@@ -33,8 +33,7 @@ To obtain the relevant repositories, see [zips/README.md](zips/README.md). You c
 
 ## Running
 
-Code to run our investigations is located inside our python package
-
+Code to run our investigations is located inside our python package `mec_hpc_investigations`.
 
 ## Contact
 
