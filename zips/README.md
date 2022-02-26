@@ -9,6 +9,8 @@ All zip files were downloaded on 2022/02/26. The commits were:
 | Whittington | 2020/11/09 | bead501bb26c6e2144362c5fecb95cdde9245fbf | https://drive.google.com/file/d/1WZpgm8PXUCb5iG594btLqc3nEZj_Ij_T/view?usp=sharing |
 | Nayebi | 2022/02/25 | 9b028a5e33f57b3aa3a5e6ec48e32232720bb092 | https://drive.google.com/file/d/1YC0JpqB1SeOLGmuqGhuej0YUza2gAKPq/view?usp=sharing |
 
-Download these files and place inside `MEC-HPC-Models-Investigation/zips`.
+To obtain the files, you can either:
 
-TODO: Provide file that downloads these zips and unzips them.
+1. Manually download these files and place them inside `MEC-HPC-Models-Investigation/zips`.
+
+2. Run from the main repo directory `python investigations/utils/data_setup.py`
