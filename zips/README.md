@@ -12,6 +12,7 @@ All zip files were downloaded on 2022/02/26. The commits were:
 To obtain the files, you can either:
 
 1. Manually download zips and place them inside `MEC-HPC-Models-Investigation/zips`, then extract
-  them to `investigations/subprojects`.
+  them to `mec_hpc_investigations/subprojects`.
    
-2. Run `python investigations/utils/data_setup.py`, which will download and unzip the files.
+2. Run `python mec_hpc_investigations/utils/data_setup.py` from the main repository directory,
+  which will download and unzip the files.

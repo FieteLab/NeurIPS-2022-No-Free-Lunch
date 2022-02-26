@@ -7,11 +7,11 @@
 We recommend creating a virtual environment. One way to do this is by running the 
 following sequence of commands:
 
-`python3 -m venv mechpc_venv`
+`python3 -m venv mec_hpc_venv`
 
 Then activate the virtual environment:
 
-`source mechpc_venv/bin/activate`
+`source mec_hpc_venv/bin/activate`
 
 Ensure pip is up-to-date:
 
@@ -26,9 +26,14 @@ Then install the required packages:
 To obtain the relevant repositories, see [zips/README.md](zips/README.md). You can either:
  
 1. Manually download zips and place them inside `MEC-HPC-Models-Investigation/zips`, then extract
-  them to `investigations/subprojects`.
+  them to `mec_hpc_investigations/subprojects`.
    
-2. Run `python investigations/utils/data_setup.py`, which will download and unzip the files.
+2. Run `python mec_hpc_investigations/utils/data_setup.py` from the main repository directory,
+  which will download and unzip the files.
+
+## Running
+
+Code to run our investigations is located inside our python package
 
 
 ## Contact
