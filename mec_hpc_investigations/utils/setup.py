@@ -7,7 +7,7 @@ project_urls = {
     'banino': 'https://drive.google.com/file/d/1K5TnYgqhD6YuYFhK-OIGduMe5a-D2-x-/view?usp=sharing',
     'sorscher': 'https://drive.google.com/file/d/1dks4CTG3T65FxxXM59UfNt_ma3BSyo4e/view?usp=sharing',
     'whittington': 'https://drive.google.com/file/d/1WZpgm8PXUCb5iG594btLqc3nEZj_Ij_T/view?usp=sharing',
-    'nayebi': 'https://drive.google.com/file/d/1YC0JpqB1SeOLGmuqGhuej0YUza2gAKPq/view?usp=sharing',
+    'nayebi': 'https://drive.google.com/file/d/1Sfalj6RLH9bYCpzytFp5USHo1Mw4ilF0/view?usp=sharing',
 }
 
 

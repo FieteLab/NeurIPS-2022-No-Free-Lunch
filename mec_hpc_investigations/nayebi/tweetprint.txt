@@ -1,0 +1,30 @@
+1/ People study medial entorhinal cortex (MEC) because of its key role in navigation and memory.
+In our new paper we build neural network models that explain the full diversity of neural responses in MEC.
+
+To appear as a #NeurIPS2021 Spotlight!
+Tweetprint below
+
+2/ tl;dr Focus less on specialty cell types and hand-crafted models. Instead, build network models that capture architectural and functional constraints that shape the MEC population as a whole.
+
+3/ Famous experiments identified special cell types in MEC (e.g. grid & border cells). Recent neural networks solving path integration tasks have some internal units that look surprisingly like grid / border cells.  @weixx2, Chris Cueva, @AndreaBanino, @caswellcaswell
+
+4/ But the great majority of MEC neurons don't exhibit such cleanly stereotyped firing patterns.  What characterizes these "heterogeneous" cells, and are they important?  (Reminiscent of Bruno Olshausen's  "other 85% of V1") [figure]
+
+5/ Unlike hand-crafted models, learned neural networks also have heterogeneous units that potentially might be like those in the real brain.  But do they *actually* look like real MEC cells, quantitatively?
+
+6/ We evaluated a variety of network models and found that -- for the right combination of circuit architecture and task -- learned models are *way* better at capturing response patterns of most MEC cells.  [figure]
+
+7/ We also performed in-silico knockout experiments, finding that heterogeneous cells are just as likely to be causally implicated in MEC functionality as grid/border cells.  Maybe grid cells aren't especially special, but just easy to visualize? [figure]
+
+8/ In fact, task-optimized networks capture not just spatial responses of MEC cells, but also reward modulation, in a single simple unified model.  [figure]
+
+9/ Our results suggest how specific processes of biological performance optimization may have directly shaped the neural mechanisms in MEC as a whole, and provides a path for enlarging the study of MEC beyond overly-restrictive response stereotypes.
+
+10/ But do we really think our best model ("UGRNN-ReLU") is *actually* the correct circuit structure of MEC?  Not really.  It does explain practically all the response variability in a wide spectrum of data, BUT the real implication ...
+
+11/ ...is that the data is probably too limited.  Future work in MEC should much more seriously engage mice in more complex environments & behaviors to strongly falsify current models and better constrain network architectures.
+
+12/ We've made our models, training code, and neural fitting pipeline publicly available in case you may want to benchmark your own neural data.
+https://github.com/neuroailab/mec
+
+13/ Special thanks to collaborators and interlocutors! @Alex_Attinger @malcgcamp @kiahhardcastle Isabel Low @sc8lin @meldefon Ben Sorscher @ItsNeuronal @SuryaGanguli @lisa_giocomo @dyamins @alxgnz @SussilloDavid @johnhwen1

@@ -1,0 +1,71 @@
+program: run_trainer_rylan.py
+project: mec-hpc-investigations
+method: grid
+metric:
+  goal: minimize
+  name: loss
+parameters:
+  activation:
+    values: [
+        'relu',
+    ]
+  batch_size:
+    values: [200,]
+  bin_side_in_m:
+    values: [0.05]
+  box_height_in_m:
+    values: [2.2]
+  box_width_in_m:
+    values: [2.2]
+  is_periodic:
+    values: [False]
+  learning:rate:
+    values: [1e-4]
+  n_epochs:
+    values: [200]
+  n_grad_steps_per_epoch:
+    values: [250]
+  n_recurrent_units_to_sample:
+    values: [64]
+  Ng:
+    values: [4096]
+  Np:
+    values: [512]
+  optimizer:
+    values: [
+        'sgd',
+        'adam'
+    ]
+  place_field_function:
+    values: [
+        'position',
+        'gaussian_global',
+        'gaussian_local',
+        'difference_of_gaussians',
+    ]
+  place_field_normalization:
+    values: [
+      'none',
+      'normal',
+      'softmax',
+    ]
+  place_cell_rf:
+    values: [
+        0.12,
+    ]
+  place_cell_n_fields:
+    values: [1, 3]
+  readout_dropout:
+    values: [0., 0.5]
+  rnn_type:
+    values: [
+        'UGRNN'
+    ]
+  seed:
+    values: [ 0, 1, 2 ]
+  sequence_length:
+    values: [20,]
+  surround_scale:
+    values: [0.5, 1., 2.,]
+  weight_decay:
+    values: [0, 1e-4]
