@@ -35,6 +35,11 @@ To obtain the relevant repositories, see [zips/README.md](zips/README.md). You c
 
 Code to run our investigations is located inside our python package `mec_hpc_investigations`.
 
+## Background
+
+This repository was based on Nayebi et al. 2021 commit `dfaa3bc03eba9df8aace1541c0724482fbcab75e`, 
+forked on 2022/03/18.
+
 ## Contact
 
 Questions? Comments? Interested in collaborating? Open an issue or 
