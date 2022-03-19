@@ -154,6 +154,7 @@ class Trainer(object):
         )
 
         n_samples = self.options.n_recurrent_units_to_sample
+        print('n_samples: ', n_samples)
         score_60_by_neuron = np.zeros(n_samples)
         score_90_by_neuron = np.zeros(n_samples)
 
@@ -232,7 +233,7 @@ class Trainer(object):
         best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
 
         wandb.log({
-            f'rate_maps_n={n_samples}': wandb.Image(fig),
+            f'rate_maps': wandb.Image(fig),
             f'max_grid_score_d=60_n={n_samples}': np.max(score_60_by_neuron),
             f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron),
             f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
@@ -247,6 +248,6 @@ class Trainer(object):
             #                                           y_labels=np.arange(best_rate_map_90.shape[0])),
         }, step=epoch_idx)
 
-        plt.show()
+        # plt.show()
         plt.close(fig=fig)
 

@@ -13,6 +13,7 @@ class Options(object):
         self.box_width_in_m = None
         self.box_height_in_m = None
         self.learning_rate = None
+        self.initializer = None
         self.is_periodic = None
         self.max_x = None
         self.min_x = None

@@ -763,6 +763,7 @@ def configure_options(save_dir=None,
                       cue_input_mode_1d=None,
                       cue_input_only=False,
                       env_1d: bool=False,
+                      initializer: str = 'glorot_uniform',
                       is_periodic: bool = False,
                       learning_rate: float = 1e-4,
                       Ng: int = 4096,
@@ -827,7 +828,7 @@ def configure_options(save_dir=None,
         options.reward_zone_as_input = reward_zone_as_input
         options.reward_zone_navigate_timesteps = reward_zone_navigate_timesteps
 
-    options.place_field_function = place_field_function  # decode positions directly if true
+    options.place_field_function = place_field_function
     options.place_field_normalization = place_field_normalization
     options.place_cell_predict = place_cell_predict
 
@@ -841,6 +842,7 @@ def configure_options(save_dir=None,
 
     options.batch_size = batch_size  # number of trajectories per batch
     options.bin_side_in_m = bin_side_in_m
+    options.initializer = initializer
     options.is_periodic = is_periodic
     options.learning_rate = learning_rate  # gradient descent learning rate
     options.n_epochs = n_epochs  # number of training epochs

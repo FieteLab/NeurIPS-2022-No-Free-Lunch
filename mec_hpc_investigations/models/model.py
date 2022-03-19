@@ -27,16 +27,21 @@ class UGRNNCell(Layer):
     """Collins et al. 2017.
     Adapted from: https://github.com/tensorflow/tensorflow/blob/r1.15/tensorflow/contrib/rnn/python/ops/rnn_cell.py#L1622-L1713"""
 
-    def __init__(self, units, activation="tanh", **kwargs):
+    def __init__(self,
+                 units,
+                 activation: str = "tanh",
+                 initializer: str = 'glorot_uniform',
+                 **kwargs):
         self.units = units
         self.state_size = units
         self.activation = activation
+        self.initializer = initializer
         super(UGRNNCell, self).__init__(**kwargs)
 
     def build(self, input_shape):
         """Initializations taken from here: https://github.com/tensorflow/tensorflow/blob/r1.15/tensorflow/contrib/rnn/python/ops/core_rnn_cell.py#L126-L188"""
         self.weight = self.add_weight(shape=(input_shape[-1] + self.units, input_shape[-1] + self.units),
-                                      initializer='glorot_uniform',
+                                      initializer=self.initializer,
                                       name='weight',
                                       trainable=True)
         self.bias = self.add_weight(shape=(input_shape[-1] + self.units,),
@@ -75,7 +80,7 @@ class RNN(Model):
         self.RNN = SimpleRNN(self.Ng,
                              return_sequences=True,
                              activation=tf.keras.layers.Activation(options.activation),
-                             recurrent_initializer='glorot_uniform',
+                             recurrent_initializer=options.initializer,
                              name='RNN',
                              use_bias=False)
         # Linear read-out weights
@@ -187,7 +192,7 @@ class LSTM(Model):
         self.M = Dense(self.Ng, name='M')
         self.RNN = tf.keras.layers.LSTM(self.Ng, return_sequences=True,
                                         activation=options.activation,
-                                        recurrent_initializer='glorot_uniform')
+                                        recurrent_initializer=options.initializer)
         self.dense = Dense(self.Ng, name='dense', activation=options.activation)
         self.decoder = Dense(self.Np, name='decoder')
 
@@ -348,7 +353,7 @@ class LSTMPCRNN(LSTMPCDense):
         self.pc_rnn_func = getattr(tf.keras.layers, options.pc_rnn_func)
         self.pc_rnn = self.pc_rnn_func(options.num_pc_pred, return_sequences=True,
                                        activation=options.pc_activation,
-                                       recurrent_initializer='glorot_uniform')
+                                       recurrent_initializer=options.initializer)
 
     def pc(self, inputs):
         v, p0 = inputs
@@ -444,7 +449,7 @@ class VanillaRNN(ThreeLayerRNNBase):
         self.RNN = SimpleRNN(self.Ng,
                              return_sequences=True,
                              activation=tf.keras.layers.Activation(options.activation),
-                             recurrent_initializer='glorot_uniform',
+                             recurrent_initializer=options.initializer,
                              name='RNN',
                              use_bias=False)
 
@@ -454,7 +459,7 @@ class GRU(ThreeLayerRNNBase):
         super(GRU, self).__init__(options=options, place_cells=place_cells)
         self.RNN = tf.keras.layers.GRU(self.Ng, return_sequences=True,
                                        activation=options.activation,
-                                       recurrent_initializer='glorot_uniform')
+                                       recurrent_initializer=options.initializer)
 
 
 class RewardThreeLayerRNNBase(ThreeLayerRNNBase):

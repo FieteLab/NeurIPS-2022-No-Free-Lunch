@@ -1,12 +1,8 @@
 import os
 import socket
 
-if "cluster" in socket.gethostname(): # cluster
-    ROOT_DIR = "/mnt/fs1/anayebi/"
-elif "sh" in socket.gethostname(): # sherlock
-    ROOT_DIR = os.environ["GROUP_SCRATCH"]
-else:
-    raise ValueError
+ROOT_DIR = '/om2/user/rylansch/MEC-HPC-Models-Investigation'
+
 
 # data dirs for mec
 BASE_DIR = os.path.join(ROOT_DIR, "mec_data/")
