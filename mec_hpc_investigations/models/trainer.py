@@ -162,21 +162,13 @@ class Trainer(object):
         best_score_90 = -np.inf
         best_rate_map_90 = None
 
-        n_rows = n_cols = int(np.sqrt(n_samples))
-
-        fig, axes = plt.subplots(
-            n_rows,  # rows
-            n_cols,  # columns
-            figsize=(2 * n_rows, 2 * n_cols),
-            sharey=True,
-            sharex=True,
-            gridspec_kw={'width_ratios': [1] * n_cols})
-
         vmin = np.min(activations)
         vmax = np.max(activations)
 
         neuron_indices = np.random.choice(self.options.Ng, replace=False,
                                           size=n_samples)
+
+        rate_maps = np.zeros(shape=(n_samples, self.scorer._nbins, self.scorer._nbins))
 
         for storage_idx, neuron_idx in enumerate(neuron_indices):
 
@@ -191,23 +183,37 @@ class Trainer(object):
             )
             scores = self.scorer.get_scores(rate_map=rate_map)
             score_60 = scores[0]
-            score_90 = scores[1]
-            score_60_by_neuron[storage_idx] = score_60
-            score_90_by_neuron[storage_idx] = score_90
-
             if score_60 > best_score_60:
                 best_score_60 = score_60
                 best_rate_map_60 = rate_map
 
+            score_90 = scores[1]
             if score_90 > best_score_90:
                 best_score_90 = score_90
                 best_rate_map_90 = rate_map
 
-            row, col = storage_idx // n_cols, storage_idx % n_cols
+            score_60_by_neuron[storage_idx] = score_60
+            score_90_by_neuron[storage_idx] = score_90
+            rate_maps[storage_idx] = rate_map
+
+        n_rows = n_cols = int(np.sqrt(n_samples))
+
+        fig, axes = plt.subplots(
+            n_rows,  # rows
+            n_cols,  # columns
+            figsize=(2 * n_rows, 2 * n_cols),
+            sharey=True,
+            sharex=True,
+            gridspec_kw={'width_ratios': [1] * n_cols})
+
+        storage_idx_sorted_by_score_60 = np.argsort(score_60_by_neuron)[::-1]
+        for count_idx, storage_idx in enumerate(storage_idx_sorted_by_score_60):
+
+            row, col = count_idx // n_cols, count_idx % n_cols
             ax = axes[row, col]
 
             sns.heatmap(
-                data=rate_map,
+                data=rate_maps[storage_idx],
                 vmin=vmin,
                 vmax=vmax,
                 ax=ax,
@@ -216,7 +222,8 @@ class Trainer(object):
                 yticklabels=False,
                 xticklabels=False)
 
-            ax.set_title(f'60={np.round(score_60, 2)}:90={np.round(score_90, 2)}')
+            ax.set_title(f'60={np.round(score_60_by_neuron[storage_idx], 2)}:'
+                         f'90={np.round(score_90_by_neuron[storage_idx], 2)}')
 
             # seaborn heatmap frustratingly flips the y axis for some reason
             ax.invert_yaxis()
@@ -240,5 +247,6 @@ class Trainer(object):
             #                                           y_labels=np.arange(best_rate_map_90.shape[0])),
         }, step=epoch_idx)
 
+        plt.show()
         plt.close(fig=fig)
 

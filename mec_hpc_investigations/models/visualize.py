@@ -8,9 +8,8 @@ import scipy.stats
 from imageio import imsave
 from tqdm.autonotebook import tqdm
 
-from mec_hpc_investigations.models.hel import PlaceCells
+from mec_hpc_investigations.models.helper_classes import PlaceCells, Options
 from mec_hpc_investigations.models.trajectory_generator import TrajectoryGenerator
-from mec_hpc_investigations.models.options import Options
 
 
 def concat_images(images,
