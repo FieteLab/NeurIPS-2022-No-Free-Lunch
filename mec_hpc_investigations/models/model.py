@@ -9,8 +9,18 @@ from tensorflow.keras import initializers
 from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 
 
-def pos_loss(x, y):
-    return (x - y) ** 2
+def create_loss_fn(place_field_loss: str,
+                   Np: int):
+    if place_field_loss == 'position':
+        assert Np == 2
+        loss_fn = pos_loss
+    elif place_field_loss == 'mse':
+        loss_fn = pos_loss
+    elif place_field_loss == 'crossentropy':
+        loss_fn = tf.nn.softmax_cross_entropy_with_logits
+    else:
+        raise ValueError(f'Impermissible place field loss str: {place_field_loss}')
+    return loss_fn
 
 
 def mask_func(inp, mask_mult=None, mask_add=None):
@@ -21,6 +31,11 @@ def mask_func(inp, mask_mult=None, mask_add=None):
         if mask_add is not None:
             inp = inp + mask_add
     return inp
+
+
+def pos_loss(x, y):
+    return (x - y) ** 2
+
 
 
 class UGRNNCell(Layer):
@@ -71,7 +86,7 @@ class RNN(Model):
         super(RNN, self).__init__()
         self.Ng = options.Ng
         self.Np = options.Np
-        self.place_field_function = options.place_field_function
+        self.place_field_loss = options.place_field_loss
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -87,11 +102,9 @@ class RNN(Model):
         self.decoder = Dense(self.Np, name='decoder', use_bias=False)
 
         # Loss function
-        if self.place_field_function == 'position':
-            assert (self.Np == 2)
-            self.loss_fun = pos_loss
-        else:
-            self.loss_fun = tf.nn.softmax_cross_entropy_with_logits
+        self.loss_fn = create_loss_fn(
+            self.place_field_loss,
+            Np=self.Np)
 
     def g(self, inputs):
         '''
@@ -144,7 +157,7 @@ class RNN(Model):
             err: Avg. decoded position error in cm.
         '''
         preds = self.call(inputs, g_mask=g_mask, g_mask_add=g_mask_add)
-        loss = tf.reduce_mean(self.loss_fun(pc_outputs, preds))
+        loss = tf.reduce_mean(self.loss_fn(pc_outputs, preds))
 
         # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
@@ -178,11 +191,11 @@ class LSTM(Model):
         super(LSTM, self).__init__()
         self.Ng = options.Ng
         self.Np = options.Np
-        assert options.place_field_function in {'position',
+        assert options.place_field_loss in {'position',
                                                 'gaussian',
                                                 'mixture_of_gaussians',
                                                 'difference_of_gaussians'}
-        self.place_field_function = options.place_field_function
+        self.place_field_loss = options.place_field_loss
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -197,13 +210,9 @@ class LSTM(Model):
         self.decoder = Dense(self.Np, name='decoder')
 
         # Loss function
-        if self.place_field_function == 'position':
-            assert(self.Np == 2)
-            assert (self.Np == 2)
-            self.loss_fun = pos_loss
-            self.loss_fun = pos_loss
-        else:
-            self.loss_fun = tf.nn.softmax_cross_entropy_with_logits
+        self.loss_fn = create_loss_fn(
+            self.place_field_loss,
+            Np=self.Np)
 
     def pre_g(self, inputs):
         '''Compute rnn cell activations'''
@@ -241,7 +250,7 @@ class LSTM(Model):
         preds = self.call(inputs,
                           g_mask=g_mask, g_mask_add=g_mask_add,
                           dc_mask=dc_mask, dc_mask_add=dc_mask_add)
-        loss = tf.reduce_mean(self.loss_fun(pc_outputs, preds))
+        loss = tf.reduce_mean(self.loss_fn(pc_outputs, preds))
 
         # # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
@@ -327,7 +336,7 @@ class LSTMPCDense(LSTM):
         '''Compute loss and decoding error.
         Note: pc_outputs and pos are the same since trajectory generator will have place_cell_identity set to True.'''
         preds = self.call(inputs, g_mask=g_mask, g_mask_add=g_mask_add)
-        loss = tf.reduce_mean(self.loss_fun(pc_outputs, preds))
+        loss = tf.reduce_mean(self.loss_fn(pc_outputs, preds))
 
         # # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
@@ -376,7 +385,7 @@ class ThreeLayerRNNBase(Model):
         super(ThreeLayerRNNBase, self).__init__()
         self.Ng = options.Ng
         self.Np = options.Np
-        self.place_field_function = options.place_field_function
+        self.place_field_loss = options.place_field_loss
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -388,11 +397,9 @@ class ThreeLayerRNNBase(Model):
         self.decoder = Dense(self.Np, name='decoder')
 
         # Loss function
-        if self.place_field_function == 'position':
-            assert (self.Np == 2)
-            self.loss_fun = pos_loss
-        else:
-            self.loss_fun = tf.nn.softmax_cross_entropy_with_logits
+        self.loss_fn = create_loss_fn(
+            self.place_field_loss,
+            Np=self.Np)
 
     def pre_g(self, inputs):
         '''Compute rnn cell activations'''
@@ -424,7 +431,7 @@ class ThreeLayerRNNBase(Model):
     def compute_loss(self, inputs, pc_outputs, pos, g_mask=None, g_mask_add=None):
         '''Compute loss and decoding error'''
         preds = self.call(inputs, g_mask=g_mask, g_mask_add=g_mask_add)
-        loss = tf.reduce_mean(self.loss_fun(pc_outputs, preds))
+        loss = tf.reduce_mean(self.loss_fn(pc_outputs, preds))
 
         # # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
@@ -541,7 +548,7 @@ class BaninoRNN(Model):
         if hasattr(options, "Nhdc"):
             self.Nhdc = options.Nhdc
         self.rnn_type = options.banino_rnn_type
-        self.place_field_function = options.place_field_function
+        self.place_field_loss = options.place_field_loss
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -588,13 +595,9 @@ class BaninoRNN(Model):
                                      bias_initializer="zeros",
                                      name='hdc_decoder')
         self.dropout = tf.keras.layers.Dropout(self.dropout_rate, name='dropout')
-        # Loss function
-        if self.place_field_function == 'position':
-            assert (self.Np == 2)
-            assert (self.Nhdc is None)
-            self.loss_fun = pos_loss
-        else:
-            self.loss_fun = tf.nn.softmax_cross_entropy_with_logits
+        self.loss_fn = create_loss_fn(
+            self.place_field_loss,
+            Np=self.Np)
 
     def pre_g(self, inputs):
         '''Compute rnn cell activations'''
@@ -652,12 +655,12 @@ class BaninoRNN(Model):
             hdc_outputs = cell_outputs["hdc_outputs"]
             pc_preds, hdc_preds = preds
             loss = tf.reduce_mean(
-                self.loss_fun(pc_outputs, pc_preds) + tf.nn.softmax_cross_entropy_with_logits(labels=hdc_outputs,
+                self.loss_fn(pc_outputs, pc_preds) + tf.nn.softmax_cross_entropy_with_logits(labels=hdc_outputs,
                                                                                               logits=hdc_preds))
             loss += self.weight_decay * tf.reduce_sum(tf.square(self.hdc_decoder.weights[0]))
             pred_pos = self.place_cells.get_nearest_cell_pos(pc_preds)
         else:
-            loss = tf.reduce_mean(self.loss_fun(cell_outputs, preds))
+            loss = tf.reduce_mean(self.loss_fn(cell_outputs, preds))
             pred_pos = self.place_cells.get_nearest_cell_pos(preds)
 
         # Weight regularization on weights only, not biases

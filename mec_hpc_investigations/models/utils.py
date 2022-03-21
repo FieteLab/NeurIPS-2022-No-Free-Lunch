@@ -45,7 +45,7 @@ def generate_run_ID(options):
         options.activation,
         'rf', str(options.place_cell_rf),
         'DoG', str(options.DoG),
-        'periodic', str(options.periodic),
+        'periodic', str(options.is_periodic),
         'lr', str(options.learning_rate),
         'weight_decay', str(options.weight_decay),
         'min_x', str(options.min_x),
@@ -588,7 +588,7 @@ def set_cfg_from_vr1ddata(dataset, cfg, return_bins=False,
         pos_bins /= 100.0
     env_cfg = copy.deepcopy(cfg)
     env_cfg.vr1d = True
-    env_cfg.periodic = True
+    env_cfg.is_periodic = True
     # in meters rather than cm
     env_cfg.min_x = pos_bins[0]
     env_cfg.max_x = pos_bins[-1]
@@ -750,7 +750,8 @@ def load_cached_metric_scores(metric, layer, rnn_type, activation, mode, eval_ar
     return curr_scores
 
 
-def configure_options(save_dir=None,
+def configure_options(run_ID: str,
+                      save_dir=None,
                       dataset=None,
                       arena_size=None,
                       activation: str = "relu",
@@ -772,10 +773,10 @@ def configure_options(save_dir=None,
                       n_recurrent_units_to_sample: int = 64,
                       n_grad_steps_per_epoch: int = 1000,
                       n_place_fields_per_cell: int = 1,
-                      place_field_function: str = 'difference_of_gaussians',
-                      place_field_normalization: str = 'softmax',
+                      place_field_loss: str = 'crossentropy',
+                      place_field_values: str = 'gaussian',
+                      place_field_normalization: str = 'local',
                       place_cell_rf: float = 0.12,
-                      place_cell_predict=False,
                       pc_k=None,
                       pc_activation="relu",
                       pc_rnn_func=None,
@@ -796,7 +797,6 @@ def configure_options(save_dir=None,
                       reward_zone_as_input=True,
                       reward_zone_navigate_timesteps=None,
                       rnn_type: str = "rnn",
-                      run_ID=None,
                       sequence_length: int = 20,
                       surround_scale: float = 2.,
                       weight_decay: float = 1e-4,
@@ -828,17 +828,9 @@ def configure_options(save_dir=None,
         options.reward_zone_as_input = reward_zone_as_input
         options.reward_zone_navigate_timesteps = reward_zone_navigate_timesteps
 
-    options.place_field_function = place_field_function
+    options.place_field_loss = place_field_loss
+    options.place_field_values = place_field_values
     options.place_field_normalization = place_field_normalization
-    options.place_cell_predict = place_cell_predict
-
-    if options.place_cell_predict:
-        options.place_cell_identity = True
-        options.num_pc_pred = Np
-        options.pc_k = pc_k
-        options.pc_activation = pc_activation
-        options.pc_rnn_func = pc_rnn_func
-        options.pc_rnn_initial_state = pc_rnn_initial_state
 
     options.batch_size = batch_size  # number of trajectories per batch
     options.bin_side_in_m = bin_side_in_m
@@ -851,11 +843,10 @@ def configure_options(save_dir=None,
     options.n_place_fields_per_cell = n_place_fields_per_cell
 
     options.Ng = Ng  # number of recurrent units
+    options.Np = Np
     options.optimizer = optimizer
-    if options.place_field_function == 'position':
-        options.Np = 2
-    else:
-        options.Np = Np  # number of place cells
+    if options.place_field_values == 'position':
+        assert options.Np == 2
     options.place_cell_rf = place_cell_rf  # width of place cell center tuning curve (m)
     options.RNN_type = rnn_type  # RNN or LSTM
     options.readout_dropout = readout_dropout
@@ -864,8 +855,7 @@ def configure_options(save_dir=None,
     options.surround_scale = surround_scale  # if DoG, ratio of sigma2^2 to sigma1^2
     options.activation = activation  # recurrent nonlinearity
     options.weight_decay = weight_decay  # strength of weight decay on recurrent weights
-    options.DoG = True  # use difference of gaussians tuning curves
-    options.periodic = False  # trajectories with periodic boundary conditions
+    options.is_periodic = is_periodic  # trajectories with periodic boundary conditions
     options.seed = seed
     if (arena_size is None) and (not env_1d):
         options.box_width_in_m = box_width_in_m  # width of training environment (meters)
@@ -918,10 +908,7 @@ def configure_options(save_dir=None,
 
     set_env_dims(options=options)
 
-    if run_ID is None:
-        options.run_ID = generate_run_ID(options=options)
-    else:
-        options.run_ID = run_ID
+    options.run_ID = run_ID
     print(f"Configured these options {vars(options)}")
     return options
 

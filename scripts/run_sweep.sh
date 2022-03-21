@@ -12,9 +12,8 @@
 # wandb sweep configs/sweep_test.yaml
 
 
-
 for i in {1..10}
 do
-  sbatch scripts/run_one.sh afo5qty6
+  sbatch scripts/run_one.sh 50b0z7y7
   sleep 5
 done

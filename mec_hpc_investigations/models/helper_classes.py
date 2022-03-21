@@ -26,9 +26,10 @@ class Options(object):
         self.Ng = None
         self.n_recurrent_units_to_sample = None
         self.optimizer = None
-        self.place_cell_rf = None
-        self.place_field_function = None
+        self.place_field_loss = None
+        self.place_field_values = None
         self.place_field_normalization = None
+        self.place_cell_rf = None
         self.readout_dropout = None
         self.recurrent_dropout = None
         self.rnn_type = None
@@ -40,11 +41,9 @@ class Options(object):
     def check_valid(self):
         assert self.activation in {'relu', 'tanh', 'sigmoid'}
         self.assert_var_is_positive_int(self.batch_size)
-        assert self.place_field_function in {'position',
-                                             'gaussian_local',
-                                             'gaussian_global',
-                                             'difference_of_gaussians_local',
-                                             'difference_of_gaussians_global'}
+        assert self.place_field_loss in {'position',
+                                             'gaussian',
+                                             'difference_of_gaussians'}
         self.assert_var_is_positive_float(self.surround_scale)
 
         assert isinstance(self.rnn_type, str)
@@ -84,20 +83,26 @@ class PlaceCells(object):
     def __init__(self,
                  options: Options):
 
-        assert options.place_field_function in {
+        assert options.place_field_loss in {
+            'mse',
+            'crossentropy'}
+        self.place_field_loss = options.place_field_loss
+
+        assert options.place_field_values in {
             'position',
             'gaussian',
             'difference_of_gaussians'}
-        self.place_field_function = options.place_field_function
+        self.place_field_values = options.place_field_values
+
+        if self.place_field_values == 'position':
+            assert options.Np == 2
+
         assert options.place_field_normalization in {
             'none',
-            'normal',
-            'softmax',
+            'local',
+            'global',
         }
         self.place_field_normalization = options.place_field_normalization
-
-        if self.place_field_function == 'position':
-            assert options.Np == 2
 
         self.Np = options.Np
         self.sigma = options.place_cell_rf
@@ -107,7 +112,7 @@ class PlaceCells(object):
         self.min_y = options.min_y
         self.max_y = options.max_y
 
-        self.place_field_function = options.place_field_function
+        self.place_field_loss = options.place_field_loss
         self.place_cell_rf = options.place_cell_rf
 
         self.is_periodic = options.is_periodic
@@ -131,7 +136,7 @@ class PlaceCells(object):
         Returns:
             outputs: Place cell activations with shape [batch_size, sequence_length, Np].
         '''
-        if self.place_field_function == 'position':
+        if self.place_field_values == 'position':
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
 
@@ -156,9 +161,9 @@ class PlaceCells(object):
             place_field_normalization=self.place_field_normalization,
             dividing_scalar=2 * self.place_cell_rf ** 2)
 
-        if self.place_field_function == 'gaussian':
+        if self.place_field_loss == 'gaussian':
             outputs = transformed_norm2
-        elif self.place_field_function == 'difference_of_gaussians':
+        elif self.place_field_loss == 'difference_of_gaussians':
 
             other_transformed_norm2 = self.normalize_norm2(
                 norm2=norm2,
@@ -172,7 +177,7 @@ class PlaceCells(object):
             diff_of_transformed /= tf.reduce_sum(diff_of_transformed, axis=-1, keepdims=True)
             outputs = diff_of_transformed
         else:
-            raise ValueError(f"Impermissible place field function: {self.place_field_function}")
+            raise ValueError(f"Impermissible place field function: {self.place_field_loss}")
 
         return outputs
 
@@ -187,7 +192,7 @@ class PlaceCells(object):
         Returns:
             pred_pos: Predicted 2d position with shape [batch_size, sequence_length, 2].
         '''
-        if self.place_field_function == 'position':
+        if self.place_field_values == 'position':
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
         else:
             _, idxs = tf.math.top_k(activation, k=k)
@@ -200,12 +205,9 @@ class PlaceCells(object):
                         place_field_normalization: str
                         ) -> tf.Tensor:
 
-        if place_field_normalization == 'none':
+        if place_field_normalization == 'local':
             output = tf.exp(-norm2 / dividing_scalar)
-        elif place_field_normalization == 'normal':
-            output = tf.exp(-norm2 / dividing_scalar)
-            output /= np.pi * dividing_scalar
-        elif place_field_normalization == 'softmax':
+        elif place_field_normalization == 'global':
             output = tf.nn.softmax(-norm2 / dividing_scalar)
         else:
             raise ValueError(f"Impermissible normalization: {place_field_normalization}")

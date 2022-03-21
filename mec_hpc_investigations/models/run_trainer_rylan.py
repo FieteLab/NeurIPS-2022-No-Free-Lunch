@@ -8,6 +8,7 @@ from mec_hpc_investigations.models.trainer import Trainer
 from mec_hpc_investigations.models.utils import configure_options, configure_model
 
 
+# Position config.
 default_config = {
     'activation': 'sigmoid',
     'batch_size': 200,
@@ -21,24 +22,30 @@ default_config = {
     'n_grad_steps_per_epoch': 10,
     'n_recurrent_units_to_sample': 16,
     'n_place_fields_per_cell': 1,
-    'Np': 512,
+    'Np': 2,
     'Ng': 4096,
     'optimizer': 'sgd',
-    'place_field_function': 'gaussian',
-    'place_field_normalization': 'normal',
-    'place_cell_rf': 0.12,
+    'place_field_loss': 'mse',
+    'place_field_values': 'position',
+    'place_field_normalization': 'none',
+    'place_cell_rf': 0.,
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
     'rnn_type': 'rnn',
     'seed': 0,
     'sequence_length': 20,
-    'surround_scale': 2,
+    'surround_scale': 1.,
     'weight_decay': 1e-4,
 }
 
 wandb.init(project='mec-hpc-investigations',
            config=default_config)
 wandb_config = wandb.config
+
+
+# Check if config is valid.
+
+
 
 # If GPUs available, select which to train on
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"

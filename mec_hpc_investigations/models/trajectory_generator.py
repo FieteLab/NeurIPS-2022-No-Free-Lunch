@@ -93,7 +93,7 @@ class TrajectoryGenerator(object):
 
         if self.vr1d:
             # periodic boundaries enforced
-            assert (self.options.periodic is True)
+            assert (self.options.is_periodic is True)
             # y position never varies
             assert (min_y == max_y)
             assert (start_y is None)
@@ -127,7 +127,7 @@ class TrajectoryGenerator(object):
             v = random_vel[:, t]
             turn_angle = np.zeros(batch_size)
 
-            if not self.options.periodic:
+            if not self.options.is_periodic:
                 # If in border region, turn and slow down
                 is_near_wall, turn_angle = self.avoid_wall(position=position[:, t],
                                                            hd=head_dir[:, t],
@@ -147,7 +147,7 @@ class TrajectoryGenerator(object):
             head_dir[:, t + 1] = head_dir[:, t] + turn_angle
 
         # Periodic boundaries
-        if self.options.periodic:
+        if self.options.is_periodic:
             # position[:,:,0] = np.mod(position[:,:,0] - min_x, (max_x - min_x)) - max_x
             # position[:,:,1] = np.mod(position[:,:,1] - min_y, (max_y - min_y)) - max_y
             position[:, :, 0] = np.mod(position[:, :, 0] - min_x, (max_x - min_x)) + min_x

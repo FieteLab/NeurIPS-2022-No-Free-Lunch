@@ -95,7 +95,12 @@ class Trainer(object):
             # 0.2 is fractional amount away from wall
             starts = [0.2] * 10
             ends = np.linspace(0.4, 1.0, num=10)
-            coords_range = ((-1.1, 1.1), (-1.1, 1.1))
+
+            # TODO: Are these height and widths consistent?
+            # coords_range = ((-1.1, 1.1), (-1.1, 1.1))
+            coords_range = (
+                (-self.options.box_width_in_m / 2., self.options.box_width_in_m / 2.),
+                (-self.options.box_height_in_m / 2., self.options.box_height_in_m / 2.))
             nbins = int((coords_range[0][1] - coords_range[0][0]) / self.options.bin_side_in_m)
             masks_parameters = zip(starts, ends.tolist())
             self.scorer = GridScorer(nbins=nbins,
@@ -103,6 +108,7 @@ class Trainer(object):
                                      coords_range=coords_range)
 
         for epoch_idx in tqdm(range(self.options.n_epochs)):
+
             t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
             for _ in t:
                 inputs, pc_outputs, pos = next(gen)
@@ -118,10 +124,10 @@ class Trainer(object):
             if save:
                 # Save checkpoint
                 self.ckpt_manager.save()
-                tot_step = self.ckpt.step.numpy()
+                # tot_step = self.ckpt.step.numpy()
 
                 # Save a picture of rate maps
-                save_ratemaps(self.model, self.options, step=tot_step)
+                # save_ratemaps(self.model, self.options, step=tot_step)
 
             wandb.log({
                 'loss': loss,

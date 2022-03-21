@@ -12,13 +12,13 @@ parameters:
         'sigmoid',
     ]
   batch_size:
-    values: [50, 200]
+    values: [200]
   bin_side_in_m:
     values: [0.05]
   box_height_in_m:
-    values: [2.2, 2.6]
+    values: [2.2, 2.4]
   box_width_in_m:
-    values: [2.2, 2.6]
+    values: [2.2, 2.4]
   initializer:
     values: [
       'glorot_uniform',
@@ -28,11 +28,11 @@ parameters:
   is_periodic:
     values: [False]
   learning_rate:
-    values: [1e-4, 1e-3]
+    values: [0.001, 0.0001]
   n_epochs:
-    values: [25]
+    values: [10]
   n_grad_steps_per_epoch:
-    values: [100 0]
+    values: [2500]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
@@ -44,43 +44,44 @@ parameters:
         'sgd',
         'adam',
     ]
-  place_field_function:
+  place_field_loss:
+    values: [
+      'mse',
+      'crossentropy',
+    ]
+  place_field_values:
     values: [
         'position',
-        'gaussian_global',
-        'gaussian_local',
+        'gaussian',
         'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
-      'none',
       'normal',
       'softmax',
     ]
   place_cell_rf:
     values: [
-      0.09,
       0.10,
       0.11,
       0.12,
       0.13,
       0.14,
-      0.15,
     ]
   readout_dropout:
-    values: [0., 0.5]
+    values: [0.]
   rnn_type:
     values: [
         'SimpleRNN',
         'LSTM',
         'UGRNN',
-        'GRU'
+        'GRU',
     ]
   seed:
-    values: [ 0, 1, 2, 3, 4 ]
+    values: [ 0, 1]
   sequence_length:
     values: [20, 40]
   surround_scale:
-    values: [1.5, 2., 2.5]
+    values: [1.8, 2., 2.2]
   weight_decay:
-      values: [ 0.0001 ]
+      values: [0, 0.0001 ]
