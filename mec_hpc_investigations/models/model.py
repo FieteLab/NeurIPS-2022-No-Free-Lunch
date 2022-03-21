@@ -10,14 +10,16 @@ from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 
 
 def create_loss_fn(place_field_loss: str,
-                   Np: int):
-    if place_field_loss == 'position':
-        assert Np == 2
-        loss_fn = pos_loss
-    elif place_field_loss == 'mse':
+                   place_field_normalization: str):
+    if place_field_loss == 'mse':
         loss_fn = pos_loss
     elif place_field_loss == 'crossentropy':
-        loss_fn = tf.nn.softmax_cross_entropy_with_logits
+        if place_field_normalization == 'global':
+            loss_fn = tf.nn.softmax_cross_entropy_with_logits
+        elif place_field_normalization == 'local':
+            loss_fn = tf.nn.sigmoid_cross_entropy_with_logits
+        else:
+            raise ValueError(f'Impermissible normalization str: {place_field_normalization}')
     else:
         raise ValueError(f'Impermissible place field loss str: {place_field_loss}')
     return loss_fn
@@ -35,7 +37,6 @@ def mask_func(inp, mask_mult=None, mask_add=None):
 
 def pos_loss(x, y):
     return (x - y) ** 2
-
 
 
 class UGRNNCell(Layer):
@@ -70,7 +71,7 @@ class UGRNNCell(Layer):
         assert (prev_state.get_shape().as_list()[-1] == self.units)  # consistency
         input_dim = inputs.get_shape().as_list()[-1]
         assert (
-                    input_dim == self.units)  # otherwise elementwise multiply of g * prev_state in new_state update will fail
+                input_dim == self.units)  # otherwise elementwise multiply of g * prev_state in new_state update will fail
         cell_inputs = tf.concat([inputs, prev_state], axis=-1)
         rnn_matrix = tf.matmul(cell_inputs, self.weight) + self.bias
         [g_act, c_act] = tf.split(axis=-1, num_or_size_splits=[input_dim, self.units], value=rnn_matrix)
@@ -87,6 +88,7 @@ class RNN(Model):
         self.Ng = options.Ng
         self.Np = options.Np
         self.place_field_loss = options.place_field_loss
+        self.place_field_normalization = options.place_field_normalization
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -104,7 +106,7 @@ class RNN(Model):
         # Loss function
         self.loss_fn = create_loss_fn(
             self.place_field_loss,
-            Np=self.Np)
+            self.place_field_normalization)
 
     def g(self, inputs):
         '''
@@ -192,10 +194,11 @@ class LSTM(Model):
         self.Ng = options.Ng
         self.Np = options.Np
         assert options.place_field_loss in {'position',
-                                                'gaussian',
-                                                'mixture_of_gaussians',
-                                                'difference_of_gaussians'}
+                                            'gaussian',
+                                            'mixture_of_gaussians',
+                                            'difference_of_gaussians'}
         self.place_field_loss = options.place_field_loss
+        self.place_field_normalization = options.place_field_normalization
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -212,7 +215,7 @@ class LSTM(Model):
         # Loss function
         self.loss_fn = create_loss_fn(
             self.place_field_loss,
-            Np=self.Np)
+            self.place_field_normalization)
 
     def pre_g(self, inputs):
         '''Compute rnn cell activations'''
@@ -386,6 +389,7 @@ class ThreeLayerRNNBase(Model):
         self.Ng = options.Ng
         self.Np = options.Np
         self.place_field_loss = options.place_field_loss
+        self.place_field_normalization = options.place_field_normalization
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -399,7 +403,7 @@ class ThreeLayerRNNBase(Model):
         # Loss function
         self.loss_fn = create_loss_fn(
             self.place_field_loss,
-            Np=self.Np)
+            self.place_field_normalization)
 
     def pre_g(self, inputs):
         '''Compute rnn cell activations'''
@@ -549,6 +553,7 @@ class BaninoRNN(Model):
             self.Nhdc = options.Nhdc
         self.rnn_type = options.banino_rnn_type
         self.place_field_loss = options.place_field_loss
+        self.place_field_normalization = options.place_field_normalization
         self.sequence_length = options.sequence_length
         self.weight_decay = options.weight_decay
         self.place_cells = place_cells
@@ -597,7 +602,7 @@ class BaninoRNN(Model):
         self.dropout = tf.keras.layers.Dropout(self.dropout_rate, name='dropout')
         self.loss_fn = create_loss_fn(
             self.place_field_loss,
-            Np=self.Np)
+            self.place_field_normalization)
 
     def pre_g(self, inputs):
         '''Compute rnn cell activations'''
@@ -656,7 +661,7 @@ class BaninoRNN(Model):
             pc_preds, hdc_preds = preds
             loss = tf.reduce_mean(
                 self.loss_fn(pc_outputs, pc_preds) + tf.nn.softmax_cross_entropy_with_logits(labels=hdc_outputs,
-                                                                                              logits=hdc_preds))
+                                                                                             logits=hdc_preds))
             loss += self.weight_decay * tf.reduce_sum(tf.square(self.hdc_decoder.weights[0]))
             pred_pos = self.place_cells.get_nearest_cell_pos(pc_preds)
         else:

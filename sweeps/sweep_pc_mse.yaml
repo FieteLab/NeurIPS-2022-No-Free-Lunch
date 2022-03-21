@@ -16,9 +16,9 @@ parameters:
   bin_side_in_m:
     values: [0.05]
   box_height_in_m:
-    values: [2.2, 2.4]
+    values: [2.2]
   box_width_in_m:
-    values: [2.2, 2.4]
+    values: [2.2]
   initializer:
     values: [
       'glorot_uniform',
@@ -38,7 +38,7 @@ parameters:
   Ng:
     values: [4096]
   Np:
-    values: [512]
+    values: [2]
   optimizer:
     values: [
         'sgd',
@@ -47,26 +47,21 @@ parameters:
   place_field_loss:
     values: [
       'mse',
-      'crossentropy',
     ]
   place_field_values:
     values: [
-        'position',
-        'gaussian',
-        'difference_of_gaussians',
+      'gaussian',
+      'difference_of_gaussians'
     ]
   place_field_normalization:
     values: [
-      'normal',
-      'softmax',
+      'none',
+      'global',
+      'local',
     ]
   place_cell_rf:
     values: [
-      0.10,
-      0.11,
-      0.12,
-      0.13,
-      0.14,
+      0.
     ]
   readout_dropout:
     values: [0.]
@@ -82,6 +77,6 @@ parameters:
   sequence_length:
     values: [20, 40]
   surround_scale:
-    values: [1.8, 2., 2.2]
+    values: [1.]
   weight_decay:
       values: [0, 0.0001 ]

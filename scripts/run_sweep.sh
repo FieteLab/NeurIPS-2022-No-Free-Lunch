@@ -8,12 +8,10 @@
 
 # Run this, then pipe sweep ID to each individual run
 # source mec_hpc_venv/bin/activate
-# wandb sweep configs/sweep_complete.yaml
-# wandb sweep configs/sweep_test.yaml
-
+# wandb sweep sweeps/sweep_complete.yaml
 
 for i in {1..10}
 do
-  sbatch scripts/run_one.sh 50b0z7y7
+  sbatch scripts/run_one.sh tgkfgdc3
   sleep 5
 done
