@@ -40,7 +40,7 @@ def generate_run_ID(options):
     params = [
         'steps', str(options.sequence_length),
         'batch', str(options.batch_size),
-        options.RNN_type,
+        options.rnn_type,
         str(options.Ng),
         options.activation,
         'rf', str(options.place_cell_rf),
@@ -95,7 +95,7 @@ def generate_run_ID(options):
     if hasattr(options, "Nhdc"):
         params.extend(['Nhdc', str(options.Nhdc)])
         params.extend(['hdconc', str(options.hdc_concentration)])
-    if options.RNN_type.lower() == "baninornn":
+    if options.rnn_type.lower() == "baninornn":
         params.extend(['brnn', options.banino_rnn_type])
         params.extend(['brnunits', str(options.banino_rnn_nunits)])
         params.extend(['brdp', str(options.banino_dropout_rate)])
@@ -848,7 +848,7 @@ def configure_options(run_ID: str,
     if options.place_field_values == 'position':
         assert options.Np == 2
     options.place_cell_rf = place_cell_rf  # width of place cell center tuning curve (m)
-    options.RNN_type = rnn_type  # RNN or LSTM
+    options.rnn_type = rnn_type  # RNN or LSTM
     options.readout_dropout = readout_dropout
     options.recurrent_dropout = recurrent_dropout
     options.sequence_length = sequence_length  # number of steps in trajectory
@@ -913,10 +913,10 @@ def configure_options(run_ID: str,
     return options
 
 
-def configure_model(options,
-                    rnn_type="rnn"):
+def configure_model(options: Options):
 
-    place_cells = PlaceCells(options)
+    place_cells = PlaceCells(options=options)
+    rnn_type = options.rnn_type
     if rnn_type.lower() == "rnn":
         model = RNN(options=options, place_cells=place_cells)
     elif rnn_type.lower() == "lstm":

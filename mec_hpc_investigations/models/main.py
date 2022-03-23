@@ -66,9 +66,9 @@ options.run_ID = generate_run_ID(options)
 
 
 place_cells = PlaceCells(options)
-if options.RNN_type == 'RNN':
+if options.rnn_type == 'RNN':
 	model = RNN(options, place_cells)
-elif options.RNN_type == 'LSTM':
+elif options.rnn_type == 'LSTM':
 	model = LSTM(options, place_cells)
 trainer = Trainer(options, model)
 

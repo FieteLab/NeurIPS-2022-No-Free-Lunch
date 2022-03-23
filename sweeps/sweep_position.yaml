@@ -64,7 +64,7 @@ parameters:
     values: [0.]
   rnn_type:
     values: [
-        'SimpleRNN',
+        'RNN',
         'LSTM',
         'UGRNN',
         'GRU',

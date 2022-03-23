@@ -1,9 +1,13 @@
 #!/bin/bash
 #SBATCH -p fiete
 #SBATCH -n 2                    # two cores
-#SBATCH --mem=12G               # RAM
+#SBATCH --mem=16G               # RAM
+#SBATCH --gres=gpu:1
 #SBATCH --time=99:99:99         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
+
+module load openmind/cuda/11.2
+module load openmind/cudnn/11.5-v8.3.3.40
 
 id=${1}
 

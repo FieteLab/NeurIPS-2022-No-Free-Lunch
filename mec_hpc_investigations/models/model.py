@@ -11,6 +11,7 @@ from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 
 def create_loss_fn(place_field_loss: str,
                    place_field_normalization: str):
+
     if place_field_loss == 'mse':
         loss_fn = pos_loss
     elif place_field_loss == 'crossentropy':
@@ -193,10 +194,8 @@ class LSTM(Model):
         super(LSTM, self).__init__()
         self.Ng = options.Ng
         self.Np = options.Np
-        assert options.place_field_loss in {'position',
-                                            'gaussian',
-                                            'mixture_of_gaussians',
-                                            'difference_of_gaussians'}
+        assert options.place_field_loss in {'mse',
+                                            'crossentropy',}
         self.place_field_loss = options.place_field_loss
         self.place_field_normalization = options.place_field_normalization
         self.sequence_length = options.sequence_length

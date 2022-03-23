@@ -18,8 +18,8 @@ default_config = {
     'initializer': 'glorot_uniform',
     'is_periodic': False,
     'learning_rate': 1e-4,
-    'n_epochs': 10,
-    'n_grad_steps_per_epoch': 10,
+    'n_epochs': 2,
+    'n_grad_steps_per_epoch': 5,
     'n_recurrent_units_to_sample': 16,
     'n_place_fields_per_cell': 1,
     'Np': 2,
@@ -31,7 +31,7 @@ default_config = {
     'place_cell_rf': 0.,
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
-    'rnn_type': 'rnn',
+    'rnn_type': 'SimpleRNN',
     'seed': 0,
     'sequence_length': 20,
     'surround_scale': 1.,
@@ -46,11 +46,10 @@ wandb_config = wandb.config
 # Check if config is valid.
 
 
-
 # If GPUs available, select which to train on
 # os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
 # os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-os.environ["CUDA_VISIBLE_DEVICES"] = ""
+# os.environ["CUDA_VISIBLE_DEVICES"] = ""
 
 # Set seeds.
 np.random.seed(seed=wandb_config.seed)

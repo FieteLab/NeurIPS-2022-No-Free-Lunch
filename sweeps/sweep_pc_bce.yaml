@@ -64,10 +64,10 @@ parameters:
     values: [0.]
   rnn_type:
     values: [
-        'SimpleRNN',
-        'LSTM',
-        'UGRNN',
-        'GRU',
+      'RNN',
+      'LSTM',
+      'UGRNN',
+      'GRU',
     ]
   seed:
     values: [ 0, 1]
