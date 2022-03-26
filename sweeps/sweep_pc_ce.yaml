@@ -38,7 +38,7 @@ parameters:
   Ng:
     values: [4096]
   Np:
-    values: [2]
+    values: [512]
   optimizer:
     values: [
         'sgd',
@@ -51,7 +51,6 @@ parameters:
   place_field_values:
     values: [
       'gaussian',
-      'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
@@ -59,7 +58,7 @@ parameters:
     ]
   place_cell_rf:
     values: [
-      0.
+      0.12,
     ]
   readout_dropout:
     values: [0.]
@@ -71,10 +70,10 @@ parameters:
       'GRU',
     ]
   seed:
-    values: [ 0, 1]
+    values: [ 0, 1, 2]
   sequence_length:
-    values: [20, 40]
+    values: [20]
   surround_scale:
-    values: [1.]
+    values: [2.]
   weight_decay:
       values: [0, 0.0001 ]

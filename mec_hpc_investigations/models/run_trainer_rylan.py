@@ -10,7 +10,7 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 
 # Position config.
 default_config = {
-    'activation': 'sigmoid',
+    'activation': 'relu',
     'batch_size': 200,
     'bin_side_in_m': 0.05,
     'box_height_in_m': 2.2,
@@ -25,13 +25,13 @@ default_config = {
     'Np': 2,
     'Ng': 4096,
     'optimizer': 'sgd',
-    'place_field_loss': 'mse',
-    'place_field_values': 'position',
-    'place_field_normalization': 'none',
+    'place_field_loss': 'crossentropy',
+    'place_field_values': 'gaussian',
+    'place_field_normalization': 'global',
     'place_cell_rf': 0.,
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
-    'rnn_type': 'SimpleRNN',
+    'rnn_type': 'RNN',
     'seed': 0,
     'sequence_length': 20,
     'surround_scale': 1.,

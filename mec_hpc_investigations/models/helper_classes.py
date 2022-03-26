@@ -161,9 +161,9 @@ class PlaceCells(object):
             place_field_normalization=self.place_field_normalization,
             dividing_scalar=2 * self.place_cell_rf ** 2)
 
-        if self.place_field_loss == 'gaussian':
+        if self.place_field_values == 'gaussian':
             outputs = transformed_norm2
-        elif self.place_field_loss == 'difference_of_gaussians':
+        elif self.place_field_values == 'difference_of_gaussians':
 
             other_transformed_norm2 = self.normalize_norm2(
                 norm2=norm2,
