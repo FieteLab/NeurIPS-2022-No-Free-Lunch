@@ -96,7 +96,7 @@ class Trainer(object):
             starts = [0.2] * 10
             ends = np.linspace(0.4, 1.0, num=10)
 
-            # TODO: Are these height and widths consistent?
+            # TODO: Are these height and widths in the correct order?
             # coords_range = ((-1.1, 1.1), (-1.1, 1.1))
             coords_range = (
                 (-self.options.box_width_in_m / 2., self.options.box_width_in_m / 2.),
