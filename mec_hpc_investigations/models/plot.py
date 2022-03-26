@@ -8,38 +8,36 @@ plt.rcParams["font.size"] = 20  # was previously 22
 sns.set_style("whitegrid")
 
 
-def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
+def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
         runs_performance_df: pd.DataFrame,
-        plot_dir: str):
+        plot_dir: str,
+        low_pos_decoding_err_threshold: float = 5.):
+    runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
+        runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 8),
                              sharey=True, sharex=True)
-    ymin = runs_performance_df['pos_decoding_err'].min()
-    ymax = runs_performance_df['pos_decoding_err'].max()
+
     ax = axes[0]
-    sns.scatterplot(y="pos_decoding_err",
-                    x='max_grid_score_d=60_n=256',
-                    data=runs_performance_df,
-                    hue='run_group',
-                    ax=ax,
-                    s=5)
-    ax.set_ylim(ymin, ymax)
-    ax.set_ylabel('Pos Decoding Err')
-    ax.set_xlabel(r'Max Grid Score ($60^{\circ}$)')
+    sns.violinplot(y="max_grid_score_d=60_n=256",
+                   x='run_group',
+                   data=runs_performance_df,
+                   ax=ax)
+    ax.set_ylabel(
+        f'Max Grid Score | Pos Err < {low_pos_decoding_err_threshold} cm')
+    ax.set_xlabel('Group')
+    ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.scatterplot(y="pos_decoding_err",
-                    x='max_grid_score_d=90_n=256',
-                    data=runs_performance_df,
-                    hue='run_group',
-                    ax=ax,
-                    s=10)
-    ax.set_ylim(ymin, ymax)
-    ax.set_ylabel(None)  # Share Y-Label with subplot to left.
-    ax.set_xlabel(r'Max Grid Score ($60^{\circ}$)')
-    # ax.set_title(r'$90^{\circ}$')
-
+    sns.violinplot(y="max_grid_score_d=90_n=256",
+                   x='run_group',
+                   data=runs_performance_df,
+                   ax=ax)
+    ax.set_ylabel(None)
+    ax.set_xlabel('Group')
+    ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_vs_max_grid_score.pdf'),
+                             f'max_grid_score_vs_run_group_given_low_pos_decoding_err.pdf'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -70,7 +68,8 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
                 data=runs_performance_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
-    ax.set_ylabel(f'% Runs : Max Grid Score > {grid_score_d60_threshold} | Pos Err < {low_pos_decoding_err_threshold}')
+    ax.set_ylabel(
+        f'% Runs : Max Grid Score > {grid_score_d60_threshold} | Pos Err < {low_pos_decoding_err_threshold} cm')
     ax.set_xlabel('Group')
 
     ax = axes[1]
@@ -111,12 +110,50 @@ def plot_percent_low_decoding_err_vs_run_group(
     plt.close()
 
 
+def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
+        runs_performance_df: pd.DataFrame,
+        plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 8),
+                             sharey=True, sharex=True)
+    ymin = runs_performance_df['pos_decoding_err'].min()
+    ymax = runs_performance_df['pos_decoding_err'].max()
+    ax = axes[0]
+    sns.scatterplot(y="pos_decoding_err",
+                    x='max_grid_score_d=60_n=256',
+                    data=runs_performance_df,
+                    hue='run_group',
+                    ax=ax,
+                    s=10)
+    ax.set_ylim(ymin, ymax)
+    ax.set_ylabel('Pos Decoding Err')
+    ax.set_xlabel(r'Max Grid Score ($60^{\circ}$)')
+
+    ax = axes[1]
+    sns.scatterplot(y="pos_decoding_err",
+                    x='max_grid_score_d=90_n=256',
+                    data=runs_performance_df,
+                    hue='run_group',
+                    ax=ax,
+                    s=10)
+    ax.set_ylim(ymin, ymax)
+    ax.set_ylabel(None)  # Share Y-Label with subplot to left.
+    ax.set_xlabel(r'Max Grid Score ($60^{\circ}$)')
+    # ax.set_title(r'$90^{\circ}$')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_err_vs_max_grid_score_by_run_group.pdf'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
-    sns.barplot(x="run_group",
-                y="pos_decoding_err",
-                data=runs_performance_df)
+    sns.violinplot(x="run_group",
+                   y="pos_decoding_err",
+                   data=runs_performance_df)
     plt.ylabel('Pos Decoding Err (cm)')
     plt.xlabel('Group')
     plt.savefig(os.path.join(plot_dir,
