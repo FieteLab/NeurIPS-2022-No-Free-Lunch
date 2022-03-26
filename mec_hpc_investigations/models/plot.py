@@ -12,6 +12,8 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
+
+    plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
@@ -50,6 +52,8 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
         low_pos_decoding_err_threshold: float = 5.,
         grid_score_d60_threshold: float = 1.0,
         grid_score_d90_threshold: float = 1.5):
+
+    plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
@@ -68,6 +72,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
                 data=runs_performance_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
+    ax.set_title(r'$60^{\circ}$')
     ax.set_ylabel(
         f'% Runs : Max Grid Score > {grid_score_d60_threshold} | Pos Err < {low_pos_decoding_err_threshold} cm')
     ax.set_xlabel('Group')
@@ -78,6 +83,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
                 data=runs_performance_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
+    ax.set_title(r'$90^{\circ}$')
     ax.set_ylabel(f'% Runs : Max Grid Score > {grid_score_d90_threshold} | Pos Err < {low_pos_decoding_err_threshold}')
     ax.set_xlabel('Group')
 
@@ -93,6 +99,8 @@ def plot_percent_low_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
+
+    plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
@@ -113,6 +121,8 @@ def plot_percent_low_decoding_err_vs_run_group(
 def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
+
+    plt.close()
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 8),
                              sharey=True, sharex=True)
     ymin = runs_performance_df['pos_decoding_err'].min()
@@ -126,7 +136,8 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
                     s=10)
     ax.set_ylim(ymin, ymax)
     ax.set_ylabel('Pos Decoding Err')
-    ax.set_xlabel(r'Max Grid Score ($60^{\circ}$)')
+    ax.set_xlabel(r'Max Grid Score')
+    ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
     sns.scatterplot(y="pos_decoding_err",
@@ -137,8 +148,8 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
                     s=10)
     ax.set_ylim(ymin, ymax)
     ax.set_ylabel(None)  # Share Y-Label with subplot to left.
-    ax.set_xlabel(r'Max Grid Score ($60^{\circ}$)')
-    # ax.set_title(r'$90^{\circ}$')
+    ax.set_xlabel(r'Max Grid Score')
+    ax.set_title(r'$90^{\circ}$')
 
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_err_vs_max_grid_score_by_run_group.pdf'),
@@ -151,6 +162,8 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
 def plot_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
+
+    plt.close()
     sns.violinplot(x="run_group",
                    y="pos_decoding_err",
                    data=runs_performance_df)
