@@ -11,7 +11,8 @@ low_pos_decoding_err_threshold = 5.
 grid_score_d60_threshold = 1.0
 grid_score_d90_threshold = 1.4
 sweep_ids = [
-    '5bpvzhfh',  # Position task loss
+    '5bpvzhfh',  # Position + MSE
+    'ni9i0dfp',  # Gaussian + global norm + cross entropy
 ]
 
 
