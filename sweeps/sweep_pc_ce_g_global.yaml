@@ -30,9 +30,9 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [4]
+    values: [20]
   n_grad_steps_per_epoch:
-    values: [10000]
+    values: [250]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
