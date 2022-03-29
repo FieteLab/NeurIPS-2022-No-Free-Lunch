@@ -11,7 +11,7 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 # Position config.
 default_config = {
     'activation': 'relu',
-    'batch_size': 200,
+    'batch_size': 20,
     'bin_side_in_m': 0.05,
     'box_height_in_m': 2.2,
     'box_width_in_m': 2.2,
@@ -22,19 +22,19 @@ default_config = {
     'n_grad_steps_per_epoch': 5,
     'n_recurrent_units_to_sample': 16,
     'n_place_fields_per_cell': 1,
-    'Np': 2,
-    'Ng': 4096,
+    'Np': 64,
+    'Ng': 512,
     'optimizer': 'sgd',
     'place_field_loss': 'crossentropy',
     'place_field_values': 'gaussian',
     'place_field_normalization': 'global',
-    'place_cell_rf': 0.,
+    'place_cell_rf': 0.12,
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
     'rnn_type': 'RNN',
     'seed': 0,
     'sequence_length': 20,
-    'surround_scale': 1.,
+    'surround_scale': 2.,
     'weight_decay': 1e-4,
 }
 

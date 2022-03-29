@@ -3,6 +3,7 @@ import tensorflow as tf
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import skdim
 import seaborn as sns
 from tqdm import tqdm
 import wandb
@@ -11,6 +12,8 @@ from mec_hpc_investigations.models.visualize import save_ratemaps
 from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 from mec_hpc_investigations.models.scores import GridScorer
 from mec_hpc_investigations.models.trajectory_generator import TrajectoryGenerator
+
+
 # from mec_hpc_investigations.models.utils import compute_and_log_rate_maps
 
 
@@ -109,15 +112,15 @@ class Trainer(object):
 
         for epoch_idx in tqdm(range(self.options.n_epochs)):
 
-            t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
-            for _ in t:
+            # t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
+            for _ in range(self.options.n_grad_steps_per_epoch):
                 inputs, pc_outputs, pos = next(gen)
                 loss, pos_decoding_err = self.train_step(inputs, pc_outputs, pos)
                 self.loss.append(loss)
                 self.err.append(pos_decoding_err)
 
                 # Log error rate
-                t.set_description(f"Error = {100 * pos_decoding_err} cm")
+                # t.set_description(f"Error = {100 * pos_decoding_err} cm")
 
                 self.ckpt.step.assign_add(1)
 
@@ -129,23 +132,28 @@ class Trainer(object):
                 # Save a picture of rate maps
                 # save_ratemaps(self.model, self.options, step=tot_step)
 
-            wandb.log({
+            wandb_vals_to_log = {
                 'loss': loss,
                 'pos_decoding_err': 100 * pos_decoding_err,
-            }, step=epoch_idx)
+            }
 
-        if log_and_plot_grid_scores:
-            self.log_and_plot_grid_scores(pos=pos, inputs=inputs,
-                                          epoch_idx=epoch_idx)
+            wandb_vals_to_log.update(self.compute_intrinsic_dimensionalies(
+                inputs=inputs))
+
+            wandb.log(wandb_vals_to_log, step=epoch_idx)
+
+            if log_and_plot_grid_scores:
+                self.log_and_plot_all(pos=pos, inputs=inputs,
+                                      epoch_idx=epoch_idx)
 
     def load_ckpt(self, idx):
         ''' Restore model from earlier checkpoint. '''
         self.ckpt.restore(self.ckpt_manager.checkpoints[idx])
 
-    def log_and_plot_grid_scores(self,
-                                 pos: tf.Tensor,
-                                 inputs: tf.Tensor,
-                                 epoch_idx: int):
+    def log_and_plot_all(self,
+                         pos: tf.Tensor,
+                         inputs: tf.Tensor,
+                         epoch_idx: int):
 
         xs = tf.reshape(
             pos[:, :, 0],
@@ -165,11 +173,74 @@ class Trainer(object):
             activations=activations,
             epoch_idx=epoch_idx)
 
+        self.compute_and_log_grid_cell_periodicity_and_orientation(
+            rate_maps=rate_maps,
+            score_60_by_neuron=score_60_by_neuron,
+            score_90_by_neuron=score_90_by_neuron,
+            epoch_idx=epoch_idx,
+        )
+
         self.plot_and_log_ratemaps(
             rate_maps=rate_maps,
             score_60_by_neuron=score_60_by_neuron,
             score_90_by_neuron=score_90_by_neuron,
             epoch_idx=epoch_idx)
+
+    def compute_intrinsic_dimensionalies(self,
+                                         inputs):
+        # activations has shape: (batch_size * sequence_length, Ng)
+        activations = tf.reshape(
+            tf.stop_gradient(self.model.g(inputs)),
+            shape=[self.options.batch_size * self.options.sequence_length, self.options.Ng]
+        )
+
+        # In this function, ID stands for Intrinsic Dimensionality.
+        two_NN_ID = skdim.id.TwoNN().fit_transform(X=activations)
+
+        method_of_moments_ID = skdim.id.MOM().fit_transform(X=activations)
+
+        # Use skdim implementation for trustworthiness.
+        participation_ratio_ID = skdim.id.lPCA(ver='participation_ratio').fit_transform(
+            X=activations)
+        # singular_vals = np.linalg.svd(
+        #     activations,
+        #     full_matrices=False,
+        #     compute_uv=False)
+        # eigen_vals = np.square(singular_vals)
+        # participation_ratio = np.square(np.sum(eigen_vals)) / np.sum(np.square(eigen_vals))
+
+        intrinsic_dimensionalities = dict(
+            participation_ratio=participation_ratio_ID,
+            two_NN=two_NN_ID,
+            method_of_moments_ID=method_of_moments_ID,
+        )
+
+        return intrinsic_dimensionalities
+
+    def compute_and_log_grid_cell_periodicity_and_orientation(self,
+                                                              rate_maps,
+                                                              score_60_by_neuron,
+                                                              score_90_by_neuron,
+                                                              epoch_idx,
+                                                              threshold: float = 1.1):
+
+        likely_grid_cell_indices = score_60_by_neuron > threshold
+        if np.sum(likely_grid_cell_indices) == 0:
+            return
+
+        period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
+        for rate_map in rate_maps[likely_grid_cell_indices]:
+            period, period_err, orientations = self.scorer.calculate_grid_cell_periodicity_and_orientation(
+                rate_map=rate_map)
+            period_per_cell.append(period)
+            period_err_per_cell.append(period_err)
+            orientations_per_cell.append(orientations.tolist())
+
+        wandb.log({
+            f'period_per_cell_threshold={threshold}': period_per_cell,
+            f'period_err_per_cell_threshold={threshold}': period_err_per_cell,
+            f'orientations_per_cell_threshold={threshold}': orientations_per_cell,
+        }, step=epoch_idx)
 
     def compute_and_log_rate_maps(self,
                                   xs,
@@ -253,7 +324,6 @@ class Trainer(object):
         storage_idx_sorted_by_score_60 = np.argsort(score_60_by_neuron)[::-1]
 
         for count_idx, storage_idx in enumerate(storage_idx_sorted_by_score_60):
-
             row, col = count_idx // n_cols, count_idx % n_cols
             ax = axes[row, col]
 

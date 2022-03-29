@@ -26,7 +26,7 @@ import numpy as np
 import scipy.signal
 from skimage.feature import peak_local_max
 from scipy.signal import correlate2d
-from typing import Union
+from typing import Tuple, Union
 
 
 def circle_mask(size, radius, in_val=1.0, out_val=0.0):
@@ -145,7 +145,8 @@ class GridScorer(object):
         return x_coef
 
     def calculate_grid_cell_periodicity_and_orientation(self,
-                                                        rate_map: Union[np.ndarray]):
+                                                        rate_map: Union[np.ndarray],
+                                                        ) -> Tuple[float, float, np.ndarray]:
         """
         Given a rate map with suspected grid cells, compute the
 

@@ -30,7 +30,7 @@ parameters:
   n_epochs:
     values: [4]
   n_grad_steps_per_epoch:
-    values: [25000]
+    values: [10000]
   n_recurrent_units_to_sample:
     values: [1024]
   Ng:
