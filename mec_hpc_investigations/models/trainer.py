@@ -53,6 +53,54 @@ class Trainer(object):
         else:
             print("Initializing new model from scratch.")
 
+    def eval_step(self, inputs, pc_outputs, pos):
+        '''
+        Eval on one batch of trajectories.
+        Args:
+            inputs: Batch of 2d velocity inputs with shape [batch_size, sequence_length, 2].
+            pc_outputs: Ground truth place cell activations with shape
+                [batch_size, sequence_length, Np].
+            pos: Ground truth 2d position with shape [batch_size, sequence_length, 2].
+        Returns:
+            loss: Avg. loss for this training batch.
+            pos_decoding_err: Avg. decoded position error in cm.
+        '''
+
+        loss, pos_decoding_err = self.model.compute_loss(inputs, pc_outputs, pos)
+
+        return loss.numpy(), pos_decoding_err.numpy()
+
+    def eval(self,
+             gen: TrajectoryGenerator,
+             epoch_idx: int,
+             save: bool = False,
+             log_and_plot_grid_scores: bool = True,
+             ):
+
+        inputs, pc_outputs, pos = next(gen)
+        loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
+        wandb_vals_to_log = {
+            'loss': loss,
+            'pos_decoding_err': 100 * pos_decoding_err,
+        }
+
+        wandb_vals_to_log.update(self.compute_intrinsic_dimensionalities(
+            inputs=inputs))
+
+        wandb.log(wandb_vals_to_log, step=epoch_idx)
+
+        if save:
+            # Save checkpoint
+            self.ckpt_manager.save()
+            # tot_step = self.ckpt.step.numpy()
+
+            # Save a picture of rate maps
+            # save_ratemaps(self.model, self.options, step=tot_step)
+
+        if log_and_plot_grid_scores:
+            self.log_and_plot_all(pos=pos, inputs=inputs,
+                                  epoch_idx=epoch_idx)
+
     def train_step(self, inputs, pc_outputs, pos):
         '''
         Train on one batch of trajectories.
@@ -110,7 +158,14 @@ class Trainer(object):
                                      mask_parameters=masks_parameters,
                                      coords_range=coords_range)
 
+        assert self.options.n_epochs > 0
         for epoch_idx in tqdm(range(self.options.n_epochs)):
+
+            self.eval(
+                gen=gen,
+                epoch_idx=epoch_idx,
+                save=save,
+                log_and_plot_grid_scores=log_and_plot_grid_scores)
 
             # t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
             for _ in range(self.options.n_grad_steps_per_epoch):
@@ -124,27 +179,11 @@ class Trainer(object):
 
                 self.ckpt.step.assign_add(1)
 
-            if save:
-                # Save checkpoint
-                self.ckpt_manager.save()
-                # tot_step = self.ckpt.step.numpy()
-
-                # Save a picture of rate maps
-                # save_ratemaps(self.model, self.options, step=tot_step)
-
-            wandb_vals_to_log = {
-                'loss': loss,
-                'pos_decoding_err': 100 * pos_decoding_err,
-            }
-
-            wandb_vals_to_log.update(self.compute_intrinsic_dimensionalies(
-                inputs=inputs))
-
-            wandb.log(wandb_vals_to_log, step=epoch_idx)
-
-            if log_and_plot_grid_scores:
-                self.log_and_plot_all(pos=pos, inputs=inputs,
-                                      epoch_idx=epoch_idx)
+        self.eval(
+            gen=gen,
+            epoch_idx=epoch_idx,
+            save=save,
+            log_and_plot_grid_scores=log_and_plot_grid_scores)
 
     def load_ckpt(self, idx):
         ''' Restore model from earlier checkpoint. '''
@@ -186,8 +225,8 @@ class Trainer(object):
             score_90_by_neuron=score_90_by_neuron,
             epoch_idx=epoch_idx)
 
-    def compute_intrinsic_dimensionalies(self,
-                                         inputs):
+    def compute_intrinsic_dimensionalities(self,
+                                           inputs):
         # activations has shape: (batch_size * sequence_length, Ng)
         activations = tf.reshape(
             tf.stop_gradient(self.model.g(inputs)),
