@@ -22,26 +22,23 @@ parameters:
   initializer:
     values: [
       'glorot_uniform',
-      'glorot_normal',
-      'orthogonal',
     ]
   is_periodic:
     values: [False]
   learning_rate:
-    values: [0.001, 0.0001]
+    values: [0.0001]
   n_epochs:
-    values: [10]
+    values: [4]
   n_grad_steps_per_epoch:
-    values: [10000]
+    values: [25000]
   n_recurrent_units_to_sample:
-    values: [256]
+    values: [1024]
   Ng:
     values: [4096]
   Np:
     values: [512]
   optimizer:
     values: [
-        'sgd',
         'adam',
     ]
   place_field_loss:
@@ -58,7 +55,13 @@ parameters:
     ]
   place_cell_rf:
     values: [
+      0.09,
+      0.10,
+      0.11,
       0.12,
+      0.13,
+      0.14,
+      0.15,
     ]
   readout_dropout:
     values: [0.]
@@ -70,10 +73,10 @@ parameters:
       'GRU',
     ]
   seed:
-    values: [ 0, 1, 2]
+    values: [ 0, 1]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [2.]
+    values: [1.8, 2., 2.2]
   weight_decay:
-      values: [0, 0.0001 ]
+      values: [0.0001 ]

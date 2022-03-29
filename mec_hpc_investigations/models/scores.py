@@ -24,6 +24,9 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.signal
+from skimage.feature import peak_local_max
+from scipy.signal import correlate2d
+from typing import Union
 
 
 def circle_mask(size, radius, in_val=1.0, out_val=0.0):
@@ -140,6 +143,28 @@ class GridScorer(object):
         x_coef = np.real(x_coef)
         x_coef = np.nan_to_num(x_coef)
         return x_coef
+
+    def calculate_grid_cell_periodicity_and_orientation(self,
+                                                        rate_map: Union[np.ndarray]):
+        """
+        Given a rate map with suspected grid cells, compute the
+
+        :param rate_map:
+        :return:
+        """
+
+        autocorr = correlate2d(rate_map, rate_map, mode='full')
+        # TODO: Ask Mikail why he used a tmp variable. Probably just experimenting?
+        autocorr_copy = autocorr.copy()
+        maxes = peak_local_max(autocorr_copy)
+        maxes_from_center = maxes - np.array(autocorr_copy.shape) // 2
+        distances = np.linalg.norm(maxes_from_center, axis=1)
+        sorted_indices = np.argsort(distances)
+        nearest_six = maxes_from_center[sorted_indices[1:7]]
+        period, period_err = np.average(np.linalg.norm(nearest_six, axis=1)), np.std(
+            np.linalg.norm(nearest_six, axis=1))
+        orientations = np.arctan2(nearest_six[:, 1], nearest_six[:, 0])
+        return period, period_err, orientations
 
     def rotated_sacs(self, sac, angles):
         return [

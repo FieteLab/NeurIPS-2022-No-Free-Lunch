@@ -134,9 +134,9 @@ class Trainer(object):
                 'pos_decoding_err': 100 * pos_decoding_err,
             }, step=epoch_idx)
 
-            if log_and_plot_grid_scores:
-                self.log_and_plot_grid_scores(pos=pos, inputs=inputs,
-                                              epoch_idx=epoch_idx)
+        if log_and_plot_grid_scores:
+            self.log_and_plot_grid_scores(pos=pos, inputs=inputs,
+                                          epoch_idx=epoch_idx)
 
     def load_ckpt(self, idx):
         ''' Restore model from earlier checkpoint. '''
@@ -200,7 +200,7 @@ class Trainer(object):
             score_90_by_neuron[storage_idx] = score_90
             rate_maps[storage_idx] = rate_map
 
-        n_rows = n_cols = int(np.sqrt(n_samples))
+        n_rows = n_cols = int(np.ceil(np.sqrt(n_samples)))
 
         fig, axes = plt.subplots(
             n_rows,  # rows
@@ -212,8 +212,6 @@ class Trainer(object):
 
         storage_idx_sorted_by_score_60 = np.argsort(score_60_by_neuron)[::-1]
 
-        vmin = np.nanmin(rate_maps)
-        vmax = np.nanmax(rate_maps)
         for count_idx, storage_idx in enumerate(storage_idx_sorted_by_score_60):
 
             row, col = count_idx // n_cols, count_idx % n_cols
@@ -221,8 +219,8 @@ class Trainer(object):
 
             sns.heatmap(
                 data=rate_maps[storage_idx],
-                vmin=vmin,
-                vmax=vmax,
+                vmin=np.nanmin(rate_maps[storage_idx]),
+                vmax=np.nanmax(rate_maps[storage_idx]),
                 ax=ax,
                 cbar=False,
                 cmap='rocket_r',
@@ -240,13 +238,13 @@ class Trainer(object):
 
         wandb.log({
             f'rate_maps': wandb.Image(fig),
-            f'max_grid_score_d=60_n={n_samples}': np.max(score_60_by_neuron),
+            f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
             f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron),
             f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
             # 'best_rate_map_d=60_n=128': wandb.plots.HeatMap(matrix_values=best_rate_map_60,
             #                                                 x_labels=np.arange(best_rate_map_60.shape[1]),
             #                                                 y_labels=np.arange(best_rate_map_60.shape[0])),
-            f'max_grid_score_d=90_n={n_samples}': np.max(score_90_by_neuron),
+            f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
             f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron),
             f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
             # 'best_rate_map_d=90': wandb.plots.HeatMap(matrix_values=best_rate_map_90,
