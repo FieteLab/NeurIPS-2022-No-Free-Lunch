@@ -169,9 +169,6 @@ class Trainer(object):
         best_score_90 = -np.inf
         best_rate_map_90 = None
 
-        vmin = np.min(activations)
-        vmax = np.max(activations)
-
         neuron_indices = np.random.choice(self.options.Ng, replace=False,
                                           size=n_samples)
 
@@ -214,6 +211,9 @@ class Trainer(object):
             gridspec_kw={'width_ratios': [1] * n_cols})
 
         storage_idx_sorted_by_score_60 = np.argsort(score_60_by_neuron)[::-1]
+
+        vmin = np.min(rate_maps)
+        vmax = np.max(rate_maps)
         for count_idx, storage_idx in enumerate(storage_idx_sorted_by_score_60):
 
             row, col = count_idx // n_cols, count_idx % n_cols
