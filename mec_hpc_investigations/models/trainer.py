@@ -11,7 +11,7 @@ from mec_hpc_investigations.models.visualize import save_ratemaps
 from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 from mec_hpc_investigations.models.scores import GridScorer
 from mec_hpc_investigations.models.trajectory_generator import TrajectoryGenerator
-from mec_hpc_investigations.models.utils import compute_ratemaps
+# from mec_hpc_investigations.models.utils import compute_and_log_rate_maps
 
 
 class Trainer(object):
@@ -159,6 +159,24 @@ class Trainer(object):
             shape=[self.options.batch_size * self.options.sequence_length, self.options.Ng]
         )
 
+        rate_maps, score_60_by_neuron, score_90_by_neuron = self.compute_and_log_rate_maps(
+            xs=xs,
+            ys=ys,
+            activations=activations,
+            epoch_idx=epoch_idx)
+
+        self.plot_and_log_ratemaps(
+            rate_maps=rate_maps,
+            score_60_by_neuron=score_60_by_neuron,
+            score_90_by_neuron=score_90_by_neuron,
+            epoch_idx=epoch_idx)
+
+    def compute_and_log_rate_maps(self,
+                                  xs,
+                                  ys,
+                                  activations,
+                                  epoch_idx: int):
+
         n_samples = self.options.n_recurrent_units_to_sample
         print('n_samples: ', n_samples)
         score_60_by_neuron = np.zeros(n_samples)
@@ -176,7 +194,7 @@ class Trainer(object):
 
         for storage_idx, neuron_idx in enumerate(neuron_indices):
 
-            # Would recommend switching to visualize.py's `compute_ratemaps`
+            # Would recommend switching to visualize.py's `compute_and_log_rate_maps`
             # Then util.py's `get_model_activations`
             # then utils.py's get_model_gridscores
             #    model_resp is the rate map for a single layer
@@ -200,6 +218,28 @@ class Trainer(object):
             score_90_by_neuron[storage_idx] = score_90
             rate_maps[storage_idx] = rate_map
 
+        # TODO: Why are these NaNs zeroed out? 
+        best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
+        best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
+
+        wandb.log({
+            f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
+            f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron),
+            f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
+            f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
+            f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron),
+            f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
+        }, step=epoch_idx)
+
+        return rate_maps, score_60_by_neuron, score_90_by_neuron
+
+    def plot_and_log_ratemaps(self,
+                              rate_maps,
+                              score_60_by_neuron,
+                              score_90_by_neuron,
+                              epoch_idx: int):
+
+        n_samples = self.options.n_recurrent_units_to_sample
         n_rows = n_cols = int(np.ceil(np.sqrt(n_samples)))
 
         fig, axes = plt.subplots(
@@ -230,28 +270,12 @@ class Trainer(object):
             ax.set_title(f'60={np.round(score_60_by_neuron[storage_idx], 2)}:'
                          f'90={np.round(score_90_by_neuron[storage_idx], 2)}')
 
-            # seaborn heatmap frustratingly flips the y axis for some reason
+            # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
             ax.invert_yaxis()
-
-        best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
-        best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
 
         wandb.log({
             f'rate_maps': wandb.Image(fig),
-            f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
-            f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron),
-            f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
-            # 'best_rate_map_d=60_n=128': wandb.plots.HeatMap(matrix_values=best_rate_map_60,
-            #                                                 x_labels=np.arange(best_rate_map_60.shape[1]),
-            #                                                 y_labels=np.arange(best_rate_map_60.shape[0])),
-            f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
-            f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron),
-            f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
-            # 'best_rate_map_d=90': wandb.plots.HeatMap(matrix_values=best_rate_map_90,
-            #                                           x_labels=np.arange(best_rate_map_90.shape[1]),
-            #                                           y_labels=np.arange(best_rate_map_90.shape[0])),
         }, step=epoch_idx)
 
         # plt.show()
         plt.close(fig=fig)
-
