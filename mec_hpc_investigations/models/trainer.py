@@ -212,8 +212,8 @@ class Trainer(object):
 
         storage_idx_sorted_by_score_60 = np.argsort(score_60_by_neuron)[::-1]
 
-        vmin = np.min(rate_maps)
-        vmax = np.max(rate_maps)
+        vmin = np.nanmin(rate_maps)
+        vmax = np.nanmax(rate_maps)
         for count_idx, storage_idx in enumerate(storage_idx_sorted_by_score_60):
 
             row, col = count_idx // n_cols, count_idx % n_cols
