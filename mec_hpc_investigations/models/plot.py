@@ -12,7 +12,6 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
-
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
@@ -21,20 +20,22 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.violinplot(y="max_grid_score_d=60_n=256",
-                   x='run_group',
-                   data=runs_performance_df,
-                   ax=ax)
+    sns.swarmplot(y="max_grid_score_d=60_n=256",
+                  x='run_group',
+                  data=runs_performance_df,
+                  ax=ax,
+                  size=2)
     ax.set_ylabel(
         f'Max Grid Score | Pos Err < {low_pos_decoding_err_threshold} cm')
     ax.set_xlabel('Group')
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.violinplot(y="max_grid_score_d=90_n=256",
-                   x='run_group',
-                   data=runs_performance_df,
-                   ax=ax)
+    sns.swarmplot(y="max_grid_score_d=90_n=256",
+                  x='run_group',
+                  data=runs_performance_df,
+                  ax=ax,
+                  size=2)
     ax.set_ylabel(None)
     ax.set_xlabel('Group')
     ax.set_title(r'$90^{\circ}$')
@@ -52,7 +53,6 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
         low_pos_decoding_err_threshold: float = 5.,
         grid_score_d60_threshold: float = 1.0,
         grid_score_d90_threshold: float = 1.5):
-
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
@@ -99,7 +99,6 @@ def plot_percent_low_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
-
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
@@ -121,7 +120,6 @@ def plot_percent_low_decoding_err_vs_run_group(
 def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 8),
                              sharey=True, sharex=True)
@@ -162,11 +160,11 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
 def plot_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
-    sns.violinplot(x="run_group",
-                   y="pos_decoding_err",
-                   data=runs_performance_df)
+    sns.swarmplot(x="run_group",
+                  y="pos_decoding_err",
+                  data=runs_performance_df,
+                  size=2)
     plt.ylabel('Pos Decoding Err (cm)')
     plt.xlabel('Group')
     plt.savefig(os.path.join(plot_dir,

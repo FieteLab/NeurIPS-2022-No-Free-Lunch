@@ -8,8 +8,8 @@ from mec_hpc_investigations.models.plot import *
 # Declare
 plot_dir = 'notebooks/00_broad_sweep_results/results/'
 low_pos_decoding_err_threshold = 5.
-grid_score_d60_threshold = 1.0
-grid_score_d90_threshold = 1.4
+grid_score_d60_threshold = 1.3
+grid_score_d90_threshold = 1.5
 sweep_ids = [
     '5bpvzhfh',  # Position + MSE
     'ni9i0dfp',  # Gaussian + global norm + cross entropy
@@ -23,8 +23,19 @@ runs_configs_df = download_wandb_project_runs_configs(
     sweep_ids=sweep_ids,
     finished_only=True)
 
+
+def sweep_to_run_group(row: pd.Series):
+    if row['Sweep'] == '5bpvzhfh':
+        run_group = 'MSE\nPosition'
+    elif row['Sweep'] == 'ni9i0dfp':
+        run_group = 'CE\nGaussian\nGlobal'
+    else:
+        run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
+    return run_group
+
+
 runs_configs_df['run_group'] = runs_configs_df.apply(
-    lambda row: f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}",
+    sweep_to_run_group,
     axis=1)
 
 runs_histories_df = download_wandb_project_runs_histories(

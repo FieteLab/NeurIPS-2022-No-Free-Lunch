@@ -22,19 +22,17 @@ parameters:
   initializer:
     values: [
       'glorot_uniform',
-      'glorot_normal',
-      'orthogonal',
     ]
   is_periodic:
     values: [False]
   learning_rate:
     values: [0.001]
   n_epochs:
-    values: [10]
+    values: [7]
   n_grad_steps_per_epoch:
     values: [10000]
   n_recurrent_units_to_sample:
-    values: [256]
+    values: [1000]
   Ng:
     values: [4096]
   Np:
