@@ -26,7 +26,7 @@ default_config = {
     'Ng': 512,
     'optimizer': 'sgd',
     'place_field_loss': 'crossentropy',
-    'place_field_values': 'gaussian',
+    'place_field_values': 'difference_of_gaussians',
     'place_field_normalization': 'global',
     'place_cell_rf': 0.12,
     'readout_dropout': 0.,

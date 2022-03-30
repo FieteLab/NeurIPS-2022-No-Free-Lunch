@@ -20,7 +20,7 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.swarmplot(y="max_grid_score_d=60_n=256",
+    sns.stripplot(y="max_grid_score_d=60_n=256",
                   x='run_group',
                   data=runs_performance_df,
                   ax=ax,
@@ -31,7 +31,7 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.swarmplot(y="max_grid_score_d=90_n=256",
+    sns.stripplot(y="max_grid_score_d=90_n=256",
                   x='run_group',
                   data=runs_performance_df,
                   ax=ax,
@@ -40,7 +40,7 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
     ax.set_xlabel('Group')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_vs_run_group_given_low_pos_decoding_err.pdf'),
+                             f'max_grid_score_vs_run_group_given_low_pos_decoding_err.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -88,7 +88,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
     ax.set_xlabel('Group')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err.pdf'),
+                             f'percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -110,7 +110,7 @@ def plot_percent_low_decoding_err_vs_run_group(
     plt.ylabel(f'% Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
     plt.ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
-                             f'percent_low_decoding_err_vs_run_group.pdf'),
+                             f'percent_low_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -150,7 +150,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
     ax.set_title(r'$90^{\circ}$')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_vs_max_grid_score_by_run_group.pdf'),
+                             f'pos_decoding_err_vs_max_grid_score_by_run_group.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -161,14 +161,14 @@ def plot_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
-    sns.swarmplot(x="run_group",
+    sns.stripplot(x="run_group",
                   y="pos_decoding_err",
                   data=runs_performance_df,
                   size=2)
     plt.ylabel('Pos Decoding Err (cm)')
     plt.xlabel('Group')
     plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_vs_run_group.pdf'),
+                             f'pos_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()

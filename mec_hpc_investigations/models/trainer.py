@@ -372,7 +372,8 @@ class Trainer(object):
                 vmax=np.nanmax(rate_maps[storage_idx]),
                 ax=ax,
                 cbar=False,
-                cmap='rocket_r',
+                # cmap='rocket_r',
+                cmap='Spectral_r',
                 yticklabels=False,
                 xticklabels=False)
 

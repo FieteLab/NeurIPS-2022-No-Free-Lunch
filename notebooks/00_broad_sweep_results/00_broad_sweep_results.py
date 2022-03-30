@@ -12,12 +12,15 @@ grid_score_d60_threshold = 1.3
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     '5bpvzhfh',  # Position + MSE
-    'ni9i0dfp',  # Gaussian + global norm + cross entropy
+    'ni9i0dfp',  # Gaussian + global norm + cross entropy + sweep hyperparameters, holding rf fixed
+    'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
+    # '67b195ch',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
 ]
 
 
 os.makedirs(plot_dir, exist_ok=True)
 
+#
 runs_configs_df = download_wandb_project_runs_configs(
     wandb_project_path='mec-hpc-investigations',
     sweep_ids=sweep_ids,
@@ -28,7 +31,13 @@ def sweep_to_run_group(row: pd.Series):
     if row['Sweep'] == '5bpvzhfh':
         run_group = 'MSE\nPosition'
     elif row['Sweep'] == 'ni9i0dfp':
-        run_group = 'CE\nGaussian\nGlobal'
+        run_group = 'CE\nGaussian\nGlobal\nRF=0.12'
+    elif row['Sweep'] == 'xqyfdt1v':
+        run_group = 'CE\nGaussian\nGlobal\nRF=Var'
+    elif row['Sweep'] == 'TODO':
+        run_group = 'CE\nDoG\nGlobal\nRF=0.12'
+    elif row['Sweep'] == '67b195ch':
+        run_group = 'CE\nDoG\nGlobal\nRF=Var'
     else:
         run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
     return run_group
