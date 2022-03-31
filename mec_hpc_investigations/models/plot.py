@@ -74,7 +74,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
     ax.set_ylim(0., 1.)
     ax.set_title(r'$60^{\circ}$')
     ax.set_ylabel(
-        f'% Runs : Max Grid Score > {grid_score_d60_threshold} | Pos Err < {low_pos_decoding_err_threshold} cm')
+        f'Frac Runs : Max Grid Score > {grid_score_d60_threshold} | Pos Err < {low_pos_decoding_err_threshold} cm')
     ax.set_xlabel('Group')
 
     ax = axes[1]
@@ -84,7 +84,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
                 ax=ax)
     ax.set_ylim(0., 1.)
     ax.set_title(r'$90^{\circ}$')
-    ax.set_ylabel(f'% Runs : Max Grid Score > {grid_score_d90_threshold} | Pos Err < {low_pos_decoding_err_threshold}')
+    ax.set_ylabel(f'Frac Runs : Max Grid Score > {grid_score_d90_threshold} | Pos Err < {low_pos_decoding_err_threshold}')
     ax.set_xlabel('Group')
 
     plt.savefig(os.path.join(plot_dir,
@@ -107,7 +107,7 @@ def plot_percent_low_decoding_err_vs_run_group(
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold}',
                 data=runs_performance_df)
     plt.xlabel('Group')
-    plt.ylabel(f'% Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
+    plt.ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
     plt.ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
                              f'percent_low_decoding_err_vs_run_group.png'),

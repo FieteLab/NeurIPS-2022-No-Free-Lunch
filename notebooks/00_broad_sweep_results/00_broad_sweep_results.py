@@ -14,7 +14,7 @@ sweep_ids = [
     '5bpvzhfh',  # Position + MSE
     'ni9i0dfp',  # Gaussian + global norm + cross entropy + sweep hyperparameters, holding rf fixed
     'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
-    # '67b195ch',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
+    'sp2hvkth',  # DoG + global norm + cross entropy + sweep hyperparameters, holding rf fixed
 ]
 
 
@@ -26,6 +26,8 @@ runs_configs_df = download_wandb_project_runs_configs(
     sweep_ids=sweep_ids,
     finished_only=True)
 
+runs_configs_df = runs_configs_df[runs_configs_df['optimizer'] != 'sgd'].copy()
+
 
 def sweep_to_run_group(row: pd.Series):
     if row['Sweep'] == '5bpvzhfh':
@@ -34,10 +36,10 @@ def sweep_to_run_group(row: pd.Series):
         run_group = 'CE\nGaussian\nGlobal\nRF=0.12'
     elif row['Sweep'] == 'xqyfdt1v':
         run_group = 'CE\nGaussian\nGlobal\nRF=Var'
+    elif row['Sweep'] == 'sp2hvkth':
+        run_group = 'CE\nDoG\nGlobal\nRFs=0.12,0.24'
     elif row['Sweep'] == 'TODO':
-        run_group = 'CE\nDoG\nGlobal\nRF=0.12'
-    elif row['Sweep'] == '67b195ch':
-        run_group = 'CE\nDoG\nGlobal\nRF=Var'
+        run_group = 'CE\nDoG\nGlobal\nRFs=Var,Var'
     else:
         run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
     return run_group
