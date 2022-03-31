@@ -8,13 +8,14 @@ from mec_hpc_investigations.models.plot import *
 # Declare
 plot_dir = 'notebooks/00_broad_sweep_results/results/'
 low_pos_decoding_err_threshold = 5.
-grid_score_d60_threshold = 1.3
+grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     '5bpvzhfh',  # Position + MSE
     'ni9i0dfp',  # Gaussian + global norm + cross entropy + sweep hyperparameters, holding rf fixed
     'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
     'sp2hvkth',  # DoG + global norm + cross entropy + sweep hyperparameters, holding rf fixed
+    '2cworubi',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
 ]
 
 
@@ -37,9 +38,9 @@ def sweep_to_run_group(row: pd.Series):
     elif row['Sweep'] == 'xqyfdt1v':
         run_group = 'CE\nGaussian\nGlobal\nRF=Var'
     elif row['Sweep'] == 'sp2hvkth':
-        run_group = 'CE\nDoG\nGlobal\nRFs=0.12,0.24'
-    elif row['Sweep'] == 'TODO':
-        run_group = 'CE\nDoG\nGlobal\nRFs=Var,Var'
+        run_group = 'CE\nDoG\nGlobal\nRF1=0.12\nRF2=0.24'
+    elif row['Sweep'] == '2cworubi':
+        run_group = 'CE\nDoG\nGlobal\nRF1=Var\nRF2=Var'
     else:
         run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
     return run_group
