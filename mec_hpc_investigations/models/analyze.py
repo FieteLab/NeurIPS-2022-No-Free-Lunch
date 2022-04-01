@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from typing import Dict, List, Tuple, Union
 import wandb
@@ -9,6 +10,7 @@ def compute_minima_performance_metrics_from_runs_histories(runs_histories_df: pd
         'max_grid_score_d=60_n=256': 'max',
         'max_grid_score_d=90_n=256': 'max',
         'pos_decoding_err': 'min',
+        'loss': 'min',
     })
 
     # Convert run_id from index to column.
@@ -93,7 +95,8 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
             samples=num_samples,
             keys=['max_grid_score_d=60_n=256',
                   'max_grid_score_d=90_n=256',
-                  'pos_decoding_err'])
+                  'pos_decoding_err',
+                  'loss'])
         if len(run_history_df) == 0:
             continue
         run_history_df['run_id'] = run.id
@@ -105,6 +108,18 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         ['run_id', '_step'],
         ascending=True,
         inplace=True)
+
+    runs_histories_df['loss_over_min_loss'] = runs_histories_df.groupby('run_id')['loss'].apply(
+        lambda col: col / np.min(col)
+    )
+
+    runs_histories_df.reset_index(inplace=True, drop=True)
+
+    runs_histories_df['pos_decoding_err_over_min_pos_decoding_err'] = runs_histories_df.groupby('run_id')['pos_decoding_err'].apply(
+        lambda col: col / np.min(col)
+    )
+
+    runs_histories_df.reset_index(inplace=True, drop=True)
 
     return runs_histories_df
 

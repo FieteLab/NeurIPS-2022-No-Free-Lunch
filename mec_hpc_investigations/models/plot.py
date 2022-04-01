@@ -8,6 +8,58 @@ plt.rcParams["font.size"] = 20  # was previously 22
 sns.set_style("whitegrid")
 
 
+def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
+        runs_histories_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.show()
+    sns.lineplot(
+        data=runs_histories_df,
+        x='_step',
+        y='pos_decoding_err_over_min_pos_decoding_err',
+        hue='run_id',
+        legend=False,
+    )
+
+    plt.yscale('log')
+    plt.ylabel('Pos Decoding Err / Min(Pos Decoding Err)')
+    plt.xlabel('Epoch')
+    plt.show()
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_over_min_loss_vs_epoch_by_run_id.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_loss_over_min_loss_vs_epoch_by_run_id(
+        runs_histories_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    sns.lineplot(
+        data=runs_histories_df,
+        x='_step',
+        y='loss_over_min_loss',
+        hue='run_id',
+        legend=False,
+    )
+
+    plt.yscale('log')
+    plt.ylabel('Loss / Min(Loss)')
+    plt.xlabel('Epoch')
+    plt.show()
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_over_min_loss_vs_epoch_by_run_id.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
