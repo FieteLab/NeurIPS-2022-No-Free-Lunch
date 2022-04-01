@@ -8,11 +8,41 @@ plt.rcParams["font.size"] = 20  # was previously 22
 sns.set_style("whitegrid")
 
 
+# def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
+#         runs_histories_df: pd.DataFrame,
+#         plot_dir: str):
+#
+#     plt.close()
+#
+#     g = sns.relplot(data=runs_histories_df,
+#                     x="_step",
+#                     y='pos_decoding_err_over_min_pos_decoding_err',
+#                     hue='run_id',
+#                     col='run_group',
+#                     kind='line',
+#                     ci=None,
+#                     facet_kws=dict(sharex=True,
+#                                    sharey=True,
+#                                    margin_titles=True)
+#                     )
+#     g.set(yscale="log")
+#     g.set_ylabels('Pos Decoding Err / Min(Pos Decoding Err)', clear_inner=True)
+#     g.set_xlabels('Epoch', clear_inner=True)
+#     # g.set_titles(col_template="{col_name}")
+#
+#     plt.savefig(os.path.join(plot_dir,
+#                              f'pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id.png'),
+#                 bbox_inches='tight',
+#                 dpi=300)
+#     # plt.show()
+#     plt.close()
+
+
 def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
         runs_histories_df: pd.DataFrame,
         plot_dir: str):
 
-    plt.show()
+    plt.close()
     sns.lineplot(
         data=runs_histories_df,
         x='_step',
@@ -24,10 +54,9 @@ def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
     plt.yscale('log')
     plt.ylabel('Pos Decoding Err / Min(Pos Decoding Err)')
     plt.xlabel('Epoch')
-    plt.show()
 
     plt.savefig(os.path.join(plot_dir,
-                             f'loss_over_min_loss_vs_epoch_by_run_id.png'),
+                             f'pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -50,7 +79,6 @@ def plot_loss_over_min_loss_vs_epoch_by_run_id(
     plt.yscale('log')
     plt.ylabel('Loss / Min(Loss)')
     plt.xlabel('Epoch')
-    plt.show()
 
     plt.savefig(os.path.join(plot_dir,
                              f'loss_over_min_loss_vs_epoch_by_run_id.png'),

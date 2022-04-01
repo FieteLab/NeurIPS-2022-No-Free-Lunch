@@ -59,30 +59,4 @@ plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
     plot_dir=plot_dir,
 )
 
-plot_pos_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
-    plot_dir=plot_dir)
-
-plot_percent_low_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
-    plot_dir=plot_dir,
-    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
-
-plot_pos_decoding_err_vs_max_grid_score_by_run_group(
-    runs_performance_df=runs_performance_df,
-    plot_dir=plot_dir)
-
-plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
-    runs_performance_df=runs_performance_df,
-    plot_dir=plot_dir,
-    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
-
-plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
-    runs_performance_df=runs_performance_df,
-    plot_dir=plot_dir,
-    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold,
-    grid_score_d60_threshold=grid_score_d60_threshold,
-    grid_score_d90_threshold=grid_score_d90_threshold,
-)
-
-print(1)
+print('Finished!')

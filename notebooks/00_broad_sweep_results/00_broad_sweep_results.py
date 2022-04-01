@@ -90,4 +90,4 @@ plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
     grid_score_d90_threshold=grid_score_d90_threshold,
 )
 
-print(1)
+print('Finished!')
