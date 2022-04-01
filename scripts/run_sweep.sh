@@ -2,7 +2,7 @@
 #SBATCH -p fiete
 #SBATCH -n 1                    # two cores
 #SBATCH --mem=1G                # RAM
-#SBATCH --time=99:99:99         # total run time limit (HH:MM:SS)
+#SBATCH --time=01:99:99         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
 
 
@@ -12,6 +12,6 @@
 
 for i in {1..5}
 do
-  sbatch scripts/run_one.sh y40eqafz
+  sbatch scripts/run_one.sh wogf1y1b
   sleep 3
 done

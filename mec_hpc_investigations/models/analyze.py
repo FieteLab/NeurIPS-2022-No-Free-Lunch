@@ -58,7 +58,7 @@ def download_wandb_project_runs_configs(wandb_project_path: str,
 
     # Keep only finished runs
     finished_runs = sweep_results_df['State'] == 'finished'
-    print(f"% of successfully finished runs: {finished_runs.mean()}")
+    print(f"% of successfully finished runs: {finished_runs.mean()} ({finished_runs.sum() / len(finished_runs)})")
 
     if finished_only:
         sweep_results_df = sweep_results_df[finished_runs]

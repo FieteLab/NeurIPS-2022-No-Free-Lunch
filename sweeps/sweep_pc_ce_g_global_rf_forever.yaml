@@ -1,0 +1,75 @@
+program: mec_hpc_investigations/models/run_trainer_rylan.py
+project: mec-hpc-investigations
+method: grid
+metric:
+  goal: minimize
+  name: pos_decoding_err
+parameters:
+  activation:
+    values: [
+        'relu',
+    ]
+  batch_size:
+    values: [200]
+  bin_side_in_m:
+    values: [0.05]
+  box_height_in_m:
+    values: [2.2]
+  box_width_in_m:
+    values: [2.2]
+  initializer:
+    values: [
+      'glorot_uniform',
+    ]
+  is_periodic:
+    values: [False]
+  learning_rate:
+    values: [0.0001]
+  n_epochs:
+    values: [100]
+  n_grad_steps_per_epoch:
+    values: [50000]
+  n_recurrent_units_to_sample:
+    values: [256]
+  Ng:
+    values: [4096]
+  Np:
+    values: [512]
+  optimizer:
+    values: [
+        'adam',
+    ]
+  place_field_loss:
+    values: [
+      'crossentropy',
+    ]
+  place_field_values:
+    values: [
+      'gaussian',
+    ]
+  place_field_normalization:
+    values: [
+      'global',
+    ]
+  place_cell_rf:
+    values: [
+      0.01,
+      0.025,
+      0.05,
+    ]
+  readout_dropout:
+    values: [0.]
+  rnn_type:
+    values: [
+      'RNN',
+      'LSTM',
+      'UGRNN',
+    ]
+  seed:
+    values: [ 0]
+  sequence_length:
+    values: [20]
+  surround_scale:
+    values: [1.]
+  weight_decay:
+      values: [0.0001 ]

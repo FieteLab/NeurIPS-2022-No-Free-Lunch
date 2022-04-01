@@ -5,6 +5,7 @@ from tensorflow.keras.layers import Input, Dense, SimpleRNN, Layer
 from tensorflow.keras.layers import RNN as RNN_wrapper
 from tensorflow.keras.models import Model
 from tensorflow.keras import initializers
+import wandb
 
 from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 
@@ -171,6 +172,14 @@ class RNN(Model):
 
         return loss, err
 
+    def log_weight_norms(self, wandb_step: int):
+        wandb_vals_to_log = {
+            'input_matrix_norm': tf.reduce_sum(self.RNN.weights[0] ** 2).numpy(),
+            'recurrent_matrix_norm': tf.reduce_sum(self.RNN.weights[1] ** 2).numpy(),
+        }
+
+        wandb.log(wandb_vals_to_log, step=wandb_step)
+
 
 class RewardRNN(RNN):
     '''
@@ -262,6 +271,15 @@ class LSTM(Model):
         err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
         return loss, err
+
+    def log_weight_norms(self, wandb_step: int):
+        wandb_vals_to_log = {
+            'input_matrix_norm': tf.reduce_sum(self.RNN.weights[0] ** 2).numpy(),
+            'recurrent_matrix_norm': tf.reduce_sum(self.RNN.weights[1] ** 2).numpy(),
+            'bias_norm': tf.reduce_sum(self.RNN.weights[2] ** 2).numpy(),
+        }
+
+        wandb.log(wandb_vals_to_log, step=wandb_step)
 
 
 class RewardLSTM(LSTM):
@@ -444,6 +462,15 @@ class ThreeLayerRNNBase(Model):
         err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
         return loss, err
+
+    def log_weight_norms(self, wandb_step: int):
+        wandb_vals_to_log = {
+            'input_matrix_norm': tf.reduce_sum(self.RNN.weights[0] ** 2).numpy(),
+            'recurrent_matrix_norm': tf.reduce_sum(self.RNN.weights[1] ** 2).numpy(),
+            'bias_norm': tf.reduce_sum(self.RNN.weights[2] ** 2).numpy(),
+        }
+
+        wandb.log(wandb_vals_to_log, step=wandb_step)
 
 
 class UGRNN(ThreeLayerRNNBase):

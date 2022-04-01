@@ -31,7 +31,7 @@ default_config = {
     'place_cell_rf': 0.09,
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
-    'rnn_type': 'GRU',
+    'rnn_type': 'RNN',
     'seed': 0,
     'sequence_length': 20,
     'surround_scale': 2.,

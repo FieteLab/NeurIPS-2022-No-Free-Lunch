@@ -89,6 +89,8 @@ class Trainer(object):
 
         wandb.log(wandb_vals_to_log, step=epoch_idx)
 
+        self.model.log_weight_norms(wandb_step=epoch_idx)
+
         if save:
             # Save checkpoint
             self.ckpt_manager.save()
@@ -193,6 +195,14 @@ class Trainer(object):
                          pos: tf.Tensor,
                          inputs: tf.Tensor,
                          epoch_idx: int):
+
+        num_grad_steps_taken = (epoch_idx + 1) * self.options.n_grad_steps_per_epoch
+        num_trajectories_trained_on = num_grad_steps_taken * self.options.batch_size
+
+        wandb.log({
+            'num_grad_steps': num_grad_steps_taken,
+            'num_trajectories_trained_on': num_trajectories_trained_on,
+        })
 
         xs = tf.reshape(
             pos[:, :, 0],
