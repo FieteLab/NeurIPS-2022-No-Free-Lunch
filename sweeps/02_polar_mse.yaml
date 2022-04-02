@@ -30,9 +30,9 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [20]
+    values: [10]
   n_grad_steps_per_epoch:
-    values: [1500]
+    values: [2500]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
@@ -41,7 +41,6 @@ parameters:
     values: [2]
   optimizer:
     values: [
-        'sgd',
         'adam',
     ]
   place_field_loss:
@@ -50,7 +49,7 @@ parameters:
     ]
   place_field_values:
     values: [
-      'position',
+      'polar',
     ]
   place_field_normalization:
     values: [
@@ -72,7 +71,7 @@ parameters:
   seed:
     values: [ 0, 1]
   sequence_length:
-    values: [20, 40]
+    values: [20]
   surround_scale:
     values: [1.]
   weight_decay:
