@@ -273,7 +273,7 @@ class Trainer(object):
                                                               score_60_by_neuron,
                                                               score_90_by_neuron,
                                                               epoch_idx,
-                                                              threshold: float = 1.1):
+                                                              threshold: float = 1.2):
 
         likely_grid_cell_indices = score_60_by_neuron > threshold
         if np.sum(likely_grid_cell_indices) == 0:
@@ -300,7 +300,6 @@ class Trainer(object):
                                   epoch_idx: int):
 
         n_samples = self.options.n_recurrent_units_to_sample
-        print('n_samples: ', n_samples)
         score_60_by_neuron = np.zeros(n_samples)
         score_90_by_neuron = np.zeros(n_samples)
 
