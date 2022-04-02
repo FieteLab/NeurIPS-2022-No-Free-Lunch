@@ -38,10 +38,10 @@ parameters:
   Ng:
     values: [4096]
   Np:
-    values: [2]
+    values: [512]
   optimizer:
     values: [
-        'adam',
+      'adam',
     ]
   place_field_loss:
     values: [
@@ -49,30 +49,32 @@ parameters:
     ]
   place_field_values:
     values: [
-      'cartesian',
+      'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
-      'none',
+      'global',
     ]
   place_cell_rf:
     values: [
-      0.
+      0.05,
+      0.12,
+      0.19,
     ]
   readout_dropout:
     values: [0.]
   rnn_type:
     values: [
-        'RNN',
-        'LSTM',
-        'UGRNN',
-        'GRU',
+      'RNN',
+      'LSTM',
+      'UGRNN',
+      'GRU',
     ]
   seed:
     values: [ 0, 1]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [1.]
+    values: [1.5, 2., 2.5]
   weight_decay:
-      values: [0, 0.0001 ]
+      values: [ 0.0001 ]

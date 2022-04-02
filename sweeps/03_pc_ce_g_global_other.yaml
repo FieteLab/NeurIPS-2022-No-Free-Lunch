@@ -30,7 +30,7 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [20]
+    values: [10]
   n_grad_steps_per_epoch:
     values: [1500]
   n_recurrent_units_to_sample:
@@ -73,6 +73,6 @@ parameters:
   sequence_length:
     values: [20]
   surround_scale:
-    values: [2.]
+    values: [1.]
   weight_decay:
       values: [ 0.0001 ]

@@ -10,13 +10,19 @@ plot_dir = 'notebooks/00_broad_sweep_results/results/'
 low_pos_decoding_err_threshold = 5.
 grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
+# sweep_ids = [
+#     '5bpvzhfh',  # Position + MSE
+#     'ni9i0dfp',  # Gaussian + global norm + cross entropy + sweep hyperparameters, holding rf fixed
+#     'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
+#     'sp2hvkth',  # DoG + global norm + cross entropy + sweep hyperparameters, holding rf fixed
+#     '2cworubi',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
+#     # 'y40eqafz',  # G + global norm + cross entropy + wide sweep of rf (but will rerun)
+# ]
+
 sweep_ids = [
-    '5bpvzhfh',  # Position + MSE
-    'ni9i0dfp',  # Gaussian + global norm + cross entropy + sweep hyperparameters, holding rf fixed
-    'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
-    'sp2hvkth',  # DoG + global norm + cross entropy + sweep hyperparameters, holding rf fixed
-    '2cworubi',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
-    # 'y40eqafz',  # G + global norm + cross entropy + wide sweep of rf (but will rerun)
+    '5bpvzhfh',  # 01: Position + MSE (TODO Rerun)
+    'qu0mobjm',  # 03: G+Global+CE, sweeping most hyperparameters
+    '8rvghgz1',  # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
 ]
 
 
@@ -33,15 +39,17 @@ runs_configs_df = runs_configs_df[runs_configs_df['optimizer'] != 'sgd'].copy()
 
 def sweep_to_run_group(row: pd.Series):
     if row['Sweep'] == '5bpvzhfh':
-        run_group = 'MSE\nPosition'
-    elif row['Sweep'] == 'ni9i0dfp':
-        run_group = 'CE\nGaussian\nGlobal\nRF=0.12'
-    elif row['Sweep'] == 'xqyfdt1v':
-        run_group = 'CE\nGaussian\nGlobal\nRF=Var'
-    elif row['Sweep'] == 'sp2hvkth':
-        run_group = 'CE\nDoG\nGlobal\nRF1=0.12\nRF2=0.24'
-    elif row['Sweep'] == '2cworubi':
-        run_group = 'CE\nDoG\nGlobal\nRF1=Var\nRF2=Var'
+        # 01: Cartesian + MSE
+        run_group = 'Cartesian\nMSE'
+    elif row['Sweep'] == '':
+        # 02: Polar + MSE
+        raise NotImplementedError
+    elif row['Sweep'] == 'qu0mobjm':
+        # 03: G+Global+CE, sweeping most hyperparameters
+        run_group = 'Gaussian\nCE\nGlobal\nOthers'
+    elif row['Sweep'] == '8rvghgz1':
+        # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
+        run_group = 'Gaussian\nCE\nGlobal\nRF'
     else:
         run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
     return run_group

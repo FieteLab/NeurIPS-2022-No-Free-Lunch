@@ -845,7 +845,7 @@ def configure_options(run_ID: str,
     options.Ng = Ng  # number of recurrent units
     options.Np = Np
     options.optimizer = optimizer
-    if options.place_field_values == 'position':
+    if options.place_field_values == 'cartesian':
         assert options.Np == 2
     options.place_cell_rf = place_cell_rf  # width of place cell center tuning curve (m)
     options.rnn_type = rnn_type  # RNN or LSTM

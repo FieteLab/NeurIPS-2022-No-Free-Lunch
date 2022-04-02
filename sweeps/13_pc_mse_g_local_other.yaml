@@ -30,9 +30,9 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [20]
+    values: [10]
   n_grad_steps_per_epoch:
-    values: [250]
+    values: [2500]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
@@ -41,16 +41,15 @@ parameters:
     values: [512]
   optimizer:
     values: [
-        'adam',
+      'adam',
     ]
   place_field_loss:
     values: [
-      'crossentropy',
+      'mse',
     ]
   place_field_values:
     values: [
       'gaussian',
-      'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
@@ -58,7 +57,9 @@ parameters:
     ]
   place_cell_rf:
     values: [
+      0.05,
       0.12,
+      0.19,
     ]
   readout_dropout:
     values: [0.]
@@ -74,6 +75,6 @@ parameters:
   sequence_length:
     values: [20]
   surround_scale:
-    values: [2.]
+    values: [1.]
   weight_decay:
       values: [ 0.0001 ]

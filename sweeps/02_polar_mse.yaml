@@ -41,7 +41,7 @@ parameters:
     values: [2]
   optimizer:
     values: [
-        'adam',
+      'adam',
     ]
   place_field_loss:
     values: [

@@ -41,7 +41,7 @@ class Options(object):
     def check_valid(self):
         assert self.activation in {'relu', 'tanh', 'sigmoid'}
         self.assert_var_is_positive_int(self.batch_size)
-        assert self.place_field_loss in {'position',
+        assert self.place_field_loss in {'cartesian',
                                              'gaussian',
                                              'difference_of_gaussians'}
         self.assert_var_is_positive_float(self.surround_scale)
@@ -89,12 +89,12 @@ class PlaceCells(object):
         self.place_field_loss = options.place_field_loss
 
         assert options.place_field_values in {
-            'position',
+            'cartesian',
             'gaussian',
             'difference_of_gaussians'}
         self.place_field_values = options.place_field_values
 
-        if self.place_field_values == 'position':
+        if self.place_field_values == 'cartesian':
             assert options.Np == 2
 
         assert options.place_field_normalization in {
@@ -136,7 +136,7 @@ class PlaceCells(object):
         Returns:
             outputs: Place cell activations with shape [batch_size, sequence_length, Np].
         '''
-        if self.place_field_values == 'position':
+        if self.place_field_values == 'cartesian':
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
 
@@ -192,7 +192,7 @@ class PlaceCells(object):
         Returns:
             pred_pos: Predicted 2d position with shape [batch_size, sequence_length, 2].
         '''
-        if self.place_field_values == 'position':
+        if self.place_field_values == 'cartesian':
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
         else:
             _, idxs = tf.math.top_k(activation, k=k)

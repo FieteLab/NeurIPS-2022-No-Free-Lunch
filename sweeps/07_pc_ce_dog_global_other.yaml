@@ -30,38 +30,34 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [20]
+    values: [10]
   n_grad_steps_per_epoch:
-    values: [1500]
+    values: [5000]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
     values: [4096]
   Np:
-    values: [2]
+    values: [512]
   optimizer:
     values: [
-        'sgd',
         'adam',
     ]
   place_field_loss:
     values: [
-      'mse',
+      'crossentropy',
     ]
   place_field_values:
     values: [
-      'gaussian',
-      'difference_of_gaussians'
+      'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
-      'none',
       'global',
-      'local',
     ]
   place_cell_rf:
     values: [
-      0.
+      0.12,
     ]
   readout_dropout:
     values: [0.]
@@ -73,10 +69,10 @@ parameters:
       'GRU',
     ]
   seed:
-    values: [ 0, 1]
+    values: [ 0 ]
   sequence_length:
-    values: [20, 40]
+    values: [20]
   surround_scale:
-    values: [1.]
+    values: [2.]
   weight_decay:
-      values: [0, 0.0001 ]
+      values: [0., 0.0001 ]
