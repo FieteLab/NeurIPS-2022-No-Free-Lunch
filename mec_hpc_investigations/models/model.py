@@ -479,6 +479,13 @@ class UGRNN(ThreeLayerRNNBase):
         self.RNN = RNN_wrapper(UGRNNCell(self.Ng, activation=options.activation),
                                return_sequences=True)
 
+    def log_weight_norms(self, epoch_idx: int):
+        wandb_vals_to_log = {
+            'input_matrix_norm': tf.reduce_sum(self.RNN.weights[0] ** 2).numpy(),
+            'recurrent_matrix_norm': tf.reduce_sum(self.RNN.weights[1] ** 2).numpy(),
+        }
+        wandb.log(wandb_vals_to_log, step=epoch_idx + 1)
+
 
 class VanillaRNN(ThreeLayerRNNBase):
     def __init__(self, options, place_cells):
