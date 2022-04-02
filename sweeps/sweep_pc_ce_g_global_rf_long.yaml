@@ -8,7 +8,6 @@ parameters:
   activation:
     values: [
         'relu',
-        'tanh',
     ]
   batch_size:
     values: [200]
@@ -27,9 +26,9 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [50]
+    values: [25]
   n_grad_steps_per_epoch:
-    values: [1000]
+    values: [2000]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:

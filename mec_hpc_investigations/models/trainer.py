@@ -87,9 +87,9 @@ class Trainer(object):
         wandb_vals_to_log.update(self.compute_intrinsic_dimensionalities(
             inputs=inputs))
 
-        wandb.log(wandb_vals_to_log, step=epoch_idx)
+        wandb.log(wandb_vals_to_log, step=epoch_idx+1)
 
-        self.model.log_weight_norms(wandb_step=epoch_idx)
+        self.model.log_weight_norms(epoch_idx=epoch_idx)
 
         if save:
             # Save checkpoint
@@ -202,7 +202,7 @@ class Trainer(object):
         wandb.log({
             'num_grad_steps': num_grad_steps_taken,
             'num_trajectories_trained_on': num_trajectories_trained_on,
-        })
+        }, step=epoch_idx+1)
 
         xs = tf.reshape(
             pos[:, :, 0],
@@ -242,6 +242,8 @@ class Trainer(object):
             tf.stop_gradient(self.model.g(inputs)),
             shape=[self.options.batch_size * self.options.sequence_length, self.options.Ng]
         )
+
+        # TODO: add ID measures to rate maps (spatial vs neuron)
 
         # In this function, ID stands for Intrinsic Dimensionality.
         two_NN_ID = skdim.id.TwoNN().fit_transform(X=activations)
@@ -289,7 +291,7 @@ class Trainer(object):
             f'period_per_cell_threshold={threshold}': period_per_cell,
             f'period_err_per_cell_threshold={threshold}': period_err_per_cell,
             f'orientations_per_cell_threshold={threshold}': orientations_per_cell,
-        }, step=epoch_idx)
+        }, step=epoch_idx+1)
 
     def compute_and_log_rate_maps(self,
                                   xs,
@@ -349,7 +351,7 @@ class Trainer(object):
             f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
             f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron),
             f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
-        }, step=epoch_idx)
+        }, step=epoch_idx+1)
 
         return rate_maps, score_60_by_neuron, score_90_by_neuron
 
@@ -395,7 +397,7 @@ class Trainer(object):
 
         wandb.log({
             f'rate_maps': wandb.Image(fig),
-        }, step=epoch_idx)
+        }, step=epoch_idx+1)
 
         # plt.show()
         plt.close(fig=fig)

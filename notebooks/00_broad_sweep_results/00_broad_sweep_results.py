@@ -16,6 +16,7 @@ sweep_ids = [
     'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
     'sp2hvkth',  # DoG + global norm + cross entropy + sweep hyperparameters, holding rf fixed
     '2cworubi',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
+    # 'y40eqafz',  # G + global norm + cross entropy + wide sweep of rf (but will rerun)
 ]
 
 
