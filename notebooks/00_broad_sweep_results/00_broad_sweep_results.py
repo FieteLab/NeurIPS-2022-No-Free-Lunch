@@ -38,7 +38,7 @@ runs_configs_df = runs_configs_df[runs_configs_df['optimizer'] != 'sgd'].copy()
 
 
 def sweep_to_run_group(row: pd.Series):
-    if row['Sweep'] == '5bpvzhfh':
+    if row['Sweep'] == '2vw5jbim':
         # 01: Cartesian + MSE
         run_group = 'Cartesian\nMSE'
     elif row['Sweep'] == '':

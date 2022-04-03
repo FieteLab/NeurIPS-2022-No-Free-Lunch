@@ -1,0 +1,6 @@
+numpy~=1.21.5
+scipy~=1.7.3
+setuptools~=61.3.1
+tensorboard~=2.8.0
+torch~=1.11.0
+wandb~=0.12.11

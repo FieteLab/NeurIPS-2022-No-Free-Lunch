@@ -6,12 +6,12 @@ from mec_hpc_investigations.models.plot import *
 
 
 # Declare
-plot_dir = 'notebooks/01_specific_sweep_results/results/'
+plot_dir = 'notebooks/01_misconceptions_pattern_formation/results/'
 low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'y40eqafz',  # Gaussians + Global + CE, sweeping RF from 0.01 to 2.00
+    '8rvghgz1',  # Gaussians + Global + CE, sweeping RF from 0.01 to 2.00
 ]
 
 
