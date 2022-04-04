@@ -22,10 +22,9 @@ np.random.seed(0)
 torch.manual_seed(0)
 
 # Choose which trained model to load
-date = '2022-04-03'  # 2020-10-13 run 0 for successful node agent
+date = '2020-10-19' # 2020-10-13 run 0 for successful node agent
 run = '0'
-# index = '32000'
-index = '13000'
+index = '32000'
 
 # Load the model: use import library to import module from specified path
 model_spec = importlib.util.spec_from_file_location("model", 'summaries/' + date + '/run' + run + '/script/model.py')
@@ -50,7 +49,7 @@ shiny_envs = [False, False, True, True]
 # Set the number of walks to execute in parallel (batch size)
 n_walks = len(shiny_envs)
 # Select environments from the environments included in training
-environments = [world.World(graph, randomise_observations=True, shiny=(params['shiny'] if shiny_envs[env_i] else None))
+environments = [world.World(graph, randomise_observations=True, shiny=(params['shiny'] if shiny_envs[env_i] else None)) 
                 for env_i, graph in enumerate(np.random.choice(envs, n_walks))]
 # Determine the length of each walk
 walk_len = np.median([env.n_locations * 50 for env in environments]).astype(int)
@@ -70,8 +69,7 @@ with torch.no_grad():
 include_stay_still = True
 
 # Compare trained model performance to a node agent and an edge agent
-correct_model, correct_node, correct_edge = analyse.compare_to_agents(forward, tem, environments,
-                                                                      include_stay_still=include_stay_still)
+correct_model, correct_node, correct_edge = analyse.compare_to_agents(forward, tem, environments, include_stay_still=include_stay_still)
 
 # Analyse occurrences of zero-shot inference: predict the right observation arriving from a visited node with a new action
 zero_shot = analyse.zero_shot(forward, tem, environments, include_stay_still=include_stay_still)
@@ -93,38 +91,28 @@ envs_to_avg = shiny_envs if shiny_envs[env_to_plot] else [not shiny_env for shin
 # Plot results of agent comparison and zero-shot inference analysis
 filt_size = 41
 plt.figure()
-plt.plot(
-    analyse.smooth(np.mean(np.array([env for env_i, env in enumerate(correct_model) if envs_to_avg[env_i]]), 0)[1:],
-                   filt_size), label='tem')
-plt.plot(analyse.smooth(np.mean(np.array([env for env_i, env in enumerate(correct_node) if envs_to_avg[env_i]]), 0)[1:],
-                        filt_size), label='node')
-plt.plot(analyse.smooth(np.mean(np.array([env for env_i, env in enumerate(correct_edge) if envs_to_avg[env_i]]), 0)[1:],
-                        filt_size), label='edge')
+plt.plot(analyse.smooth(np.mean(np.array([env for env_i, env in enumerate(correct_model) if envs_to_avg[env_i]]),0)[1:], filt_size), label='tem')
+plt.plot(analyse.smooth(np.mean(np.array([env for env_i, env in enumerate(correct_node) if envs_to_avg[env_i]]),0)[1:], filt_size), label='node')
+plt.plot(analyse.smooth(np.mean(np.array([env for env_i, env in enumerate(correct_edge) if envs_to_avg[env_i]]),0)[1:], filt_size), label='edge')
 plt.ylim(0, 1)
 plt.legend()
-plt.title('Zero-shot inference: ' + str(
-    np.mean([np.mean(env) for env_i, env in enumerate(zero_shot) if envs_to_avg[env_i]]) * 100) + '%')
+plt.title('Zero-shot inference: ' + str(np.mean([np.mean(env) for env_i, env in enumerate(zero_shot) if envs_to_avg[env_i]]) * 100) + '%')
 plt.show()
 
 # Plot rate maps for all cells
-plot.plot_cells(p[env_to_plot], g[env_to_plot], environments[env_to_plot],
-                n_f_ovc=(params['n_f_ovc'] if 'n_f_ovc' in params else 0), columns=25)
+plot.plot_cells(p[env_to_plot], g[env_to_plot], environments[env_to_plot], n_f_ovc=(params['n_f_ovc'] if 'n_f_ovc' in params else 0), columns = 25)
 
 # Plot accuracy separated by location
 plt.figure()
-ax = plt.subplot(1, 2, 1)
+ax = plt.subplot(1,2,1)
 plot.plot_map(environments[env_to_plot], np.array(to_acc[env_to_plot]), ax)
 ax.set_title('Accuracy to location')
-ax = plt.subplot(1, 2, 2)
+ax = plt.subplot(1,2,2)
 plot.plot_map(environments[env_to_plot], np.array(from_acc[env_to_plot]), ax)
 ax.set_title('Accuracy from location')
 
 # Plot occupation per location, then add walks on top
-ax = plot.plot_map(environments[env_to_plot],
-                   np.array(occupation[env_to_plot]) / sum(occupation[env_to_plot]) * environments[
-                       env_to_plot].n_locations,
-                   min_val=0, max_val=2, ax=None, shape='square',
-                   radius=1 / np.sqrt(environments[env_to_plot].n_locations))
-ax = plot.plot_walk(environments[env_to_plot], walks[env_to_plot], ax=ax,
-                    n_steps=max(1, int(len(walks[env_to_plot]) / 500)))
+ax = plot.plot_map(environments[env_to_plot], np.array(occupation[env_to_plot])/sum(occupation[env_to_plot])*environments[env_to_plot].n_locations, 
+                   min_val=0, max_val=2, ax=None, shape='square', radius=1/np.sqrt(environments[env_to_plot].n_locations))
+ax = plot.plot_walk(environments[env_to_plot], walks[env_to_plot], ax=ax, n_steps=max(1, int(len(walks[env_to_plot])/500)))
 plt.title('Walk and average occupation')

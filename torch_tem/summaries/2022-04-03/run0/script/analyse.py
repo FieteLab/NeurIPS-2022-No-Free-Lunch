@@ -7,8 +7,8 @@ Created on Thu May 28 15:01:34 2020
 """
 import numpy as np
 import torch
+import pdb
 import copy
-
 
 # Track prediction accuracy over walk, and calculate fraction of locations visited and actions taken to assess performance
 def performance(forward, model, environments):
@@ -19,9 +19,9 @@ def performance(forward, model, environments):
         # Keep track for each location whether it has been visited
         location_visited = np.full(env.n_locations, False)
         # And for each action in each location whether it has been taken
-        action_taken = np.full((env.n_locations, model.hyper['n_actions']), False)
+        action_taken = np.full((env.n_locations,model.hyper['n_actions']), False)
         # Not all actions are available at every location (e.g. edges of grid world). Find how many actions can be taken
-        action_available = np.full((env.n_locations, model.hyper['n_actions']), False)
+        action_available = np.full((env.n_locations,model.hyper['n_actions']), False)
         for currLocation in env.locations:
             for currAction in currLocation['actions']:
                 if np.sum(currAction['transition']) > 0:
@@ -29,9 +29,9 @@ def performance(forward, model, environments):
                         if currAction['id'] > 0:
                             action_available[currLocation['id'], currAction['id'] - 1] = True
                     else:
-                        action_available[currLocation['id'], currAction['id']] = True
-                        # Make array to list whether the observation was predicted correctly or not
-        correct = []
+                        action_available[currLocation['id'], currAction['id']] = True                    
+        # Make array to list whether the observation was predicted correctly or not
+        correct = []  
         # Make array that stores for each step the fraction of locations visited
         location_frac = []
         # And an array that stores for each step the fraction of actions taken
@@ -45,8 +45,8 @@ def performance(forward, model, environments):
                 if step.a[env_i] > 0:
                     action_taken[step.g[env_i]['id'], step.a[env_i] - 1] = True
             else:
-                action_taken[step.g[env_i]['id'], step.a[env_i]] = True
-                # Mark the location of the previous iteration as visited
+                action_taken[step.g[env_i]['id'], step.a[env_i]] = True                    
+            # Mark the location of the previous iteration as visited
             correct.append((torch.argmax(step.x_gen[2][env_i]) == torch.argmax(step.x[env_i])).numpy())
             # Add the fraction of locations visited for this step
             location_frac.append(np.sum(location_visited) / location_visited.size)
@@ -59,34 +59,26 @@ def performance(forward, model, environments):
     # Return 
     return all_correct, all_location_frac, all_action_frac
 
-
-# Track prediction accuracy per location, after a transition towards the location
+# Track prediction accuracy per location, after a transition towards the location 
 def location_accuracy(forward, model, environments):
     # Keep track of whether model prediction were correct for each environment, separated by arrival and departure location
     accuracy_from, accuracy_to = [], []
     # Run through environments and monitor performance in each
     for env_i, env in enumerate(environments):
         # Make array to list whether the observation was predicted correctly or not
-        correct_from = [[] for _ in range(env.n_locations)]
-        correct_to = [[] for _ in range(env.n_locations)]
+        correct_from = [[] for _ in range(env.n_locations)]  
+        correct_to = [[] for _ in range(env.n_locations)]          
         # Run through iterations of forward pass to check when an action is taken for the first time
         for step_i, step in enumerate(forward[1:]):
             # Prediction on arrival: sensory prediction when arriving at given node
-            correct_to[step.g[env_i]['id']].append(
-                (torch.argmax(step.x_gen[2][env_i]) == torch.argmax(step.x[env_i])).numpy().tolist())
+            correct_to[step.g[env_i]['id']].append((torch.argmax(step.x_gen[2][env_i]) == torch.argmax(step.x[env_i])).numpy().tolist())
             # Prediction on depature: sensory prediction after leaving given node - i.e. store whether the current prediction is correct for the previous location
-            correct_from[forward[step_i].g[env_i]['id']].append(
-                (torch.argmax(step.x_gen[2][env_i]) == torch.argmax(step.x[env_i])).numpy().tolist())
+            correct_from[forward[step_i].g[env_i]['id']].append((torch.argmax(step.x_gen[2][env_i]) == torch.argmax(step.x[env_i])).numpy().tolist())
         # Add performance and visitation fractions of this environment to performance list across environments
-        accuracy_from.append(
-            [sum(correct_from_location) / (len(correct_from_location) if len(correct_from_location) > 0 else 1) for
-             correct_from_location in correct_from])
-        accuracy_to.append(
-            [sum(correct_to_location) / (len(correct_to_location) if len(correct_to_location) > 0 else 1) for
-             correct_to_location in correct_to])
+        accuracy_from.append([sum(correct_from_location) / (len(correct_from_location) if len(correct_from_location) > 0 else 1) for correct_from_location in correct_from])
+        accuracy_to.append([sum(correct_to_location) / (len(correct_to_location) if len(correct_to_location) > 0 else 1) for correct_to_location in correct_to])
     # Return 
     return accuracy_from, accuracy_to
-
 
 # Track occupation per location
 def location_occupation(forward, model, environments):
@@ -95,7 +87,7 @@ def location_occupation(forward, model, environments):
     # Run through environments and monitor performance in each
     for env_i, env in enumerate(environments):
         # Make array to list whether the observation was predicted correctly or not
-        visits = [0 for _ in range(env.n_locations)]
+        visits = [0 for _ in range(env.n_locations)]  
         # Run through iterations of forward pass to check when an action is taken for the first time
         for step in forward:
             # Prediction on arrival: sensory prediction when arriving at given node
@@ -104,7 +96,6 @@ def location_occupation(forward, model, environments):
         occupation.append(visits)
     # Return occupation of states during walk across environments
     return occupation
-
 
 # Measure zero-shot inference for this model: see if it can predict an observation following a new action to a know location
 def zero_shot(forward, model, environments, include_stay_still=True):
@@ -145,7 +136,6 @@ def zero_shot(forward, model, environments, include_stay_still=True):
     # Return lists of success of zero-shot inference for all environments
     return all_correct_zero_shot
 
-
 # Compare TEM performance to a 'node' and an 'edge' agent, that remember previous observations and guess others
 def compare_to_agents(forward, model, environments, include_stay_still=True):
     # Get the number of actions in this model
@@ -161,9 +151,9 @@ def compare_to_agents(forward, model, environments, include_stay_still=True):
         # Make array to list whether the observation was predicted correctly or not for the model
         correct_model = []
         # And the same for a node agent, that picks a random observation on first encounter of a node, and the correct one every next time
-        correct_node = []
+        correct_node = []  
         # And the same for an edge agent, that picks a random observation on first encounter of an edge, and the correct one every next time
-        correct_edge = []
+        correct_edge = []          
         # Get the very first iteration
         prev_iter = forward[0]
         # Run through iterations of forward pass to check when an action is taken for the first time
@@ -178,11 +168,9 @@ def compare_to_agents(forward, model, environments, include_stay_still=True):
             # Update model prediction for this step
             correct_model.append((torch.argmax(step.x_gen[2][env_i]) == torch.argmax(step.x[env_i])).numpy())
             # Update node agent prediction for this step: correct when this state was visited beofre, otherwise chance
-            correct_node.append(True if location_visited[step.g[env_i]['id']] else np.random.randint(
-                model.hyper['n_x']) == torch.argmax(step.x[env_i]).numpy())
+            correct_node.append(True if location_visited[step.g[env_i]['id']] else np.random.randint(model.hyper['n_x']) == torch.argmax(step.x[env_i]).numpy())
             # Update edge agent prediction for this step: always correct if no action taken, correct when action leading to this state was taken before, otherwise chance
-            correct_edge.append(True if prev_a is None else True if action_taken[prev_g, prev_a] else np.random.randint(
-                model.hyper['n_x']) == torch.argmax(step.x[env_i]).numpy())
+            correct_edge.append(True if prev_a is None else True if action_taken[prev_g, prev_a] else np.random.randint(model.hyper['n_x']) == torch.argmax(step.x[env_i]).numpy())
             # Update the previous action as taken
             if prev_a is not None:
                 action_taken[prev_g, prev_a] = True
@@ -194,7 +182,6 @@ def compare_to_agents(forward, model, environments, include_stay_still=True):
         all_correct_edge.append(correct_edge)
     # Return list of prediction success for all three agents across environments
     return all_correct_model, all_correct_node, all_correct_edge
-
 
 # Calculate rate maps for this model: what is the firing pattern for each cell at all locations?
 def rate_map(forward, model, environments):
@@ -217,9 +204,7 @@ def rate_map(forward, model, environments):
             for f, frequency in enumerate(cells):
                 # Average across visits of the each location, but only the second half of the visits so model roughly know the environment
                 for l, location in enumerate(frequency):
-                    frequency[l] = sum(location[int(len(location) / 2):]) / len(
-                        location[int(len(location) / 2):]) if len(location[int(len(location) / 2):]) > 0 else np.zeros(
-                        n_cells[f])
+                    frequency[l] = sum(location[int(len(location)/2):]) / len(location[int(len(location)/2):]) if len(location[int(len(location)/2):]) > 0 else np.zeros(n_cells[f])
                 # Then concatenate the locations to get a [locations x cells for this frequency] matrix
                 cells[f] = np.stack(frequency, axis=0)
         # Append the final average representations of this environment to the list of representations across environments
@@ -228,13 +213,12 @@ def rate_map(forward, model, environments):
     # Return list of locations x cells matrix of firing rates for each frequency module for each environment
     return all_g, all_p
 
-
 # Helper function to generate input for the model
 def generate_input(environment, walk):
     # If no walk was provided: use the environment to generate one
     if walk is None:
         # Generate a single walk from environment with length depending on number of locations (so you're likely to visit each location)
-        walk = environment.generate_walks(environment.graph['n_locations'] * 100, 1)[0]
+        walk = environment.generate_walks(environment.graph['n_locations']*100, 1)[0]
         # Now this walk needs to be adjusted so that it looks like a batch with batch size 1
         for step in walk:
             # Make single location into list
@@ -244,7 +228,6 @@ def generate_input(environment, walk):
             # Make single action into list
             step[2] = [step[2]]
     return walk
-
 
 # Smoothing function (originally written by James)
 def smooth(a, wsz):
