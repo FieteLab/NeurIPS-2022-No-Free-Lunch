@@ -28,7 +28,6 @@ import world
 np.random.seed(0)
 torch.manual_seed(0)
 
-wandb.init(project='mec-hpc-investigations-torch-tem')
 
 # Either load a trained model and continue training, or start afresh
 load_existing_model = False
@@ -87,12 +86,19 @@ else:
     tem = model.Model(params)
 
     # Create list of environments that we will sample from during training to provide TEM with trajectory input
-    envs = ['./envs/5x5.json']
+    # envs = ['./envs/5x5.json']
+    envs = ['./envs/10x10.json']
     # Save all environment files that are being used in training in the script directory
     for file in set(envs):
         shutil.copy2(file, os.path.join(envs_path, os.path.basename(file)))
 
-    # Create a tensor board to stay updated on training progress. Start tensorboard with tensorboard --logdir=runs
+
+wandb.init(project='mec-hpc-investigations-torch-tem',
+           config=params)
+wandb_config = wandb.config
+
+
+# Create a tensor board to stay updated on training progress. Start tensorboard with tensorboard --logdir=runs
 writer = SummaryWriter(train_path)
 # Create a logger to write log output to file
 logger = utils.make_logger(run_path)
@@ -101,9 +107,13 @@ logger = utils.make_logger(run_path)
 adam = torch.optim.Adam(tem.parameters(), lr=params['lr_max'])
 
 # Make set of environments: one for each batch, randomly choosing to use shiny objects or not
-environments = [world.World(graph, randomise_observations=True,
-                            shiny=(params['shiny'] if np.random.rand() < params['shiny_rate'] else None)) for graph in
-                np.random.choice(envs, params['batch_size'])]
+environments = [world.World(graph,
+                            randomise_observations=True,
+                            shiny=params['shiny'] if np.random.rand() < params['shiny_rate'] else None,
+                            # shiny=None,
+                            gaussian_filter_sigma=params['gaussian_filter_sigma'])
+                for graph in np.random.choice(envs, params['batch_size'])]
+
 # Initialise whether a state has been visited for each world
 visited = [[False for _ in range(env.n_locations)] for env in environments]
 # And make a single walk for each environment, where walk lengths can be any between the min and max length to de-sychronise world switches

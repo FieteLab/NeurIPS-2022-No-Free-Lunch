@@ -7,6 +7,7 @@ Created on Tue Feb 11 14:33:06 2020
 """
 import json
 import numpy as np
+import scipy.ndimage
 import torch
 import copy
 from scipy.sparse.csgraph import shortest_path
@@ -14,15 +15,22 @@ from scipy.sparse.csgraph import shortest_path
 # Functions for generating data that TEM trains on: sequences of [state,observation,action] tuples
 
 class World:
-    def __init__(self, env, randomise_observations=False, randomise_policy=False, shiny=None):
+    def __init__(self,
+                 env,
+                 randomise_observations=False,
+                 randomise_policy=False,
+                 shiny=None,
+                 gaussian_filter_sigma: float = 0.5,
+                 ):
+
         # If the environment is provided as a filename: load the corresponding file. If it's no filename, it's assumed to be an environment dictionary
         if type(env) == str or type(env) == np.str_:
             # Filename provided, load graph from json file
-            file = open(env, 'r') 
+            file = open(env, 'r')
             json_text = file.read()
             env = json.loads(json_text)
             file.close()
-        
+
         # Now env holds a dictionary that describes this world
         try:
             # Copy expected fiels to object attributes
@@ -33,25 +41,31 @@ class World:
             self.n_observations = env['n_observations']
         except (KeyError, TypeError) as e:
             # If any of the expected fields is missing: treat this as an invalid environment
-            print('Invalid environment: bad dictionary\n', e)            
+            print('Invalid environment: bad dictionary\n', e)
             # Initialise all environment fields for an empty environment
             self.adjacency = []
             self.locations = []
             self.n_actions = 0
             self.n_locations = 0
             self.n_observations = 0
-        
+
         # If requested: shuffle observations from original assignments
         if randomise_observations:
             self.observations_randomise()
-        
+
+        if gaussian_filter_sigma == 0.:
+            gaussian_filter_sigma = None
+        self.gaussian_filter_sigma = gaussian_filter_sigma
+        self.observation_vectors = self.construct_observation_vectors()
+        self.torch_observation_vectors = torch.from_numpy(self.observation_vectors)
+
         # If requested: randomise policy by setting equal probability for each action
         if randomise_policy:
             self.policy_random()
 
         # Copy the shiny input
         self.shiny = copy.deepcopy(shiny)
-        # If there's no shiny data provided: initialise this world as a non-shiny environement
+        # If there's no shiny data provided: initialise this world as a non-shiny environment
         if self.shiny is None:
             # TEM needs to know that this is a non-shiny environment (e.g. for providing actions to generative model), so set shiny to None for each location
             for location in self.locations:
@@ -60,8 +74,8 @@ class World:
         else:
             # Initially make all locations non-shiny
             for location in self.locations:
-                location['shiny'] = False            
-            # Calculate all graph distances, since shiny objects aren't allowed to be too close together
+                location['shiny'] = False
+                # Calculate all graph distances, since shiny objects aren't allowed to be too close together
             dist_matrix = shortest_path(csgraph=np.array(self.adjacency), directed=False)
             # Initialise the list of shiny locations as empty
             self.shiny['locations'] = []
@@ -70,8 +84,8 @@ class World:
                 new = np.random.randint(self.n_locations)
                 too_close = [dist_matrix[new,existing] < np.max(dist_matrix) / self.shiny['n'] for existing in self.shiny['locations']]
                 if not any(too_close):
-                    self.shiny['locations'].append(new)                    
-            # Set those locaitons to be shiny
+                    self.shiny['locations'].append(new)
+                    # Set those locaitons to be shiny
             for shiny_location in self.shiny['locations']:
                 self.locations[shiny_location]['shiny'] = True
             # Get objects at shiny locations
@@ -86,14 +100,48 @@ class World:
                     location['observation'] = np.random.choice(not_shiny)
             # Generate a policy towards each of the shiny objects
             self.shiny['policies'] = [self.policy_distance(shiny_location) for shiny_location in self.shiny['locations']]
-    
+
     def observations_randomise(self):
         # Run through every abstract location
         for location in self.locations:
             # Pick random observation from any of the observations
             location['observation'] = np.random.randint(self.n_observations)
         return self
-    
+
+    def construct_observation_vectors(self):
+        gaussian_filter_sigma = self.gaussian_filter_sigma
+        possible_one_hot_vectors = np.eye(self.n_observations)
+        one_hot_vectors = np.stack([
+            possible_one_hot_vectors[location['observation']]
+            for location in self.locations])
+        if gaussian_filter_sigma is None:
+            observation_vectors = one_hot_vectors
+        else:
+            # Make sure locations are sorted by y, then x
+            sorted_locations = sorted(self.locations, key=lambda loc: (loc['y'], loc['x']))
+            one_hot_vectors_reordered = np.stack([
+                one_hot_vectors[loc['id']] for loc in sorted_locations])
+            # TODO: refactor to not assume environment is square
+            nrows = ncols = int(np.sqrt(self.n_locations))
+            one_hot_vectors_reshaped = np.reshape(
+                one_hot_vectors_reordered,
+                newshape=(nrows, ncols, self.n_observations))
+            observation_vectors = scipy.ndimage.gaussian_filter(
+                one_hot_vectors_reshaped,
+                sigma=gaussian_filter_sigma,
+            )
+            # import matplotlib.pyplot as plt
+            # for i in range(4):
+            #     plt.hist(observation_vectors[i, 2*i, :])
+            #     plt.show()
+
+            # Reshape back to (env length * env width, obs dim embedding)
+            observation_vectors = np.reshape(
+                observation_vectors,
+                newshape=(nrows * ncols, self.n_observations))
+
+        return observation_vectors
+
     def policy_random(self):
         # Run through every abstract location
         for location in self.locations:
@@ -226,11 +274,13 @@ class World:
     
     def get_observation(self, new_location):
         # Find sensory observation for new state, and store it as one-hot vector
-        new_observation = np.eye(self.n_observations)[new_location['observation']]
+        # next_observation = self.observation_vectors[new_location['id']]
         # Create a new observation by converting the new observation to a torch tensor
-        new_observation = torch.tensor(new_observation, dtype=torch.float).view((new_observation.shape[0]))
+        # next_observation = torch.tensor(next_observation, dtype=torch.float).view((next_observation.shape[0]))
+
+        next_observation = self.torch_observation_vectors[new_location['id']].float()
         # Return the new observation
-        return new_observation
+        return next_observation
         
     def get_action(self, new_location, walk, repeat_bias_factor=2):
         # Build policy from action probability of each action of provided location dictionary

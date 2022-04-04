@@ -12,6 +12,7 @@ import torch
 import glob
 import matplotlib.pyplot as plt
 import importlib.util
+import os
 # Own module imports. Note how model module is not imported, since we'll used the model from the training run
 import world
 import analyse
@@ -28,7 +29,14 @@ run = '0'
 index = '13000'
 
 # Load the model: use import library to import module from specified path
-model_spec = importlib.util.spec_from_file_location("model", 'summaries/' + date + '/run' + run + '/script/model.py')
+run_dir_path = os.path.join('summaries', date, f'run{run}')
+print(f'Run Dir: {run_dir_path}')
+model_script_path = os.path.join(run_dir_path, 'script', 'model.py')
+plots_dir_path = os.path.join(run_dir_path, 'plots')
+print(f'Plots dir: {plots_dir_path}')
+os.makedirs(plots_dir_path, exist_ok=True)
+model_spec = importlib.util.spec_from_file_location(
+    "model", model_script_path)
 model = importlib.util.module_from_spec(model_spec)
 model_spec.loader.exec_module(model)
 
@@ -104,11 +112,17 @@ plt.ylim(0, 1)
 plt.legend()
 plt.title('Zero-shot inference: ' + str(
     np.mean([np.mean(env) for env_i, env in enumerate(zero_shot) if envs_to_avg[env_i]]) * 100) + '%')
-plt.show()
+# plt.show()
+plt.savefig(os.path.join(plots_dir_path,
+                         f'agent_compare_and_zeroshot_inf.png'),
+            bbox_inches='tight',
+            dpi=300)
 
 # Plot rate maps for all cells
 plot.plot_cells(p[env_to_plot], g[env_to_plot], environments[env_to_plot],
-                n_f_ovc=(params['n_f_ovc'] if 'n_f_ovc' in params else 0), columns=25)
+                n_f_ovc=(params['n_f_ovc'] if 'n_f_ovc' in params else 0), columns=25,
+                plots_dir_path=plots_dir_path)
+
 
 # Plot accuracy separated by location
 plt.figure()
@@ -118,6 +132,10 @@ ax.set_title('Accuracy to location')
 ax = plt.subplot(1, 2, 2)
 plot.plot_map(environments[env_to_plot], np.array(from_acc[env_to_plot]), ax)
 ax.set_title('Accuracy from location')
+plt.savefig(os.path.join(plots_dir_path,
+                         f'acc_separated_by_location.png'),
+            bbox_inches='tight',
+            dpi=300)
 
 # Plot occupation per location, then add walks on top
 ax = plot.plot_map(environments[env_to_plot],
@@ -128,3 +146,9 @@ ax = plot.plot_map(environments[env_to_plot],
 ax = plot.plot_walk(environments[env_to_plot], walks[env_to_plot], ax=ax,
                     n_steps=max(1, int(len(walks[env_to_plot]) / 500)))
 plt.title('Walk and average occupation')
+plt.savefig(os.path.join(plots_dir_path,
+                         f'walk_and_avg_occupation.png'),
+            bbox_inches='tight',
+            dpi=300)
+
+print('Finished!')
