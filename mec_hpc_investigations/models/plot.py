@@ -284,12 +284,15 @@ def plot_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
+    fig, ax = plt.subplots(figsize=(24, 8))
     sns.stripplot(x="run_group",
                   y="pos_decoding_err",
                   data=runs_performance_df,
-                  size=2)
-    plt.ylabel('Pos Decoding Err (cm)')
-    plt.xlabel('Group')
+                  size=4,
+                  ax=ax)
+    ax.set_ylim(1., 100.)
+    ax.set_ylabel('Pos Decoding Err (cm)')
+    ax.set_xlabel('Group')
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',
