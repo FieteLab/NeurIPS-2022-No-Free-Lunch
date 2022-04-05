@@ -69,7 +69,15 @@ plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir)
 
+plot_loss_vs_num_grad_steps(
+    runs_augmented_histories_df=runs_augmented_histories_df,
+    plot_dir=results_dir)
+
 plot_loss_vs_num_grad_steps_by_place_cell_rf(
+    runs_augmented_histories_df=runs_augmented_histories_df,
+    plot_dir=results_dir)
+
+plot_pos_decoding_error_vs_num_grad_steps(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir)
 

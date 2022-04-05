@@ -88,6 +88,26 @@ def plot_loss_over_min_loss_vs_epoch_by_run_id(
     plt.close()
 
 
+def plot_loss_vs_num_grad_steps(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="loss",
+                 x='num_grad_steps',
+                 data=runs_augmented_histories_df)
+    plt.ylabel(f'Loss')
+    plt.yscale('log')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_vs_num_grad_steps.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_loss_vs_num_grad_steps_by_place_cell_rf(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
@@ -364,6 +384,26 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
 
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_err_vs_max_grid_score_by_run_group.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_pos_decoding_error_vs_num_grad_steps(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="pos_decoding_err",
+                 x='num_grad_steps',
+                 data=runs_augmented_histories_df)
+    plt.ylabel(f'Pos Decoding Error (cm)')
+    plt.yscale('log')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_error_vs_num_grad_steps.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
