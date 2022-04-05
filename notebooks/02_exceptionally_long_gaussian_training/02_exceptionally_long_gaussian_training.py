@@ -60,6 +60,11 @@ runs_augmented_histories_df = runs_configs_df[[
 runs_augmented_histories_df['num_grad_steps'] = \
     runs_augmented_histories_df['n_grad_steps_per_epoch'] * runs_augmented_histories_df['_step']
 
+plot_max_grid_score_vs_num_grad_steps(
+    runs_augmented_histories_df=runs_augmented_histories_df,
+    plot_dir=results_dir,
+)
+
 plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir)
