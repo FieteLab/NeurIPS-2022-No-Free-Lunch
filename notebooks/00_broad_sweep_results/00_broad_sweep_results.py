@@ -46,20 +46,20 @@ runs_configs_df = runs_configs_df[runs_configs_df['optimizer'] != 'sgd'].copy()
 def sweep_to_run_group(row: pd.Series):
     if row['Sweep'] == '2vw5jbim':
         # 01: Cartesian + MSE
-        run_group = 'Cartesian\nMSE'
+        run_group = 'Cartesian\nMSE\nN=144'
     elif row['Sweep'] == '':
         # 02: Polar + MSE
         run_group = 'Polar\nGeodesic'
         raise NotImplementedError
     elif row['Sweep'] == 'qu0mobjm':
         # 03: G+Global+CE, sweeping most hyperparameters
-        run_group = 'Gaussian\nCE\nGlobal\nAll Hyper'
+        run_group = 'Gaussian\nCE\nGlobal\nAll Hyper\nN='
     elif row['Sweep'] == '8rvghgz1':
         # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
-        run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 5x'
+        run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 5x\nN=64'
     elif row['Sweep'] == 'ea06fmvq':
-        # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
-        run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x'
+        # 05: G+Global+CE, sweeping RF from 0.01m to 0.05m, training 100x
+        run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x\nN=9'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
