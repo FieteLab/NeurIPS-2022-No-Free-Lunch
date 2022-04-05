@@ -27,7 +27,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     wandb_project_path='mec-hpc-investigations',
     data_dir=data_dir,
     sweep_ids=sweep_ids,
-    finished_only=True)
+    finished_only=False)
 
 
 def sweep_to_run_group(row: pd.Series):

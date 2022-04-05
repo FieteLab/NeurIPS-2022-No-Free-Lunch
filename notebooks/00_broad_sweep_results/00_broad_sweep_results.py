@@ -14,14 +14,6 @@ os.makedirs(results_dir, exist_ok=True)
 low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
-# sweep_ids = [
-#     '5bpvzhfh',  # Position + MSE
-#     'ni9i0dfp',  # Gaussian + global norm + cross entropy + sweep hyperparameters, holding rf fixed
-#     'xqyfdt1v',  # Gaussian + global norm + cross entropy + sweep rf, holding hyperparameters fixed
-#     'sp2hvkth',  # DoG + global norm + cross entropy + sweep hyperparameters, holding rf fixed
-#     '2cworubi',  # DoG + global norm + cross entropy + sweep rf, holding hyperparameters fixed
-#     # 'y40eqafz',  # G + global norm + cross entropy + wide sweep of rf (but will rerun)
-# ]
 
 sweep_ids = [
     '2vw5jbim',  # 01: Cartesian + MSE
@@ -80,7 +72,8 @@ minima_performance_metrics = compute_minima_performance_metrics_from_runs_histor
 )
 
 runs_performance_df = runs_configs_df[[
-    'run_id', 'run_group', 'place_field_loss', 'place_field_values', 'place_field_normalization']].merge(
+    'run_id', 'run_group', 'place_field_loss', 'place_field_values',
+    'place_field_normalization', 'activation']].merge(
         minima_performance_metrics,
         on='run_id',
         how='left')
@@ -102,6 +95,10 @@ plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
     runs_performance_df=runs_performance_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
+
+plot_max_grid_score_vs_activation(
+    runs_performance_df=runs_performance_df,
+    plot_dir=results_dir)
 
 plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
     runs_performance_df=runs_performance_df,

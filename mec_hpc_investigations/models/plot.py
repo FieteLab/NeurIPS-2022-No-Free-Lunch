@@ -134,6 +134,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
+
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
@@ -163,6 +164,40 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'max_grid_score_given_low_pos_decoding_err_vs_run_group.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_max_grid_score_vs_activation(runs_performance_df: pd.DataFrame,
+                                      plot_dir: str):
+
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+
+    ax = axes[0]
+    sns.stripplot(y="max_grid_score_d=60_n=256",
+                  x='activation',
+                  data=runs_performance_df,
+                  ax=ax,
+                  size=2)
+    ax.set_ylabel(
+        f'Max Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="max_grid_score_d=90_n=256",
+                  x='activation',
+                  data=runs_performance_df,
+                  ax=ax,
+                  size=2)
+    ax.set_ylabel(None)
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'max_grid_score_vs_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -271,6 +306,25 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'max_grid_score_vs_place_cell_rf_by_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_participation_ratio_by_num_grad_steps(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="participation_ratio",
+                 x='num_grad_steps',
+                 data=runs_augmented_histories_df)
+    plt.ylabel(f'Participation Ratio')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'participation_ratio_by_num_grad_steps.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()

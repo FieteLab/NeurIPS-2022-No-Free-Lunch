@@ -23,16 +23,18 @@ np.random.seed(0)
 torch.manual_seed(0)
 
 # Choose which trained model to load
-date = '2022-04-03'  # 2020-10-13 run 0 for successful node agent
-run = '0'
+date = '2022-04-04'
+# run = '0'
+# run = '1'
+run = '2'
 # index = '32000'
-index = '13000'
+checkpoint_index = '14000'
 
 # Load the model: use import library to import module from specified path
 run_dir_path = os.path.join('summaries', date, f'run{run}')
 print(f'Run Dir: {run_dir_path}')
 model_script_path = os.path.join(run_dir_path, 'script', 'model.py')
-plots_dir_path = os.path.join(run_dir_path, 'plots')
+plots_dir_path = os.path.join(run_dir_path, 'plots', checkpoint_index)
 print(f'Plots dir: {plots_dir_path}')
 os.makedirs(plots_dir_path, exist_ok=True)
 model_spec = importlib.util.spec_from_file_location(
@@ -41,11 +43,11 @@ model = importlib.util.module_from_spec(model_spec)
 model_spec.loader.exec_module(model)
 
 # Load the parameters of the model
-params = torch.load('summaries/' + date + '/run' + run + '/model/params_' + index + '.pt')
+params = torch.load('summaries/' + date + '/run' + run + '/model/params_' + checkpoint_index + '.pt')
 # Create a new tem model with the loaded parameters
 tem = model.Model(params)
 # Load the model weights after training
-model_weights = torch.load('summaries/' + date + '/run' + run + '/model/tem_' + index + '.pt')
+model_weights = torch.load('summaries/' + date + '/run' + run + '/model/tem_' + checkpoint_index + '.pt')
 # Set the model weights to the loaded trained model weights
 tem.load_state_dict(model_weights)
 # Make sure model is in evaluate mode (not crucial because it doesn't currently use dropout or batchnorm layers)
