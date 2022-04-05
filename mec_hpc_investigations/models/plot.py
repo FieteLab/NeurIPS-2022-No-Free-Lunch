@@ -90,7 +90,7 @@ def plot_loss_over_min_loss_vs_epoch_by_run_id(
     plt.close()
 
 
-def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
+def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
@@ -98,7 +98,7 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16, 8),
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
 
     ax = axes[0]
@@ -122,7 +122,7 @@ def plot_max_grid_score_vs_run_group_given_low_pos_decoding_err(
     ax.set_xlabel('Group')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_vs_run_group_given_low_pos_decoding_err.png'),
+                             f'max_grid_score_given_low_pos_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -134,7 +134,7 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
         plot_dir: str):
 
     plt.close()
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16, 8),
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
 
     ax = axes[0]
@@ -166,12 +166,13 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
     plt.close()
 
 
-def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
+def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.,
-        grid_score_d60_threshold: float = 1.0,
-        grid_score_d90_threshold: float = 1.5):
+        grid_score_d60_threshold: float = 1.2,
+        grid_score_d90_threshold: float = 1.4):
+
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
@@ -182,7 +183,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
     runs_performance_df[f'has_grid_d90'] \
         = runs_performance_df['max_grid_score_d=90_n=256'] > grid_score_d90_threshold
 
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16, 8),
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
 
     ax = axes[0]
@@ -207,7 +208,7 @@ def plot_percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err(
     ax.set_xlabel('Group')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'percent_have_grid_cells_vs_run_group_given_low_pos_decoding_err.png'),
+                             f'percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -218,16 +219,19 @@ def plot_percent_low_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
+
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
+    fig, ax = plt.subplots(figsize=(24, 8))
     sns.barplot(x="run_group",
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold}',
-                data=runs_performance_df)
-    plt.xlabel('Group')
-    plt.ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
-    plt.ylim(0., 1.)
+                data=runs_performance_df,
+                ax=ax)
+    fig.set_xlabel('Group')
+    fig.set_ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
+    fig.set_ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
                              f'percent_low_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',
@@ -240,7 +244,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(16, 8),
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
     ymin = runs_performance_df['pos_decoding_err'].min()
     ymax = runs_performance_df['pos_decoding_err'].max()
@@ -252,7 +256,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
                     ax=ax,
                     s=10)
     ax.set_ylim(ymin, ymax)
-    ax.set_ylabel('Pos Decoding Err')
+    ax.set_ylabel('Pos Decoding Err (cm)')
     ax.set_xlabel(r'Max Grid Score')
     ax.set_title(r'$60^{\circ}$')
 
