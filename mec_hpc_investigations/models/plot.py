@@ -88,6 +88,28 @@ def plot_loss_over_min_loss_vs_epoch_by_run_id(
     plt.close()
 
 
+def plot_loss_vs_num_grad_steps_by_place_cell_rf(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="loss",
+                 x='num_grad_steps',
+                 hue='place_cell_rf',
+                 data=runs_augmented_histories_df,
+                 size=3)
+    plt.ylabel(f'Loss')
+    plt.yscale('log')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_vs_num_grad_steps_by_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
@@ -128,7 +150,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
 
 
 def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
-        runs_performance_df: pd.DataFrame,
+        runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
 
     plt.close()
@@ -139,7 +161,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
     sns.lineplot(y="max_grid_score_d=60_n=256",
                  x='num_grad_steps',
                  hue='place_cell_rf',
-                 data=runs_performance_df,
+                 data=runs_augmented_histories_df,
                  ax=ax,
                  size=3)
     ax.set_ylabel(f'Max Grid Score')
@@ -150,7 +172,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
     sns.lineplot(y="max_grid_score_d=90_n=256",
                  x='num_grad_steps',
                  hue='place_cell_rf',
-                 data=runs_performance_df,
+                 data=runs_augmented_histories_df,
                  ax=ax)
     ax.set_ylabel(None)  # Use ylabel from left plot
     ax.set_xlabel('Num Grad Steps')
@@ -306,6 +328,28 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
 
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_err_vs_max_grid_score_by_run_group.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_pos_decoding_error_vs_num_grad_steps_by_place_cell_rf(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="loss",
+                 x='num_grad_steps',
+                 hue='place_cell_rf',
+                 data=runs_augmented_histories_df,
+                 size=3)
+    plt.ylabel(f'Pos Decoding Error (cm)')
+    plt.yscale('log')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_error_vs_num_grad_steps_by_place_cell_rf.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
