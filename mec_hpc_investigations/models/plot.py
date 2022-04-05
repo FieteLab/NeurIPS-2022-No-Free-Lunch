@@ -229,9 +229,9 @@ def plot_percent_low_decoding_err_vs_run_group(
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold}',
                 data=runs_performance_df,
                 ax=ax)
-    fig.set_xlabel('Group')
-    fig.set_ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
-    fig.set_ylim(0., 1.)
+    ax.set_xlabel('Group')
+    ax.set_ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
+    ax.set_ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
                              f'percent_low_decoding_err_vs_run_group.png'),
                 bbox_inches='tight',

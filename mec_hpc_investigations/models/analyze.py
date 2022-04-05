@@ -140,6 +140,7 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         )
 
         runs_histories_df.reset_index(inplace=True, drop=True)
+        runs_histories_df.to_csv(runs_histories_df_path, index=False)
         print(f'Wrote {runs_histories_df_path} to disk')
     else:
         runs_histories_df = pd.read_csv(runs_histories_df_path)
