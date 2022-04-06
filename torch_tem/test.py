@@ -28,7 +28,7 @@ date = '2022-04-04'
 # run = '1'
 run = '2'
 # index = '32000'
-checkpoint_index = '14000'
+checkpoint_index = '28000'
 
 # Load the model: use import library to import module from specified path
 run_dir_path = os.path.join('summaries', date, f'run{run}')
