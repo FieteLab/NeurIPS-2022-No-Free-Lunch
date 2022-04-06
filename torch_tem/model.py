@@ -123,7 +123,10 @@ class Model(torch.nn.Module):
 
     def init_trainable(self):
         # Scale factor in Laplacian transform for each frequency module. High frequency comes first, low frequency comes last. Learn inverse sigmoid instead of scale factor directly, so domain of alpha is -inf, inf
-        self.alpha = torch.nn.ParameterList([torch.nn.Parameter(torch.tensor(np.log(self.hyper['f_initial'][f] / (1 - self.hyper['f_initial'][f])), dtype=torch.float)) for f in range(self.hyper['n_f'])])
+        self.alpha = torch.nn.ParameterList([
+            torch.nn.Parameter(torch.tensor(np.log(self.hyper['f_initial'][f] / (1 - self.hyper['f_initial'][f])),
+                                            dtype=torch.float))
+            for f in range(self.hyper['n_f'])])
         # Entorhinal preference weights
         self.w_x = torch.nn.Parameter(torch.tensor(1.0))
         # Entorhinal preference bias

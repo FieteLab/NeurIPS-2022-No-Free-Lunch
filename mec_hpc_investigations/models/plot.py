@@ -91,7 +91,6 @@ def plot_loss_over_min_loss_vs_epoch_by_run_id(
 def plot_loss_vs_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="loss",
                  x='num_grad_steps',
@@ -111,7 +110,6 @@ def plot_loss_vs_num_grad_steps(
 def plot_loss_vs_num_grad_steps_by_place_cell_rf(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="loss",
                  x='num_grad_steps',
@@ -134,7 +132,6 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
-
     plt.close()
     runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
@@ -172,7 +169,6 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
 
 def plot_max_grid_score_vs_activation(runs_performance_df: pd.DataFrame,
                                       plot_dir: str):
-
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
 
@@ -207,7 +203,6 @@ def plot_max_grid_score_vs_activation(runs_performance_df: pd.DataFrame,
 def plot_max_grid_score_vs_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
@@ -241,7 +236,6 @@ def plot_max_grid_score_vs_num_grad_steps(
 def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
@@ -312,10 +306,30 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
     plt.close()
 
 
+def plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
+        runs_performance_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    sns.scatterplot(
+        data=runs_performance_df,
+        x='max_grid_score_d=60_n=256',
+        y='max_grid_score_d=90_n=256',
+        hue='activation',
+    )
+
+    plt.xlabel(r'Max $60^{\circ}$ Score')
+    plt.ylabel(r'Max $90^{\circ}$ Score')
+    plt.savefig(os.path.join(plot_dir,
+                             f'max_grid_score_90_vs_max_grid_score_60_by_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_participation_ratio_by_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="participation_ratio",
                  x='num_grad_steps',
@@ -447,7 +461,6 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
 def plot_pos_decoding_error_vs_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="pos_decoding_err",
                  x='num_grad_steps',
@@ -467,7 +480,6 @@ def plot_pos_decoding_error_vs_num_grad_steps(
 def plot_pos_decoding_error_vs_num_grad_steps_by_place_cell_rf(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="pos_decoding_err",
                  x='num_grad_steps',

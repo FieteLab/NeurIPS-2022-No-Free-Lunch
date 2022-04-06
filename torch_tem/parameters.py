@@ -18,7 +18,7 @@ def parameters():
     # Does this world include the standing still action?
     params['has_static_action'] = True
     # Are we smoothing the sensory observations?
-    params['gaussian_filter_sigma'] = 0.5
+    params['gaussian_filter_sigma'] = 0.
     # Number of available actions, excluding the stand still action (since standing still has an action vector full of zeros, it won't add to the action vector dimension)
     params['n_actions'] = 4
     # Bias for explorative behaviour to pick the same action again, to encourage straight walks
@@ -138,7 +138,9 @@ def parameters():
     # Neurons for hippocampal grounded location p for each frequency
     params['n_p'] = [g * x for g, x in zip(params['n_g_subsampled'], params['n_x_f'])]
     # Initial frequencies of each module. For ease of interpretation (higher number = higher frequency) this is 1 - the frequency as James uses it
-    params['f_initial'] = [0.99, 0.3, 0.09, 0.03, 0.01]
+    # params['f_initial'] = [0.99, 0.3, 0.09, 0.03, 0.01]
+    # params['f_initial'] = [0.01, 0.01, 0.01, 0.01, 0.01]
+    params['f_initial'] = [0.99, 0.99, 0.99, 0.99, 0.99]
     # Add frequencies of object vector cell modules, if object vector cells get separate modules
     params['f_initial'] = params['f_initial'] + params['f_initial'][0:params['n_f_ovc']]
 
