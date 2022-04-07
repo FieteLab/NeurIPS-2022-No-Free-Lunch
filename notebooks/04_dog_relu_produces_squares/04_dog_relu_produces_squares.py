@@ -39,6 +39,8 @@ runs_configs_df['run_group'] = runs_configs_df.apply(
     sweep_to_run_group,
     axis=1)
 
+runs_configs_df = runs_configs_df[runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold]
+
 runs_histories_df = download_wandb_project_runs_histories(
     wandb_project_path='mec-hpc-investigations',
     data_dir=data_dir,

@@ -46,7 +46,7 @@ def sweep_to_run_group(row: pd.Series):
         raise NotImplementedError
     elif row['Sweep'] == 'qu0mobjm':
         # 03: G+Global+CE, sweeping most hyperparameters
-        run_group = 'Gaussian\nCE\nGlobal\nAll Hyper\nN='
+        run_group = 'Gaussian\nCE\nGlobal\nHyperparams-RF\nN='
     elif row['Sweep'] == '8rvghgz1':
         # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
         run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 5x\nN=64'
