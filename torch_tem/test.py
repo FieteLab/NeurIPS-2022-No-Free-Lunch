@@ -23,12 +23,14 @@ np.random.seed(0)
 torch.manual_seed(0)
 
 # Choose which trained model to load
-date = '2022-04-04'
+# date = '2022-04-04'
+date = '2022-04-05'
 # run = '0'
 # run = '1'
-run = '2'
+# run = '2'
+run = '3'
 # index = '32000'
-checkpoint_index = '28000'
+checkpoint_index = '30000'
 
 # Load the model: use import library to import module from specified path
 run_dir_path = os.path.join('summaries', date, f'run{run}')
