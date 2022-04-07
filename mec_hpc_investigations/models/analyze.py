@@ -12,6 +12,7 @@ def compute_minima_performance_metrics_from_runs_histories(runs_histories_df: pd
         'max_grid_score_d=90_n=256': 'max',
         'pos_decoding_err': 'min',
         'loss': 'min',
+        'participation_ratio': 'max',
     })
 
     # Convert run_id from index to column.
@@ -116,6 +117,7 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
                 keys=['max_grid_score_d=60_n=256',
                       'max_grid_score_d=90_n=256',
                       'pos_decoding_err',
+                      'participation_ratio',
                       'loss'])
             if len(run_history_df) == 0:
                 continue

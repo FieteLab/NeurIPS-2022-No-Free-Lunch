@@ -352,6 +352,27 @@ def plot_participation_ratio_by_num_grad_steps(
     plt.close()
 
 
+def plot_participation_ratio_vs_architecture_and_activation(
+        runs_performance_df: pd.DataFrame,
+        plot_dir: str):
+
+    sns.barplot(
+        data=runs_performance_df,
+        x='rnn_type',
+        y='participation_ratio',
+        hue='activation',
+    )
+
+    plt.xlabel('Architecture')
+    plt.ylabel('Participation Ratio')
+    plt.savefig(os.path.join(plot_dir,
+                             f'participation_ratio_vs_architecture_and_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,

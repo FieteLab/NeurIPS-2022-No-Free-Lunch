@@ -16,7 +16,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    '05ljtf0t',  # DoG + Global + CE, sweeping others
+    '05ljtf0t',  # 05: DoG+Global+CE, sweeping others
 ]
 
 
@@ -62,7 +62,8 @@ minima_performance_metrics = compute_minima_performance_metrics_from_runs_histor
 
 runs_performance_df = runs_configs_df[[
     'run_id', 'run_group', 'place_field_loss', 'place_field_values',
-    'place_field_normalization', 'place_cell_rf', 'activation']].merge(
+    'place_field_normalization', 'place_cell_rf', 'activation',
+    'rnn_type']].merge(
         minima_performance_metrics,
         on='run_id',
         how='left')
@@ -77,6 +78,11 @@ plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
     plot_dir=results_dir,
     grid_score_d60_threshold=grid_score_d60_threshold,
     grid_score_d90_threshold=grid_score_d90_threshold,
+)
+
+plot_participation_ratio_vs_architecture_and_activation(
+    runs_performance_df=runs_performance_df,
+    plot_dir=results_dir,
 )
 
 print('Finished!')
