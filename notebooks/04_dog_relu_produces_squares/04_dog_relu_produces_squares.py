@@ -28,8 +28,8 @@ runs_configs_df = download_wandb_project_runs_configs(
 
 
 def sweep_to_run_group(row: pd.Series):
-    if row['Sweep'] == 'y40eqafz':
-        run_group = 'CE\nDoG\nGlobal\nOthers'
+    if row['Sweep'] == '05ljtf0t':
+        run_group = 'CE\nDoG\nGlobal\nOthers\nN=25'
     else:
         run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
     return run_group
@@ -73,6 +73,8 @@ plot_max_grid_score_vs_place_cell_rf_by_activation(
 plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
     runs_performance_df=runs_performance_df,
     plot_dir=results_dir,
+    grid_score_d60_threshold=grid_score_d60_threshold,
+    grid_score_d90_threshold=grid_score_d90_threshold,
 )
 
 print('Finished!')

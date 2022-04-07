@@ -31,7 +31,7 @@ runs_configs_df = download_wandb_project_runs_configs(
 
 def sweep_to_run_group(row: pd.Series):
     if row['Sweep'] == 'y40eqafz':
-        run_group = 'CE\nGaussian\nGlobal\nRF=Var'
+        run_group = 'CE\nGaussian\nGlobal\nRF=Var\nN=64'
     else:
         run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
     return run_group

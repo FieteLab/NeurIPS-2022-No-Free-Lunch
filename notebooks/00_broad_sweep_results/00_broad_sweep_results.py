@@ -20,6 +20,7 @@ sweep_ids = [
     'qu0mobjm',  # 03: G+Global+CE, sweeping most hyperparameters
     '8rvghgz1',  # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
     'ea06fmvq',  # 05: G+Global+CE, small RF (0.01, 0.025, 0.05), training for exceptionally long
+    '05ljtf0t',  #
 ]
 
 
@@ -52,6 +53,9 @@ def sweep_to_run_group(row: pd.Series):
     elif row['Sweep'] == 'ea06fmvq':
         # 05: G+Global+CE, sweeping RF from 0.01m to 0.05m, training 100x
         run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x\nN=9'
+    elif row['Sweep'] == '05ljtf0t':
+        # 05: DoG+Global+CE, sweeping most hyperparameters
+        run_group = 'DoG\nCE\nGlobal\nOthers\nN=25'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError

@@ -308,7 +308,9 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
 
 def plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
         runs_performance_df: pd.DataFrame,
-        plot_dir: str):
+        plot_dir: str,
+        grid_score_d60_threshold: float,
+        grid_score_d90_threshold: float):
     plt.close()
     sns.scatterplot(
         data=runs_performance_df,
@@ -316,6 +318,11 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
         y='max_grid_score_d=90_n=256',
         hue='activation',
     )
+    plt.hlines(grid_score_d90_threshold, 0., 2., colors='r')
+    plt.vlines(grid_score_d60_threshold, 0., 2., colors='r')
+    plt.xlim(0., 2.)
+    plt.ylim(0., 2.)
+    plt.legend(loc='lower left')
 
     plt.xlabel(r'Max $60^{\circ}$ Score')
     plt.ylabel(r'Max $90^{\circ}$ Score')
