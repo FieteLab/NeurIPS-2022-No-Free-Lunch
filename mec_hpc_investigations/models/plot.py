@@ -285,7 +285,7 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
                   ax=ax,
                   size=3)
     ax.set_ylabel(f'Max Grid Score')
-    ax.set_xlabel('Gaussian ' + r'$\sigma$')
+    ax.set_xlabel('Gaussian ' + r'$\sigma$' + ' (m)')
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
