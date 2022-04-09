@@ -355,7 +355,6 @@ def plot_participation_ratio_by_num_grad_steps(
 def plot_participation_ratio_vs_architecture_and_activation(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
-
     sns.barplot(
         data=runs_performance_df,
         x='rnn_type',
@@ -416,6 +415,53 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
 
     plt.savefig(os.path.join(plot_dir,
                              f'percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
+        runs_performance_df: pd.DataFrame,
+        plot_dir: str,
+        low_pos_decoding_err_threshold: float = 6.,
+        grid_score_d60_threshold: float = 1.2,
+        grid_score_d90_threshold: float = 1.4):
+    plt.close()
+    runs_performance_low_pos_decod_err_df = runs_performance_df[
+        runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold].copy()
+
+    runs_performance_low_pos_decod_err_df['has_grid_d60'] \
+        = runs_performance_low_pos_decod_err_df['max_grid_score_d=60_n=256'] > grid_score_d60_threshold
+
+    runs_performance_low_pos_decod_err_df['has_grid_d90'] \
+        = runs_performance_low_pos_decod_err_df['max_grid_score_d=90_n=256'] > grid_score_d90_threshold
+
+    def compute_lattice_group(row: pd.Series):
+        if row['has_grid_d60'] & row['has_grid_d90']:
+            lattice_group = 'Both'
+        elif row['has_grid_d60'] & ~row['has_grid_d90']:
+            lattice_group = r'$60\circ$'
+        elif ~row['has_grid_d60'] & row['has_grid_d90']:
+            lattice_group = r'$90\circ$'
+        elif ~row['has_grid_d60'] & ~row['has_grid_d90']:
+            lattice_group = 'Neither'
+        else:
+            raise ValueError
+        return lattice_group
+
+    runs_performance_low_pos_decod_err_df['lattice_group'] = runs_performance_low_pos_decod_err_df.apply(
+        compute_lattice_group,
+        axis=1)
+
+    sns.histplot(x='lattice_group',
+                 hue='activation',
+                 stat='density',
+                 common_norm=False,
+                 data=runs_performance_low_pos_decod_err_df)
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
