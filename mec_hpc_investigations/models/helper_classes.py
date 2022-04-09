@@ -148,14 +148,15 @@ class PlaceCells(object):
             minval=0.,
             maxval=1.0) > (self.n_place_fields_per_cell / np.ceil(self.n_place_fields_per_cell))
         fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)
-        # By setting the locations to a ridiculous value, these place fields will never be
-        # active. Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
+        # Rather than deleting, just move the fields far far away. By setting the locations
+        # to a ridiculous value, these place fields will never be active.
+        # Rather than Just move the fields far, far away. 1e5 is a heuristic.
+        replacement_locations_for_fields_to_delete = 1e5 * self.us
+        # Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
         # https://stackoverflow.com/a/62472890), so we have to use this complicated workaround.
-        # self.us[fields_to_delete, :] = 1e4
-        replacement_locations_for_fields_to_delete = 1e4 * max(self.max_x, self.max_y) * tf.ones_like(self.us)
         self.us = tf.add(
-            tf.multiply(replacement_locations_for_fields_to_delete, fields_to_delete[:, :, tf.newaxis]),
-            tf.multiply(self.us, 1 - fields_to_delete[:, :, tf.newaxis]),
+            tf.multiply(fields_to_delete[:, :, tf.newaxis], replacement_locations_for_fields_to_delete),
+            tf.multiply(1 - fields_to_delete[:, :, tf.newaxis], self.us),
         )
 
     def get_activation(self, pos):
