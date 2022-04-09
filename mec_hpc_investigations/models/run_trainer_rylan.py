@@ -11,7 +11,7 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 # Position config.
 default_config = {
     'activation': 'relu',
-    'batch_size': 20,
+    'batch_size': 21,
     'bin_side_in_m': 0.05,
     'box_height_in_m': 2.2,
     'box_width_in_m': 2.2,
@@ -21,7 +21,7 @@ default_config = {
     'n_epochs': 2,
     'n_grad_steps_per_epoch': 5,
     'n_recurrent_units_to_sample': 16,
-    'n_place_fields_per_cell': 1,
+    'n_place_fields_per_cell': 2.5,
     'Np': 64,
     'Ng': 512,
     'optimizer': 'adam',

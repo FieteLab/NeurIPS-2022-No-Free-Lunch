@@ -12,6 +12,6 @@
 
 for i in {1..5}
 do
-  sbatch scripts/run_one.sh 05ljtf0t
+  sbatch scripts/run_one.sh 5kurapg7
   sleep 3
 done
