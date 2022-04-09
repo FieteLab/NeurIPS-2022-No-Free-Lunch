@@ -119,7 +119,6 @@ class PlaceCells(object):
         self.vr1d = hasattr(options, 'vr1d') and (options.vr1d is True)
 
         # Randomly tile place cell centers across environment
-        tf.random.set_seed(0)
         usx = tf.random.uniform((self.Np,), self.min_x, self.max_x, dtype=tf.float64)
         if self.vr1d:
             assert (self.min_y == self.max_y)

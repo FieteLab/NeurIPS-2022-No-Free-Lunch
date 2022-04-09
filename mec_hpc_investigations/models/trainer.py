@@ -339,7 +339,8 @@ class Trainer(object):
             score_90_by_neuron[storage_idx] = score_90
             rate_maps[storage_idx] = rate_map
 
-        # TODO: Why are these NaNs zeroed out? 
+        # These NaNs need to be zeroed out if logging as heatmaps to W&B,
+        # otherwise W&B throws an error.
         best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
         best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
 
