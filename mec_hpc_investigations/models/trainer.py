@@ -339,9 +339,15 @@ class Trainer(object):
             score_90_by_neuron[storage_idx] = score_90
             rate_maps[storage_idx] = rate_map
 
-        # TODO: Why are these NaNs zeroed out? 
+        # These NaNs need to be zeroed out if logging as heatmaps to W&B,
+        # otherwise W&B throws an error.
         best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
         best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
+
+        # Sometimes, scores can be NaN if a neuron's ratemap is all 0.
+        # Remove these.
+        score_60_by_neuron = score_60_by_neuron[~np.isnan(score_60_by_neuron)]
+        score_90_by_neuron = score_90_by_neuron[~np.isnan(score_90_by_neuron)]
 
         wandb.log({
             f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),

@@ -80,6 +80,13 @@ plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
     grid_score_d90_threshold=grid_score_d90_threshold,
 )
 
+plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
+    runs_performance_df=runs_performance_df,
+    plot_dir=results_dir,
+    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold,
+    grid_score_d60_threshold=grid_score_d60_threshold,
+    grid_score_d90_threshold=grid_score_d90_threshold)
+
 plot_participation_ratio_vs_architecture_and_activation(
     runs_performance_df=runs_performance_df,
     plot_dir=results_dir,
