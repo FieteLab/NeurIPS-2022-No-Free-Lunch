@@ -21,7 +21,7 @@ default_config = {
     'n_epochs': 4,
     'n_grad_steps_per_epoch': 5,
     'n_recurrent_units_to_sample': 16,
-    'n_place_fields_per_cell': 1,
+    'n_place_fields_per_cell': 2.5,
     'Np': 64,
     'Ng': 512,
     'optimizer': 'adam',

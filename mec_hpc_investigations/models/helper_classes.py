@@ -42,8 +42,8 @@ class Options(object):
         assert self.activation in {'relu', 'tanh', 'sigmoid'}
         self.assert_var_is_positive_int(self.batch_size)
         assert self.place_field_loss in {'cartesian',
-                                             'gaussian',
-                                             'difference_of_gaussians'}
+                                         'gaussian',
+                                         'difference_of_gaussians'}
         self.assert_var_is_positive_float(self.surround_scale)
 
         assert isinstance(self.rnn_type, str)
@@ -64,7 +64,7 @@ class HeadDirectionCells(object):
     def __init__(self,
                  options: Options):
         self.Nhdc = options.Nhdc
-        assert(self.Nhdc is not None)
+        assert (self.Nhdc is not None)
         self.concentration = options.hdc_concentration
         # Create a random Von Mises with fixed cov over the position
         rs = np.random.RandomState(None)
@@ -72,7 +72,7 @@ class HeadDirectionCells(object):
         self.kappa = np.ones_like(self.means) * self.concentration
 
     def get_activation(self, x):
-        assert(len(x.shape) == 2)
+        assert (len(x.shape) == 2)
         logp = self.kappa * tf.cos(x[:, :, np.newaxis] - self.means[np.newaxis, np.newaxis, :])
         outputs = logp - tf.reduce_logsumexp(logp, axis=2, keepdims=True)
         outputs = tf.nn.softmax(outputs, axis=-1)
@@ -105,6 +105,7 @@ class PlaceCells(object):
         self.place_field_normalization = options.place_field_normalization
 
         self.Np = options.Np
+        self.n_place_fields_per_cell = float(options.n_place_fields_per_cell)
         self.sigma = options.place_cell_rf
         self.surround_scale = options.surround_scale
         self.min_x = options.min_x
@@ -119,13 +120,43 @@ class PlaceCells(object):
         self.vr1d = hasattr(options, 'vr1d') and (options.vr1d is True)
 
         # Randomly tile place cell centers across environment
-        usx = tf.random.uniform((self.Np,), self.min_x, self.max_x, dtype=tf.float64)
+        usx = tf.random.uniform(
+            shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell))),
+            minval=self.min_x,
+            maxval=self.max_x,
+            dtype=tf.float64)
         if self.vr1d:
             assert (self.min_y == self.max_y)
             usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
         else:
-            usy = tf.random.uniform((self.Np,), self.min_y, self.max_y, dtype=tf.float64)
+            usy = tf.random.uniform(
+                shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell))),
+                minval=self.min_y,
+                maxval=self.max_y,
+                dtype=tf.float64)
+
+        # Shape: (Num place cells, num fields per cell, 2 for XY)
         self.us = tf.stack([usx, usy], axis=-1)
+
+        # If num fields per cell is not a whole integer, we want to randomly
+        # "delete" fields. Since this is difficult with fixed-sized arrays, the
+        # simplest workaround is to set a random subset to ridiculously far
+        # away values.
+        fields_to_delete = tf.random.uniform(
+            shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell))),
+            minval=0.,
+            maxval=1.0) > (self.n_place_fields_per_cell / np.ceil(self.n_place_fields_per_cell))
+        fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)
+        # Rather than deleting, just move the fields far far away. By setting the locations
+        # to a ridiculous value, these place fields will never be active.
+        # Rather than Just move the fields far, far away. 1e5 is a heuristic.
+        replacement_locations_for_fields_to_delete = 1e5 * self.us
+        # Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
+        # https://stackoverflow.com/a/62472890), so we have to use this complicated workaround.
+        self.us = tf.add(
+            tf.multiply(fields_to_delete[:, :, tf.newaxis], replacement_locations_for_fields_to_delete),
+            tf.multiply(1 - fields_to_delete[:, :, tf.newaxis], self.us),
+        )
 
     def get_activation(self, pos):
         '''
@@ -138,8 +169,11 @@ class PlaceCells(object):
         if self.place_field_values == 'cartesian':
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
+        # Shape: (batch size, sequence length, num place cells, num fields per cell, 2)
+        d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
 
-        d = tf.abs(pos[:, :, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
+        # Take the place field per cell closest to the position.
+        d = tf.reduce_min(d, axis=3)
 
         # if self.is_periodic:
         #    dx = tf.gather(d, 0, axis=-1)
@@ -194,8 +228,15 @@ class PlaceCells(object):
         if self.place_field_values == 'cartesian':
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
         else:
+            # Shape (batch size, sequence length, Np)
+            # Original.
+            # _, idxs = tf.math.top_k(activation, k=k)
+            # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
+
+            # Shape (batch size, sequence length, Np)
             _, idxs = tf.math.top_k(activation, k=k)
             pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
+
         return pred_pos
 
     @staticmethod
