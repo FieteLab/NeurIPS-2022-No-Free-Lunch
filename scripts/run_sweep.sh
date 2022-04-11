@@ -11,6 +11,7 @@
 # wandb sweep sweeps/sweep_position.yaml
 
 for i in {1..5}
-  sbatch scripts/run_one.sh 5kurapg7
+do
+  sbatch scripts/run_one.sh jy855pdt
   sleep 3
 done

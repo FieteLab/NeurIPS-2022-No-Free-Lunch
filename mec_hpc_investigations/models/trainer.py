@@ -253,12 +253,6 @@ class Trainer(object):
         # Use skdim implementation for trustworthiness.
         participation_ratio_ID = skdim.id.lPCA(ver='participation_ratio').fit_transform(
             X=activations)
-        # singular_vals = np.linalg.svd(
-        #     activations,
-        #     full_matrices=False,
-        #     compute_uv=False)
-        # eigen_vals = np.square(singular_vals)
-        # participation_ratio = np.square(np.sum(eigen_vals)) / np.sum(np.square(eigen_vals))
 
         intrinsic_dimensionalities = dict(
             participation_ratio=participation_ratio_ID,

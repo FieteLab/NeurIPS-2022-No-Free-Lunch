@@ -49,15 +49,15 @@ class GridScorer(object):
 
     def __init__(self, nbins, mask_parameters, coords_range=None, min_max=True):
         """Scoring ratemaps given trajectories.
-    Args:
-      nbins: Number of bins per dimension in the ratemap.
-      coords_range: Environment coordinates range.
-      mask_parameters: parameters for the masks that analyze the angular
-        autocorrelation of the 2D autocorrelation.
-      min_max: Minimum difference between correlations of spatial autocorrelograms rotated at 30 and 60 degrees
-               with those at 30, 90, and 150 degrees. grid_score_60 is the value that I have seen used in the literature (e.g. Hardcastle et al. 2017).
-               Note: Butler, Hardcastle et al. 2019 do the differences of the means, so min_max=False if you want to do that.
-    """
+        Args:
+          nbins: Number of bins per dimension in the ratemap.
+          coords_range: Environment coordinates range.
+          mask_parameters: parameters for the masks that analyze the angular
+            autocorrelation of the 2D autocorrelation.
+          min_max: Minimum difference between correlations of spatial autocorrelograms rotated at 30 and 60 degrees
+                   with those at 30, 90, and 150 degrees. grid_score_60 is the value that I have seen used in the literature (e.g. Hardcastle et al. 2017).
+                   Note: Butler, Hardcastle et al. 2019 do the differences of the means, so min_max=False if you want to do that.
+        """
         self._nbins = nbins
         self._min_max = min_max
         self._coords_range = coords_range

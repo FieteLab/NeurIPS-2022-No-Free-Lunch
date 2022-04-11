@@ -23,7 +23,7 @@ default_config = {
     'n_recurrent_units_to_sample': 16,
     'n_place_fields_per_cell': 2.5,
     'Np': 64,
-    'Ng': 512,
+    'Ng': 256,
     'optimizer': 'adam',
     'place_field_loss': 'crossentropy',
     # 'place_field_values': 'difference_of_gaussians',

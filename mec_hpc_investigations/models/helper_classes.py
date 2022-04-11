@@ -120,8 +120,9 @@ class PlaceCells(object):
         self.vr1d = hasattr(options, 'vr1d') and (options.vr1d is True)
 
         # Randomly tile place cell centers across environment
+        max_n_place_fields_per_cell = int(np.ceil(self.n_place_fields_per_cell) + 1)
         usx = tf.random.uniform(
-            shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell))),
+            shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell)) + 1),
             minval=self.min_x,
             maxval=self.max_x,
             dtype=tf.float64)
@@ -130,7 +131,7 @@ class PlaceCells(object):
             usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
         else:
             usy = tf.random.uniform(
-                shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell))),
+                shape=(self.Np, max_n_place_fields_per_cell),
                 minval=self.min_y,
                 maxval=self.max_y,
                 dtype=tf.float64)
@@ -143,9 +144,10 @@ class PlaceCells(object):
         # simplest workaround is to set a random subset to ridiculously far
         # away values.
         fields_to_delete = tf.random.uniform(
-            shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell))),
+            shape=(self.Np, max_n_place_fields_per_cell),
             minval=0.,
-            maxval=1.0) > (self.n_place_fields_per_cell / np.ceil(self.n_place_fields_per_cell))
+            maxval=1.0,
+            dtype=tf.float64) > (self.n_place_fields_per_cell / max_n_place_fields_per_cell)
         fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)
         # Rather than deleting, just move the fields far far away. By setting the locations
         # to a ridiculous value, these place fields will never be active.
@@ -167,7 +169,7 @@ class PlaceCells(object):
             outputs: Place cell activations with shape [batch_size, sequence_length, Np].
         '''
         if self.place_field_values == 'cartesian':
-            outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
+            outputs = tf.cast(tf.identity(pos), dtype=tf.float64)
             return outputs
         # Shape: (batch size, sequence length, num place cells, num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
@@ -226,16 +228,21 @@ class PlaceCells(object):
             pred_pos: Predicted 2d position with shape [batch_size, sequence_length, 2].
         '''
         if self.place_field_values == 'cartesian':
-            pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
+            pred_pos = tf.cast(tf.identity(activation), dtype=tf.float64)
         else:
-            # Shape (batch size, sequence length, Np)
+            # Shape: (batch size, sequence length, Np)
             # Original.
             # _, idxs = tf.math.top_k(activation, k=k)
-            # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
 
-            # Shape (batch size, sequence length, Np)
-            _, idxs = tf.math.top_k(activation, k=k)
-            pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
+            # For some reason, activation is float32. Recast it to 64.
+            activation = tf.cast(activation, dtype=tf.float64)
+
+            # Recall, self.us has shape (Np, num fields per place cell, 2)
+            # and activation has shape (batch size, sequence length, Np)
+            pred_pos = tf.reduce_mean(tf.multiply(
+                activation[:, :, :, tf.newaxis, tf.newaxis],  # add 2 dimensions for fields/cell and for cartesian coordinates
+                self.us[tf.newaxis, tf.newaxis, :, :, :],  # add 2 dimensions for batch size and sequence length
+            ), axis=(2, 3))
 
         return pred_pos
 
@@ -277,7 +284,7 @@ class PlaceCells(object):
     #     pos = np.array(np.meshgrid(np.linspace(self.min_x, self.max_x, res),
     #                      np.linspace(self.min_y, self.max_y, res))).T
 
-    #     pos = pos.astype(np.float32)
+    #     pos = pos.astype(np.float64)
 
     #     #Maybe specify dimensions here again?
     #     pc_outputs = self.get_activation(pos)
