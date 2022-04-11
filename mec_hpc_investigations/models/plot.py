@@ -457,8 +457,11 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
     sns.histplot(x='lattice_group',
                  hue='activation',
                  stat='density',
+                 multiple="dodge",
                  common_norm=False,
                  data=runs_performance_low_pos_decod_err_df)
+    plt.xlabel(f'(Probable) Lattices (N={len(runs_performance_low_pos_decod_err_df)})')
+    plt.ylim(0., 1.)
 
     plt.savefig(os.path.join(plot_dir,
                              f'percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation.png'),
