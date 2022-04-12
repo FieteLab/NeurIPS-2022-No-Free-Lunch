@@ -106,7 +106,6 @@ class PlaceCells(object):
         self.place_field_normalization = options.place_field_normalization
 
         self.Np = options.Np
-        self.n_place_fields_per_cell = float(options.n_place_fields_per_cell)
         self.place_field_loss = options.place_field_loss
         self.min_x = options.min_x
         self.max_x = options.max_x
@@ -116,55 +115,100 @@ class PlaceCells(object):
         self.is_periodic = options.is_periodic
         self.vr1d = hasattr(options, 'vr1d') and (options.vr1d is True)
 
-        # Randomly tile place cell centers across environment
-        max_n_place_fields_per_cell = int(np.ceil(self.n_place_fields_per_cell) + 1)
-        usx = tf.random.uniform(
-            shape=(self.Np, max_n_place_fields_per_cell),
-            minval=self.min_x,
-            maxval=self.max_x,
-            dtype=tf.float64)
-        if self.vr1d:
-            # assert (self.min_y == self.max_y)
-            # usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
-            raise NotImplementedError
-        else:
-            usy = tf.random.uniform(
-                shape=(self.Np, max_n_place_fields_per_cell),
-                minval=self.min_y,
-                maxval=self.max_y,
+        # Choose locations for place cells.
+        self.n_place_fields_per_cell = options.n_place_fields_per_cell
+        if isinstance(options.n_place_fields_per_cell, int):
+            self.max_n_place_fields_per_cell = self.n_place_fields_per_cell
+            self.us = tf.random.uniform(
+                shape=(self.Np, self.max_n_place_fields_per_cell, 2),
+                minval=self.min_x,
+                maxval=self.max_x,
+                dtype=tf.float64)
+        elif isinstance(options.n_place_fields_per_cell, str):
+
+            if options.n_place_fields_per_cell.startswith('Poisson'):
+                rate = self.extract_floats_from_str(options.n_place_fields_per_cell)
+                n_fields_per_cell = 1 + tf.random.poisson(
+                    shape=(self.Np,),
+                    lam=rate,
+                    dtype=tf.float64)  # Add 1 to ensures that each cell has at least 1 field.
+                self.max_n_place_fields_per_cell = int(tf.reduce_max(n_fields_per_cell))
+
+                # Shape: (num place cells, max num fields per cell)
+                # Create array of indices
+                fields_to_delete = tf.repeat(
+                    tf.range(self.max_n_place_fields_per_cell, dtype=tf.float64)[tf.newaxis, :],
+                    repeats=self.Np,
+                    axis=0)
+                fields_to_delete = fields_to_delete >= n_fields_per_cell
+
+            else:
+                raise NotImplementedError
+
+            self.us = tf.random.uniform(
+                shape=(self.Np, self.max_n_place_fields_per_cell, 2),
+                minval=self.min_x,
+                maxval=self.max_x,
                 dtype=tf.float64)
 
-        # Shape: (Num place cells, num fields per cell, 2 for XY)
-        self.us = tf.stack([usx, usy], axis=-1)
+            fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)
+            # Rather than deleting, move the fields far away. By setting the locations
+            # to a ridiculous value, these place fields will never be active.
+            # 1e7 is a heuristic.
+            replacement_locations_for_fields_to_delete = 1e7 * self.us
+            # Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
+            # https://stackoverflow.com/a/62472890), so we have to use this complicated workaround.
+            self.us = tf.add(
+                tf.multiply(fields_to_delete[:, :, tf.newaxis], replacement_locations_for_fields_to_delete),
+                tf.multiply(1 - fields_to_delete[:, :, tf.newaxis], self.us),
+            )
+        else:
+            raise NotImplementedError
 
+        # if self.vr1d:
+        #     # assert (self.min_y == self.max_y)
+        #     # usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
+        #     raise NotImplementedError
+        # else:
+        #     usy = tf.random.uniform(
+        #         shape=(self.Np, max_n_place_fields_per_cell),
+        #         minval=self.min_y,
+        #         maxval=self.max_y,
+        #         dtype=tf.float64)
+        #
+        # # Shape: (Num place cells, num fields per cell, 2 for XY)
+        # self.us = tf.stack([usx, usy], axis=-1)
+
+        # Create place cell receptive field tensor.
         if isinstance(options.place_cell_rf, (float, int)):
             # Add the 1, 1, to the shape for future broadcasting
             self.place_cell_rf = float(options.place_cell_rf) * tf.ones(
-                shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
                 dtype=tf.float64)
         elif isinstance(options.place_cell_rf, str):
             if options.place_cell_rf.startswith('Uniform'):
                 low, high = self.extract_floats_from_str(s=options.place_cell_rf)
                 # Add the 1, 1, to the shape for future broadcasting
                 self.place_cell_rf = tf.random.uniform(
-                    shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                    shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
                     minval=low,
                     maxval=high,
                     dtype=tf.float64)
         else:
             raise NotImplementedError
 
+        # Create second place cell receptive field tensor.
         if isinstance(options.surround_scale, (float, int)):
             # Add the 1, 1, to the shape for future broadcasting
             self.surround_scale = float(options.surround_scale) * tf.ones(
-                shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
                 dtype=tf.float64)
         elif isinstance(options.surround_scale, str):
             if options.surround_scale.startswith('Uniform'):
                 # Add the 1, 1, to the shape for future broadcasting
                 low, high = self.extract_floats_from_str(s=options.surround_scale)
                 self.surround_scale = tf.random.uniform(
-                    shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                    shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
                     minval=low,
                     maxval=high,
                     dtype=tf.float64)
@@ -172,27 +216,6 @@ class PlaceCells(object):
                 raise NotImplementedError
         else:
             raise NotImplementedError
-
-        # If num fields per cell is not a whole integer, we want to randomly
-        # "delete" fields. Since this is difficult with fixed-sized arrays, the
-        # simplest workaround is to set a random subset to ridiculously far
-        # away values.
-        fields_to_delete = tf.random.uniform(
-            shape=(self.Np, max_n_place_fields_per_cell),
-            minval=0.,
-            maxval=1.0,
-            dtype=tf.float64) > (self.n_place_fields_per_cell / max_n_place_fields_per_cell)
-        fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)
-        # Rather than deleting, just move the fields far far away. By setting the locations
-        # to a ridiculous value, these place fields will never be active.
-        # Rather than Just move the fields far, far away. 1e5 is a heuristic.
-        replacement_locations_for_fields_to_delete = 1e6 * self.us
-        # Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
-        # https://stackoverflow.com/a/62472890), so we have to use this complicated workaround.
-        self.us = tf.add(
-            tf.multiply(fields_to_delete[:, :, tf.newaxis], replacement_locations_for_fields_to_delete),
-            tf.multiply(1 - fields_to_delete[:, :, tf.newaxis], self.us),
-        )
 
     def get_activation(self, pos):
         '''
