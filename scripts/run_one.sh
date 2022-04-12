@@ -11,7 +11,10 @@ module load openmind/cudnn/11.5-v8.3.3.40
 
 id=${1}
 
-# update
+# This allegedly helps with memory fragmentation.
+TF_GPU_ALLOCATOR=cuda_malloc_async
+
+# Activate virtual environment.
 source mec_hpc_venv/bin/activate
 export PYTHONPATH=.
 

@@ -31,7 +31,10 @@ parameters:
   n_grad_steps_per_epoch:
     values: [5000]
   n_place_fields_per_cell:
-    values: [1., 1.75, 2.5]
+    values: [
+      1,
+      'Poisson( 1.0 )',
+    ]
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
@@ -57,6 +60,7 @@ parameters:
   place_cell_rf:
     values: [
       0.12,
+      'Uniform( 0.09 , 0.15 )',
     ]
   readout_dropout:
     values: [0.]

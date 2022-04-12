@@ -118,6 +118,7 @@ class PlaceCells(object):
         # Choose locations for place cells.
         self.n_place_fields_per_cell = options.n_place_fields_per_cell
         if isinstance(options.n_place_fields_per_cell, int):
+
             self.max_n_place_fields_per_cell = self.n_place_fields_per_cell
             self.us = tf.random.uniform(
                 shape=(self.Np, self.max_n_place_fields_per_cell, 2),
@@ -303,25 +304,29 @@ class PlaceCells(object):
             # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
             # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
+            _, idxs = tf.math.top_k(activation, k=k)
+            # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY)
+            voting_locations = tf.gather(tf.multiply(self.us, self.fields_to_keep), idxs)
+            pred_pos = tf.reduce_mean(voting_locations, axis=(2, 3))
 
             # For some reason, activation is float32. Recast it to 64.
             # Shape:
-            activation = tf.cast(activation, dtype=tf.float64)
+            # activation = tf.cast(activation, dtype=tf.float64)
 
             # Recall, self.us has shape (Np, num fields per place cell, 2)
             # and activation has shape (batch size, sequence length, Np)
             # reduce_mean divides by num place cells * num fields per cell; we
             # need to correct for this by removing the fraction of fields that
             # aren't being used.
-            pred_pos = tf.reduce_mean(tf.multiply(
-                # Take softmax to ensure activations are probability distributions.
-                tf.nn.softmax(activation[:, :, :, tf.newaxis, tf.newaxis],
-                              # add 2 dimensions for fields/cell and for cartesian coordinates
-                              axis=2),
-                tf.multiply(self.us,
-                            self.fields_to_keep,
-                            )[tf.newaxis, tf.newaxis, :, :, :]  # add 2 dimensions for batch size and sequence length
-            ), axis=(2, 3))
+            # pred_pos = tf.reduce_mean(tf.multiply(
+            #     # Take softmax to ensure activations are probability distributions.
+            #     tf.nn.softmax(activation[:, :, :, tf.newaxis, tf.newaxis],
+            #                   # add 2 dimensions for fields/cell and for cartesian coordinates
+            #                   axis=2),
+            #     tf.multiply(self.us,
+            #                 self.fields_to_keep,
+            #                 )[tf.newaxis, tf.newaxis, :, :, :]  # add 2 dimensions for batch size and sequence length
+            # ), axis=(2, 3))
 
         return pred_pos
 

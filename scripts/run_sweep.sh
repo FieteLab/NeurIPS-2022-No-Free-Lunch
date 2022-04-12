@@ -12,6 +12,6 @@
 
 for i in {1..5}
 do
-  sbatch scripts/run_one.sh tgwsduby
+  sbatch scripts/run_one.sh ohxjys9x
   sleep 3
 done
