@@ -450,7 +450,7 @@ class ThreeLayerRNNBase(Model):
         return place_preds
 
     def compute_loss(self, inputs, pc_outputs, pos, g_mask=None, g_mask_add=None):
-        '''Compute loss and decoding error'''
+        """Compute loss and decoding error"""
         preds = self.call(inputs, g_mask=g_mask, g_mask_add=g_mask_add)
         loss = tf.reduce_mean(self.loss_fn(pc_outputs, preds))
 

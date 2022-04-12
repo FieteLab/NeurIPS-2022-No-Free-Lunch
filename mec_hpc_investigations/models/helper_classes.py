@@ -2,6 +2,7 @@
 import numpy as np
 import scipy
 import tensorflow as tf
+from typing import Dict, List, Tuple, Union
 
 
 class Options(object):
@@ -106,15 +107,11 @@ class PlaceCells(object):
 
         self.Np = options.Np
         self.n_place_fields_per_cell = float(options.n_place_fields_per_cell)
-        self.sigma = options.place_cell_rf
-        self.surround_scale = options.surround_scale
+        self.place_field_loss = options.place_field_loss
         self.min_x = options.min_x
         self.max_x = options.max_x
         self.min_y = options.min_y
         self.max_y = options.max_y
-
-        self.place_field_loss = options.place_field_loss
-        self.place_cell_rf = options.place_cell_rf
 
         self.is_periodic = options.is_periodic
         self.vr1d = hasattr(options, 'vr1d') and (options.vr1d is True)
@@ -122,13 +119,14 @@ class PlaceCells(object):
         # Randomly tile place cell centers across environment
         max_n_place_fields_per_cell = int(np.ceil(self.n_place_fields_per_cell) + 1)
         usx = tf.random.uniform(
-            shape=(self.Np, int(np.ceil(self.n_place_fields_per_cell)) + 1),
+            shape=(self.Np, max_n_place_fields_per_cell),
             minval=self.min_x,
             maxval=self.max_x,
             dtype=tf.float64)
         if self.vr1d:
-            assert (self.min_y == self.max_y)
-            usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
+            # assert (self.min_y == self.max_y)
+            # usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
+            raise NotImplementedError
         else:
             usy = tf.random.uniform(
                 shape=(self.Np, max_n_place_fields_per_cell),
@@ -138,6 +136,42 @@ class PlaceCells(object):
 
         # Shape: (Num place cells, num fields per cell, 2 for XY)
         self.us = tf.stack([usx, usy], axis=-1)
+
+        if isinstance(options.place_cell_rf, (float, int)):
+            # Add the 1, 1, to the shape for future broadcasting
+            self.place_cell_rf = float(options.place_cell_rf) * tf.ones(
+                shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                dtype=tf.float64)
+        elif isinstance(options.place_cell_rf, str):
+            if options.place_cell_rf.startswith('Uniform'):
+                low, high = self.extract_floats_from_str(s=options.place_cell_rf)
+                # Add the 1, 1, to the shape for future broadcasting
+                self.place_cell_rf = tf.random.uniform(
+                    shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                    minval=low,
+                    maxval=high,
+                    dtype=tf.float64)
+        else:
+            raise NotImplementedError
+
+        if isinstance(options.surround_scale, (float, int)):
+            # Add the 1, 1, to the shape for future broadcasting
+            self.surround_scale = float(options.surround_scale) * tf.ones(
+                shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                dtype=tf.float64)
+        elif isinstance(options.surround_scale, str):
+            if options.surround_scale.startswith('Uniform'):
+                # Add the 1, 1, to the shape for future broadcasting
+                low, high = self.extract_floats_from_str(s=options.surround_scale)
+                self.surround_scale = tf.random.uniform(
+                    shape=(1, 1, self.Np, max_n_place_fields_per_cell),
+                    minval=low,
+                    maxval=high,
+                    dtype=tf.float64)
+            else:
+                raise NotImplementedError
+        else:
+            raise NotImplementedError
 
         # If num fields per cell is not a whole integer, we want to randomly
         # "delete" fields. Since this is difficult with fixed-sized arrays, the
@@ -152,7 +186,7 @@ class PlaceCells(object):
         # Rather than deleting, just move the fields far far away. By setting the locations
         # to a ridiculous value, these place fields will never be active.
         # Rather than Just move the fields far, far away. 1e5 is a heuristic.
-        replacement_locations_for_fields_to_delete = 1e5 * self.us
+        replacement_locations_for_fields_to_delete = 1e6 * self.us
         # Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
         # https://stackoverflow.com/a/62472890), so we have to use this complicated workaround.
         self.us = tf.add(
@@ -174,8 +208,8 @@ class PlaceCells(object):
         # Shape: (batch size, sequence length, num place cells, num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
 
-        # Take the place field per cell closest to the position.
-        d = tf.reduce_min(d, axis=3)
+        # # Take the place field per cell closest to the position.
+        # d = tf.reduce_min(d, axis=3)
 
         # if self.is_periodic:
         #    dx = tf.gather(d, 0, axis=-1)
@@ -189,21 +223,25 @@ class PlaceCells(object):
         #    dy = tf.minimum(dy, (self.max_y - self.min_y) - dy)
         #    d = tf.stack([dx,dy], axis=-1)
 
-        norm2 = tf.reduce_sum(d ** 2, axis=-1)
+        # Compute norm over 2D cartesian position
+        # Shape: (batch size, sequence length, num place cells, num fields per cell)
+        norm2 = tf.reduce_sum(d ** 2, axis=4)
 
-        transformed_norm2 = self.normalize_norm2(
+        # Shape (batch size, seq length, num place cells)
+        transformed_norm2 = self.select_norm2_firing_field_then_normalize(
             norm2=norm2,
-            place_field_normalization=self.place_field_normalization,
-            dividing_scalar=2 * self.place_cell_rf ** 2)
+            dividing_scalars=2. * tf.square(self.place_cell_rf),
+            place_field_normalization=self.place_field_normalization)
 
         if self.place_field_values == 'gaussian':
             outputs = transformed_norm2
         elif self.place_field_values == 'difference_of_gaussians':
 
-            other_transformed_norm2 = self.normalize_norm2(
+            # Shape (batch size, seq length, num place cells)
+            other_transformed_norm2 = self.select_norm2_firing_field_then_normalize(
                 norm2=norm2,
-                place_field_normalization=self.place_field_normalization,
-                dividing_scalar=2 * self.surround_scale * self.place_cell_rf ** 2)
+                dividing_scalars=2. * tf.square(tf.multiply(self.surround_scale, self.place_cell_rf)),
+                place_field_normalization=self.place_field_normalization,)
 
             diff_of_transformed = transformed_norm2 - other_transformed_norm2
 
@@ -214,6 +252,7 @@ class PlaceCells(object):
         else:
             raise ValueError(f"Impermissible place field function: {self.place_field_loss}")
 
+        # Shape (batch size, seq length, num place cells,)
         return outputs
 
     def get_nearest_cell_pos(self,
@@ -235,30 +274,58 @@ class PlaceCells(object):
             # _, idxs = tf.math.top_k(activation, k=k)
 
             # For some reason, activation is float32. Recast it to 64.
+            # Shape:
             activation = tf.cast(activation, dtype=tf.float64)
 
             # Recall, self.us has shape (Np, num fields per place cell, 2)
             # and activation has shape (batch size, sequence length, Np)
             pred_pos = tf.reduce_mean(tf.multiply(
-                activation[:, :, :, tf.newaxis, tf.newaxis],  # add 2 dimensions for fields/cell and for cartesian coordinates
+                # Take softmax to ensure activations are probability distribution.
+                tf.nn.softmax(activation[:, :, :, tf.newaxis, tf.newaxis], axis=2),  # add 2 dimensions for fields/cell and for cartesian coordinates
                 self.us[tf.newaxis, tf.newaxis, :, :, :],  # add 2 dimensions for batch size and sequence length
             ), axis=(2, 3))
 
         return pred_pos
 
     @staticmethod
-    def normalize_norm2(norm2: tf.Tensor,
-                        dividing_scalar: float,
-                        place_field_normalization: str
-                        ) -> tf.Tensor:
+    def select_norm2_firing_field_then_normalize(norm2: tf.Tensor,
+                                                 dividing_scalars: tf.Tensor,
+                                                 place_field_normalization: str
+                                                 ) -> tf.Tensor:
+        """
+
+        :param norm2: (batch size, seq length, num place cells, num fields per cell)
+        :param dividing_scalars: (1, 1, num place cells, num fields per cell)
+        :param place_field_normalization:
+        :return: Shape: (batch size, seq len, num place cells)
+        """
+
+        # Shape: (batch size, seq length, num place cells, num fields per cell)
+        divided_norm2 = tf.divide(norm2, dividing_scalars)
+
+        # Compute the most likely firing pattern per place cell
+        # Shape: (batch size, seq length, num place cells)
+        max_divided_norm2 = tf.reduce_min(divided_norm2, axis=3)
 
         if place_field_normalization == 'local':
-            output = tf.exp(-norm2 / dividing_scalar)
+            output = tf.exp(-max_divided_norm2)
         elif place_field_normalization == 'global':
-            output = tf.nn.softmax(-norm2 / dividing_scalar)
+            output = tf.nn.softmax(-max_divided_norm2, axis=2)
         else:
             raise ValueError(f"Impermissible normalization: {place_field_normalization}")
         return output
+
+    @staticmethod
+    def extract_floats_from_str(s: str) -> Tuple:
+        # This assumes that the floats are separated by whitespace
+        # e.g. Uniform( 0.5 , 3.5 )
+        floats = []
+        for sub_s in s.split():
+            try:
+                floats.append(float(sub_s))
+            except ValueError:
+                pass
+        return tuple(floats)
 
     # def grid_pc(self, pc_outputs, res=32):
     #     ''' Interpolate place cell outputs onto a grid'''

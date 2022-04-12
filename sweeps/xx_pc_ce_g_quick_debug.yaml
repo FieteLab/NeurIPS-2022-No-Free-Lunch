@@ -9,7 +9,6 @@ parameters:
     values: [
         'relu',
         'tanh',
-        'sigmoid',
     ]
   batch_size:
     values: [200]

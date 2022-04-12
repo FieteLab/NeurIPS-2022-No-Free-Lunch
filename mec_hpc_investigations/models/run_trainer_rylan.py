@@ -26,17 +26,18 @@ default_config = {
     'Ng': 256,
     'optimizer': 'adam',
     'place_field_loss': 'crossentropy',
-    # 'place_field_values': 'difference_of_gaussians',
-    'place_field_values': 'gaussian',
+    # 'place_field_values': 'gaussian',
+    'place_field_values': 'difference_of_gaussians',
     'place_field_normalization': 'global',
-    'place_cell_rf': 0.12,
+    # 'place_cell_rf': 0.12,
+    'place_cell_rf': 'Uniform( 0.09 , 0.15 )',  # WARNING: Spaces needed
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
     'rnn_type': 'UGRNN',
     'seed': 0,
     'sequence_length': 20,
-    # 'surround_scale': 2.,
-    'surround_scale': 1.,
+    'surround_scale': 2.,
+    # 'surround_scale': 1.,
     'weight_decay': 1e-4,
 }
 
