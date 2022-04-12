@@ -124,6 +124,10 @@ class PlaceCells(object):
                 minval=self.min_x,
                 maxval=self.max_x,
                 dtype=tf.float64)
+            self.fields_to_delete = tf.zeros(
+                shape=(self.Np, self.max_n_place_fields_per_cell),
+                dtype=tf.float64)
+
         elif isinstance(options.n_place_fields_per_cell, str):
 
             if options.n_place_fields_per_cell.startswith('Poisson'):
@@ -151,7 +155,8 @@ class PlaceCells(object):
                 maxval=self.max_x,
                 dtype=tf.float64)
 
-            fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)
+            # Shape:
+            self.fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)[:, :, tf.newaxis]
             # Rather than deleting, move the fields far away. By setting the locations
             # to a ridiculous value, these place fields will never be active.
             # 1e7 is a heuristic.
@@ -159,11 +164,13 @@ class PlaceCells(object):
             # Irritatingly, TensorFlow doesn't permit assigning to the LHS (see
             # https://stackoverflow.com/a/62472890), so we have to use this complicated workaround.
             self.us = tf.add(
-                tf.multiply(fields_to_delete[:, :, tf.newaxis], replacement_locations_for_fields_to_delete),
-                tf.multiply(1 - fields_to_delete[:, :, tf.newaxis], self.us),
+                tf.multiply(self.fields_to_delete, replacement_locations_for_fields_to_delete),
+                tf.multiply(1. - self.fields_to_delete, self.us),
             )
         else:
             raise NotImplementedError
+
+        self.fields_to_keep = 1. - self.fields_to_delete
 
         # if self.vr1d:
         #     # assert (self.min_y == self.max_y)
@@ -264,7 +271,7 @@ class PlaceCells(object):
             other_transformed_norm2 = self.select_norm2_firing_field_then_normalize(
                 norm2=norm2,
                 dividing_scalars=2. * tf.square(tf.multiply(self.surround_scale, self.place_cell_rf)),
-                place_field_normalization=self.place_field_normalization,)
+                place_field_normalization=self.place_field_normalization, )
 
             diff_of_transformed = transformed_norm2 - other_transformed_norm2
 
@@ -293,8 +300,9 @@ class PlaceCells(object):
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float64)
         else:
             # Shape: (batch size, sequence length, Np)
-            # Original.
+            # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
+            # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
 
             # For some reason, activation is float32. Recast it to 64.
             # Shape:
@@ -302,10 +310,17 @@ class PlaceCells(object):
 
             # Recall, self.us has shape (Np, num fields per place cell, 2)
             # and activation has shape (batch size, sequence length, Np)
+            # reduce_mean divides by num place cells * num fields per cell; we
+            # need to correct for this by removing the fraction of fields that
+            # aren't being used.
             pred_pos = tf.reduce_mean(tf.multiply(
-                # Take softmax to ensure activations are probability distribution.
-                tf.nn.softmax(activation[:, :, :, tf.newaxis, tf.newaxis], axis=2),  # add 2 dimensions for fields/cell and for cartesian coordinates
-                self.us[tf.newaxis, tf.newaxis, :, :, :],  # add 2 dimensions for batch size and sequence length
+                # Take softmax to ensure activations are probability distributions.
+                tf.nn.softmax(activation[:, :, :, tf.newaxis, tf.newaxis],
+                              # add 2 dimensions for fields/cell and for cartesian coordinates
+                              axis=2),
+                tf.multiply(self.us,
+                            self.fields_to_keep,
+                            )[tf.newaxis, tf.newaxis, :, :, :]  # add 2 dimensions for batch size and sequence length
             ), axis=(2, 3))
 
         return pred_pos

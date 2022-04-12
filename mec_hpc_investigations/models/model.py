@@ -433,7 +433,7 @@ class ThreeLayerRNNBase(Model):
         return rnn
 
     def g(self, inputs):
-        '''Compute grid cell activations'''
+        """Compute grid cell activations"""
         rnn = self.pre_g(inputs)
         g = self.dense(rnn)
         return g
@@ -444,7 +444,7 @@ class ThreeLayerRNNBase(Model):
         return self.decoder(g)
 
     def call(self, inputs, g_mask=None, g_mask_add=None):
-        '''Predict place cell code'''
+        """Predict place cell code"""
         place_preds = self.dc(inputs, g_mask=g_mask, g_mask_add=g_mask_add)
 
         return place_preds
