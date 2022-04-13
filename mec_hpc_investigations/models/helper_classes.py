@@ -304,9 +304,11 @@ class PlaceCells(object):
             # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
             # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
-            _, idxs = tf.math.top_k(activation, k=k)
+
+            _, top_k_indices = tf.math.top_k(activation, k=k)
             # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY)
-            voting_locations = tf.gather(tf.multiply(self.us, self.fields_to_keep), idxs)
+            voting_locations = tf.gather(tf.multiply(self.us, self.fields_to_keep), top_k_indices)
+            # Shape: (batch size, seq length, 2 i.e. XY)
             pred_pos = tf.reduce_mean(voting_locations, axis=(2, 3))
 
             # For some reason, activation is float32. Recast it to 64.
