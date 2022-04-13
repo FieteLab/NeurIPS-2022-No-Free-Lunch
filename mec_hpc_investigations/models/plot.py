@@ -334,6 +334,45 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
     plt.close()
 
 
+def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
+        runs_performance_df: pd.DataFrame,
+        plot_dir: str,
+        grid_score_d60_threshold: float,
+        grid_score_d90_threshold: float):
+
+    plt.close()
+    unique_rnn_types = runs_performance_df['rnn_type'].unique()
+    ncols = len(unique_rnn_types)
+    fig, axes = plt.subplots(nrows=1, ncols=ncols, figsize=(16 * ncols, 8),
+                             sharey=True, sharex=True)
+
+    axes[0].set_ylabel(r'Max $90^{\circ}$ Score')
+    for ax_idx, unique_rnn_type in enumerate(unique_rnn_types):
+
+        ax = axes[ax_idx]
+        sns.scatterplot(
+            data=runs_performance_df[runs_performance_df['rnn_type'] == unique_rnn_type],
+            x='max_grid_score_d=60_n=256',
+            y='max_grid_score_d=90_n=256',
+            hue='activation',
+            ax=ax,
+        )
+        ax.hlines(grid_score_d90_threshold, 0., 2., colors='r')
+        ax.vlines(grid_score_d60_threshold, 0., 2., colors='r')
+        ax.set_xlim(0., 2.)
+        ax.set_ylim(0., 2.)
+        ax.legend(loc='lower left')
+        ax.set_xlabel(r'Max $60^{\circ}$ Score')
+        ax.set_title(unique_rnn_type)
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_participation_ratio_by_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
@@ -355,6 +394,7 @@ def plot_participation_ratio_by_num_grad_steps(
 def plot_participation_ratio_vs_architecture_and_activation(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
+
     sns.barplot(
         data=runs_performance_df,
         x='rnn_type',

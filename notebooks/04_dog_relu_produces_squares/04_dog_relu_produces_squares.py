@@ -39,7 +39,9 @@ runs_configs_df['run_group'] = runs_configs_df.apply(
     sweep_to_run_group,
     axis=1)
 
-runs_configs_df = runs_configs_df[runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold]
+# Keep only networks that achieved low position decoding error.
+runs_configs_df = runs_configs_df[
+    runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold]
 
 runs_histories_df = download_wandb_project_runs_histories(
     wandb_project_path='mec-hpc-investigations',
@@ -91,5 +93,13 @@ plot_participation_ratio_vs_architecture_and_activation(
     runs_performance_df=runs_performance_df,
     plot_dir=results_dir,
 )
+
+plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
+    runs_performance_df=runs_performance_df,
+    plot_dir=results_dir,
+    grid_score_d60_threshold=grid_score_d60_threshold,
+    grid_score_d90_threshold=grid_score_d90_threshold,
+)
+
 
 print('Finished!')

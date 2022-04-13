@@ -25,13 +25,13 @@ def download_wandb_project_runs_configs(wandb_project_path: str,
                                         data_dir: str,
                                         sweep_ids: List[str] = None,
                                         finished_only: bool = True,
+                                        refresh: bool = False,
                                         ) -> pd.DataFrame:
 
     runs_configs_df_path = os.path.join(
         data_dir,
         'sweeps='+','.join(sweep_ids)+'_runs_configs.csv')
-    if not os.path.isfile(runs_configs_df_path):
-
+    if refresh or not os.path.isfile(runs_configs_df_path):
 
         # Download sweep results
         api = wandb.Api(timeout=60)
@@ -91,12 +91,13 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
                                           data_dir: str,
                                           sweep_ids: List[str] = None,
                                           num_samples: int = 10000,
+                                          refresh: bool = False
                                           ) -> pd.DataFrame:
 
     runs_histories_df_path = os.path.join(
         data_dir,
         'sweeps=' + ','.join(sweep_ids)+'_runs_histories.csv')
-    if not os.path.isfile(runs_histories_df_path):
+    if refresh or not os.path.isfile(runs_histories_df_path):
 
         # Download sweep results
         api = wandb.Api(timeout=60)

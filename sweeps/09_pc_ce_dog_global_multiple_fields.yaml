@@ -62,7 +62,6 @@ parameters:
   place_cell_rf:
     values: [
       0.12,
-      0.20,
     ]
   readout_dropout:
     values: [0.]

@@ -270,7 +270,6 @@ class Trainer(object):
                                                               threshold: float = 1.2):
 
         likely_grid_cell_indices = score_60_by_neuron > threshold
-        # likely_grid_cell_indices = score_60_by_neuron > 0.
         if np.sum(likely_grid_cell_indices) == 0:
             return
 
