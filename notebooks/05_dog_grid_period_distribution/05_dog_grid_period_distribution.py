@@ -6,7 +6,7 @@ from mec_hpc_investigations.models.plot import *
 
 
 # Declare
-notebook_dir = 'notebooks/04_dog_relu_produces_squares'
+notebook_dir = 'notebooks/05_dog_grid_period_distribution'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -16,7 +16,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    '05ljtf0t',  # 05: DoG+Global+CE, sweeping others
+    '05ljtf0t',  # 05: DoG+Global+CE, sweeping others (and receptive field?)
 ]
 
 

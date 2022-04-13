@@ -11,6 +11,7 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 # Position config.
 default_config = {
     'activation': 'tanh',
+    # 'activation': 'relu',
     'batch_size': 13,
     'bin_side_in_m': 0.05,
     'box_height_in_m': 2.2,

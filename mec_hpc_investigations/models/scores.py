@@ -144,8 +144,8 @@ class GridScorer(object):
         x_coef = np.nan_to_num(x_coef)
         return x_coef
 
-    def calculate_grid_cell_periodicity_and_orientation(self,
-                                                        rate_map: Union[np.ndarray],
+    @staticmethod
+    def calculate_grid_cell_periodicity_and_orientation(rate_map: np.ndarray,
                                                         ) -> Tuple[float, float, np.ndarray]:
         """
         Given a rate map with suspected grid cells, compute the
@@ -154,11 +154,12 @@ class GridScorer(object):
         :return:
         """
 
+        # Copied from Mikail
         autocorr = correlate2d(rate_map, rate_map, mode='full')
-        # TODO: Ask Mikail why he used a tmp variable. Probably just experimenting?
-        autocorr_copy = autocorr.copy()
-        maxes = peak_local_max(autocorr_copy)
-        maxes_from_center = maxes - np.array(autocorr_copy.shape) // 2
+        # autocorr = correlate2d(smoothed_rates_wf,smoothed_rates_wf,mode = 'full')
+        tmp = autocorr
+        maxes = peak_local_max(tmp)
+        maxes_from_center = maxes - np.array(tmp.shape) // 2
         distances = np.linalg.norm(maxes_from_center, axis=1)
         sorted_indices = np.argsort(distances)
         nearest_six = maxes_from_center[sorted_indices[1:7]]

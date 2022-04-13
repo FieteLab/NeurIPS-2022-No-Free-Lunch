@@ -55,7 +55,7 @@ def sweep_to_run_group(row: pd.Series):
         run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x\nN=9'
     elif row['Sweep'] == '05ljtf0t':
         # 05: DoG+Global+CE, sweeping most hyperparameters
-        run_group = 'DoG\nCE\nGlobal\nOthers\nN=25'
+        run_group = 'DoG\nCE\nGlobal\nOthers\nN=72'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError

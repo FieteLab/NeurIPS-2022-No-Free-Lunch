@@ -270,6 +270,7 @@ class Trainer(object):
                                                               threshold: float = 1.2):
 
         likely_grid_cell_indices = score_60_by_neuron > threshold
+        # likely_grid_cell_indices = score_60_by_neuron > 0.
         if np.sum(likely_grid_cell_indices) == 0:
             return
 
@@ -318,6 +319,10 @@ class Trainer(object):
                 ys=ys,
                 activations=activations[:, neuron_idx],
             )
+
+            # NOTE: This is new as of 2022/04/13.
+            rate_map[np.isnan(rate_map)] = 0.
+
             scores = self.scorer.get_scores(rate_map=rate_map)
             score_60 = scores[0]
             if score_60 > best_score_60:
