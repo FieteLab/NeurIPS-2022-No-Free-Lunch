@@ -372,7 +372,7 @@ class Trainer(object):
                               score_90_by_neuron,
                               epoch_idx: int):
 
-        n_samples = self.options.n_recurrent_units_to_sample
+        n_samples = rate_maps.shape[0]
         n_rows = n_cols = int(np.ceil(np.sqrt(n_samples)))
 
         fig, axes = plt.subplots(

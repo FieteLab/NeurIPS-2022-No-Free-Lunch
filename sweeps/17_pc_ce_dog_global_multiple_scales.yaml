@@ -58,9 +58,12 @@ parameters:
     ]
   place_cell_rf:
     values: [
+      0.12,
+      'Uniform( 0.10 , 0.14 )',
+      'Uniform( 0.07 , 0.19 )',
       0.20,
       'Uniform( 0.18 , 0.22 )',
-      'Uniform( 0.15 , 0.25 )'
+      'Uniform( 0.15 , 0.25 )',
     ]
   readout_dropout:
     values: [0.]
