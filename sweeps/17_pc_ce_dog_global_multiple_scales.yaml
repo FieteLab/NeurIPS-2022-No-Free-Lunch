@@ -8,7 +8,6 @@ parameters:
   activation:
     values: [
         'relu',
-        'tanh',
     ]
   batch_size:
     values: [200]
