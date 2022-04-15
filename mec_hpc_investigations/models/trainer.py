@@ -73,6 +73,7 @@ class Trainer(object):
     def eval(self,
              gen: TrajectoryGenerator,
              epoch_idx: int,
+             n_samples: int,
              save: bool = False,
              log_and_plot_grid_scores: bool = True,
              ):
@@ -100,8 +101,10 @@ class Trainer(object):
             # save_ratemaps(self.model, self.options, step=tot_step)
 
         if log_and_plot_grid_scores:
-            self.log_and_plot_all(pos=pos, inputs=inputs,
-                                  epoch_idx=epoch_idx)
+            self.log_and_plot_all(pos=pos,
+                                  inputs=inputs,
+                                  epoch_idx=epoch_idx,
+                                  n_samples=n_samples)
 
     def train_step(self, inputs, pc_outputs, pos):
         '''
@@ -167,7 +170,9 @@ class Trainer(object):
                 gen=gen,
                 epoch_idx=epoch_idx,
                 save=save,
-                log_and_plot_grid_scores=log_and_plot_grid_scores)
+                log_and_plot_grid_scores=log_and_plot_grid_scores,
+                n_samples=self.options.n_recurrent_units_to_sample,
+            )
 
             # t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
             for _ in range(self.options.n_grad_steps_per_epoch):
@@ -185,7 +190,8 @@ class Trainer(object):
             gen=gen,
             epoch_idx=epoch_idx,
             save=save,
-            log_and_plot_grid_scores=log_and_plot_grid_scores)
+            log_and_plot_grid_scores=log_and_plot_grid_scores,
+            n_samples=self.options.Ng)
 
     def load_ckpt(self, idx):
         ''' Restore model from earlier checkpoint. '''
@@ -194,7 +200,8 @@ class Trainer(object):
     def log_and_plot_all(self,
                          pos: tf.Tensor,
                          inputs: tf.Tensor,
-                         epoch_idx: int):
+                         epoch_idx: int,
+                         n_samples: int):
 
         num_grad_steps_taken = (epoch_idx + 1) * self.options.n_grad_steps_per_epoch
         num_trajectories_trained_on = num_grad_steps_taken * self.options.batch_size
@@ -220,7 +227,8 @@ class Trainer(object):
             xs=xs,
             ys=ys,
             activations=activations,
-            epoch_idx=epoch_idx)
+            epoch_idx=epoch_idx,
+            n_samples=n_samples)
 
         self.compute_and_log_grid_cell_periodicity_and_orientation(
             rate_maps=rate_maps,
@@ -291,9 +299,9 @@ class Trainer(object):
                                   xs,
                                   ys,
                                   activations,
-                                  epoch_idx: int):
+                                  epoch_idx: int,
+                                  n_samples: int):
 
-        n_samples = self.options.n_recurrent_units_to_sample
         score_60_by_neuron = np.zeros(n_samples)
         score_90_by_neuron = np.zeros(n_samples)
 

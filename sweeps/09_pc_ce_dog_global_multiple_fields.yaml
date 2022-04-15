@@ -40,7 +40,7 @@ parameters:
   n_recurrent_units_to_sample:
     values: [256]
   Ng:
-    values: [4096]
+    values: [512]
   Np:
     values: [512]
   optimizer:
@@ -61,7 +61,7 @@ parameters:
     ]
   place_cell_rf:
     values: [
-      0.12,
+      0.20,
     ]
   readout_dropout:
     values: [0.]
@@ -75,7 +75,7 @@ parameters:
   seed:
     values: [ 0 ]
   sequence_length:
-    values: [20]
+    values: [50]
   surround_scale:
     values: [2.]
   weight_decay:
