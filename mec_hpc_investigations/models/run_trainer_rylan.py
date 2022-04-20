@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import os
 import tensorflow as tf
+from tensorflow.python.profiler import profiler_v2 as profiler
 import wandb
 
 from mec_hpc_investigations.models.trainer import Trainer
@@ -19,11 +20,11 @@ default_config = {
     'initializer': 'glorot_uniform',
     'is_periodic': False,
     'learning_rate': 1e-4,
-    'n_epochs': 4,
+    'n_epochs': 3,
     'n_grad_steps_per_epoch': 5,
     'n_recurrent_units_to_sample': 16,
-    # 'n_place_fields_per_cell': 1,
-    'n_place_fields_per_cell': 'Poisson ( 1.5 )',
+    'n_place_fields_per_cell': 1,
+    # 'n_place_fields_per_cell': 'Poisson ( 1.5 )',
     'Np': 32,
     'Ng': 256,
     'optimizer': 'adam',
@@ -31,16 +32,15 @@ default_config = {
     # 'place_field_values': 'gaussian',
     'place_field_values': 'difference_of_gaussians',
     'place_field_normalization': 'global',
-    # 'place_cell_rf': 0.12,
-    'place_cell_rf': 'Uniform( 0.09 , 0.15 )',  # WARNING: Spaces needed
+    'place_cell_rf': 0.12,
+    # 'place_cell_rf': 'Uniform( 0.09 , 0.15 )',  # WARNING: Spaces needed
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
     'rnn_type': 'UGRNN',
     'seed': 0,
     'sequence_length': 20,
-    # 'surround_scale': 2.,
-    'surround_scale': 'Uniform( 1.9 , 2.1 )',
-    # 'surround_scale': 1.,
+    'surround_scale': 2.,
+    # 'surround_scale': 'Uniform( 1.9 , 2.1 )',
     'weight_decay': 1e-4,
 }
 
@@ -66,10 +66,12 @@ options = configure_options(save_dir='results',
                             run_ID=wandb.run.id,
                             **wandb_config)
 
+# profiler.warmup()
+# profiler.start(logdir='logdir')
 model = configure_model(options=options)
 trainer = Trainer(options=options,
                   model=model)
 trainer.train(save=False,
               log_and_plot_grid_scores=True)
-
+# profiler.stop()
 print('Finished training.')

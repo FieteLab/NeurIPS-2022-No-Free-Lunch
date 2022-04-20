@@ -326,7 +326,7 @@ class PlaceCells(object):
         else:
             # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
-            # Shape: (batch size, sequence length, Np)
+            # # Shape: (batch size, sequence length, Np)
             # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
 
             # top_k applies to the last dimension.
@@ -334,13 +334,15 @@ class PlaceCells(object):
             _, top_k_indices = tf.math.top_k(activation, k=k)
             # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY).
             # Ensure we can only gather the fields that we want to keep.
-            voting_locations = tf.gather(tf.multiply(self.us, self.fields_to_keep), top_k_indices)
+            voting_locations = tf.gather(self.us, top_k_indices)
 
             # Explanation: voting_locations has shape (batch size, seq length, K, max fields per cell, 2 i.e. XY).
             # Our approach is to consider all possible configurations of (max fields per cell)^K
             # We will construct a tensor of shape (batch size, seq length, 2, (max fields per cell)^K)
             # and then take the mean and variance over the last dimension. We will then return
             # the mean XY position of the configuration with the smallest variance.
+            batch_size = voting_locations.shape[0]
+            seq_len = voting_locations.shape[1]
             max_fields_per_cell = voting_locations.shape[3]
             # Shape: ((max fields per cell^K, max fields per cell,)
             indices_per_config = tf.convert_to_tensor(

@@ -458,7 +458,7 @@ class ThreeLayerRNNBase(Model):
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
 
         # Compute decoding error
-        pred_pos = self.place_cells.get_nearest_cell_pos(preds)
+        pred_pos = tf.stop_gradient(self.place_cells.get_nearest_cell_pos(preds))
         err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
         return loss, err
