@@ -11,8 +11,8 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 
 # Position config.
 default_config = {
-    'activation': 'tanh',
-    # 'activation': 'relu',
+    # 'activation': 'tanh',
+    'activation': 'relu',
     'batch_size': 13,
     'bin_side_in_m': 0.05,
     'box_height_in_m': 2.2,
@@ -36,7 +36,8 @@ default_config = {
     # 'place_cell_rf': 'Uniform( 0.09 , 0.15 )',  # WARNING: Spaces needed
     'readout_dropout': 0.,
     'recurrent_dropout': 0.,
-    'rnn_type': 'UGRNN',
+    # 'rnn_type': 'UGRNN',
+    'rnn_type': 'RNN',
     'seed': 0,
     'sequence_length': 20,
     'surround_scale': 2.,

@@ -8,7 +8,6 @@ parameters:
   activation:
     values: [
         'relu',
-        'tanh',
     ]
   batch_size:
     values: [200]
@@ -29,11 +28,10 @@ parameters:
   n_epochs:
     values: [10]
   n_grad_steps_per_epoch:
-    values: [5000]
+    values: [10000]
   n_place_fields_per_cell:
     values: [
       1,
-      'Poisson( 1.0 )',
     ]
   n_recurrent_units_to_sample:
     values: [256]
@@ -44,6 +42,7 @@ parameters:
   optimizer:
     values: [
         'adam',
+        'rmsprop'
     ]
   place_field_loss:
     values: [
@@ -51,7 +50,7 @@ parameters:
     ]
   place_field_values:
     values: [
-      'gaussian',
+      'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
@@ -60,22 +59,20 @@ parameters:
   place_cell_rf:
     values: [
       0.12,
-      'Uniform( 0.09 , 0.15 )',
     ]
   readout_dropout:
     values: [0.]
   rnn_type:
     values: [
       'RNN',
-      'LSTM',
-      'UGRNN',
-      'GRU',
     ]
   seed:
-    values: [ 0 ]
+    values: [ 0 , 1 ]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [1.]
+    values: [
+      2.,
+    ]
   weight_decay:
       values: [ 0.0001 ]

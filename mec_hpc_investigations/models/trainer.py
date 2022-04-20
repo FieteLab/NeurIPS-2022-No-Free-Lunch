@@ -24,7 +24,12 @@ class Trainer(object):
                  model):
         self.options = options
         self.model = model
-        self.trajectory_generator = TrajectoryGenerator(self.options, PlaceCells(self.options))
+        # self.trajectory_generator = TrajectoryGenerator(self.options, PlaceCells(self.options))
+        # TODO: Why did Aran give the models' access to the place cells?
+        # Guess: to compute the loss
+        self.trajectory_generator = TrajectoryGenerator(
+            options=self.options,
+            place_cells=model.place_cells)
         lr = self.options.learning_rate
 
         if options.optimizer == 'adam':
@@ -203,7 +208,7 @@ class Trainer(object):
                          epoch_idx: int,
                          n_samples: int):
 
-        num_grad_steps_taken = (epoch_idx + 1) * self.options.n_grad_steps_per_epoch
+        num_grad_steps_taken = epoch_idx * self.options.n_grad_steps_per_epoch
         num_trajectories_trained_on = num_grad_steps_taken * self.options.batch_size
 
         wandb.log({
