@@ -42,6 +42,7 @@ parameters:
   optimizer:
     values: [
         'adam',
+        'rmsprop',
     ]
   place_field_loss:
     values: [

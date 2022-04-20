@@ -189,7 +189,7 @@ class Trainer(object):
         self.eval(
             gen=gen,
             epoch_idx=epoch_idx,
-            save=save,
+            save=True,
             log_and_plot_grid_scores=log_and_plot_grid_scores,
             n_samples=self.options.Ng)
 
@@ -283,8 +283,11 @@ class Trainer(object):
 
         period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
         for rate_map in rate_maps[likely_grid_cell_indices]:
+            rate_map_copy = np.copy(rate_map)
+            # NOTE: This is new as of 2022/04/19.
+            rate_map_copy[np.isnan(rate_map_copy)] = 0.
             period, period_err, orientations = self.scorer.calculate_grid_cell_periodicity_and_orientation(
-                rate_map=rate_map)
+                rate_map=rate_map_copy)
             period_per_cell.append(period)
             period_err_per_cell.append(period_err)
             orientations_per_cell.append(orientations.tolist())
@@ -326,9 +329,6 @@ class Trainer(object):
                 ys=ys,
                 activations=activations[:, neuron_idx],
             )
-
-            # NOTE: This is new as of 2022/04/13.
-            rate_map[np.isnan(rate_map)] = 0.
 
             scores = self.scorer.get_scores(rate_map=rate_map)
             score_60 = scores[0]

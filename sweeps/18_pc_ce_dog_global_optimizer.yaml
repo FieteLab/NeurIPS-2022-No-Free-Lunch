@@ -26,16 +26,12 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [20]
+    values: [10]
   n_grad_steps_per_epoch:
-    values: [5000]
+    values: [10000]
   n_place_fields_per_cell:
     values: [
       1.0,
-      'Poisson( 0.5 )',
-      'Poisson( 1.0 )',
-      'Poisson( 1.5 )',
-      'Poisson( 2.5 )',
     ]
   n_recurrent_units_to_sample:
     values: [256]
@@ -70,15 +66,14 @@ parameters:
   rnn_type:
     values: [
       'RNN',
-      'LSTM',
-      'UGRNN',
-      'GRU',
     ]
   seed:
-    values: [ 0 ]
+    values: [ 0 , 1 ]
   sequence_length:
     values: [50]
   surround_scale:
-    values: [2.]
+    values: [
+      2.,
+    ]
   weight_decay:
       values: [ 0.0001 ]

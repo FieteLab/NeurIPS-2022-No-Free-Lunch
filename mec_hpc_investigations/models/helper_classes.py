@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from itertools import product
 import numpy as np
 import scipy
 import tensorflow as tf
@@ -81,6 +82,7 @@ class HeadDirectionCells(object):
 
 
 class PlaceCells(object):
+
     def __init__(self,
                  options: Options):
 
@@ -156,7 +158,7 @@ class PlaceCells(object):
                 maxval=self.max_x,
                 dtype=tf.float64)
 
-            # Shape:
+            # Shape: (num place cells, max num fields per cell, 1)
             self.fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)[:, :, tf.newaxis]
             # Rather than deleting, move the fields far away. By setting the locations
             # to a ridiculous value, these place fields will never be active.
@@ -202,6 +204,8 @@ class PlaceCells(object):
                     minval=low,
                     maxval=high,
                     dtype=tf.float64)
+            else:
+                raise NotImplementedError
         else:
             raise NotImplementedError
 
@@ -224,6 +228,8 @@ class PlaceCells(object):
                 raise NotImplementedError
         else:
             raise NotImplementedError
+        # Ensure that surround receptive field is greater than receptive field.
+        assert tf.reduce_min(self.surround_scale) > 1.
 
     def get_activation(self, pos):
         '''
@@ -236,6 +242,7 @@ class PlaceCells(object):
         if self.place_field_values == 'cartesian':
             outputs = tf.cast(tf.identity(pos), dtype=tf.float64)
             return outputs
+
         # Shape: (batch size, sequence length, num place cells, num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
 
@@ -254,32 +261,45 @@ class PlaceCells(object):
         #    dy = tf.minimum(dy, (self.max_y - self.min_y) - dy)
         #    d = tf.stack([dx,dy], axis=-1)
 
-        # Compute norm over 2D cartesian position
+        # Compute distance over 2D cartesian position
         # Shape: (batch size, sequence length, num place cells, num fields per cell)
-        norm2 = tf.reduce_sum(d ** 2, axis=4)
-
-        # Shape (batch size, seq length, num place cells)
-        transformed_norm2 = self.select_norm2_firing_field_then_normalize(
-            norm2=norm2,
-            dividing_scalars=2. * tf.square(self.place_cell_rf),
-            place_field_normalization=self.place_field_normalization)
+        dist_squared = tf.reduce_sum(d ** 2, axis=4)
+        divided_dist_squared = tf.divide(dist_squared, tf.square(self.place_cell_rf))
+        if self.place_field_normalization == 'local':
+            normalized_dist_squared = tf.exp(-divided_dist_squared)
+        elif self.place_field_normalization == 'global':
+            normalized_dist_squared = tf.nn.softmax(-divided_dist_squared, axis=2)
+        else:
+            raise ValueError(f"Impermissible normalization: {self.place_field_normalization}")
 
         if self.place_field_values == 'gaussian':
-            outputs = transformed_norm2
+            # Shape: (batch size, sequence length, num place cells,)
+            outputs = tf.reduce_sum(normalized_dist_squared, axis=3)
         elif self.place_field_values == 'difference_of_gaussians':
 
-            # Shape (batch size, seq length, num place cells)
-            other_transformed_norm2 = self.select_norm2_firing_field_then_normalize(
-                norm2=norm2,
-                dividing_scalars=2. * tf.square(tf.multiply(self.surround_scale, self.place_cell_rf)),
-                place_field_normalization=self.place_field_normalization, )
+            # Shape: (batch size, sequence length, num place cells, num fields per cell)
+            other_divided_dist_squared = tf.divide(
+                dist_squared,
+                tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
+            )
 
-            diff_of_transformed = transformed_norm2 - other_transformed_norm2
+            if self.place_field_normalization == 'local':
+                other_normalized_dist_squared = tf.exp(-other_divided_dist_squared)
+            elif self.place_field_normalization == 'global':
+                other_normalized_dist_squared = tf.nn.softmax(-other_divided_dist_squared, axis=2)
+            else:
+                raise ValueError(f"Impermissible normalization: {self.place_field_normalization}")
+
+            # Shape: (batch size, sequence length, num place cells, num fields per cell)
+            diff_of_normalized_dist_squared = normalized_dist_squared - other_normalized_dist_squared
+
+            # Shape: (batch size, sequence length, num place cells,)
+            outputs = tf.reduce_sum(diff_of_normalized_dist_squared, axis=3)
 
             # Shift and scale outputs so that they lie in [0,1].
-            diff_of_transformed += tf.abs(tf.reduce_min(diff_of_transformed, axis=-1, keepdims=True))
-            diff_of_transformed /= tf.reduce_sum(diff_of_transformed, axis=-1, keepdims=True)
-            outputs = diff_of_transformed
+            outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
+            outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
+
         else:
             raise ValueError(f"Impermissible place field function: {self.place_field_loss}")
 
@@ -297,68 +317,67 @@ class PlaceCells(object):
         Returns:
             pred_pos: Predicted 2d position with shape [batch_size, sequence_length, 2].
         '''
+
+        # TODO: implement this for a general number k
+        assert k == 3
+
         if self.place_field_values == 'cartesian':
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float64)
         else:
-            # Shape: (batch size, sequence length, Np)
             # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
+            # Shape: (batch size, sequence length, Np)
             # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
 
+            # top_k applies to the last dimension.
+            # Shape: (batch size, sequence length, k)
             _, top_k_indices = tf.math.top_k(activation, k=k)
-            # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY)
+            # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY).
+            # Ensure we can only gather the fields that we want to keep.
             voting_locations = tf.gather(tf.multiply(self.us, self.fields_to_keep), top_k_indices)
-            # Shape: (batch size, seq length, 2 i.e. XY)
-            pred_pos = tf.reduce_mean(voting_locations, axis=(2, 3))
 
-            # For some reason, activation is float32. Recast it to 64.
-            # Shape:
-            # activation = tf.cast(activation, dtype=tf.float64)
+            # Explanation: voting_locations has shape (batch size, seq length, K, max fields per cell, 2 i.e. XY).
+            # Our approach is to consider all possible configurations of (max fields per cell)^K
+            # We will construct a tensor of shape (batch size, seq length, 2, (max fields per cell)^K)
+            # and then take the mean and variance over the last dimension. We will then return
+            # the mean XY position of the configuration with the smallest variance.
 
-            # Recall, self.us has shape (Np, num fields per place cell, 2)
-            # and activation has shape (batch size, sequence length, Np)
-            # reduce_mean divides by num place cells * num fields per cell; we
-            # need to correct for this by removing the fraction of fields that
-            # aren't being used.
-            # pred_pos = tf.reduce_mean(tf.multiply(
-            #     # Take softmax to ensure activations are probability distributions.
-            #     tf.nn.softmax(activation[:, :, :, tf.newaxis, tf.newaxis],
-            #                   # add 2 dimensions for fields/cell and for cartesian coordinates
-            #                   axis=2),
-            #     tf.multiply(self.us,
-            #                 self.fields_to_keep,
-            #                 )[tf.newaxis, tf.newaxis, :, :, :]  # add 2 dimensions for batch size and sequence length
-            # ), axis=(2, 3))
+
+            max_fields_per_cell = voting_locations.shape[3]
+            # Shape: ((max fields per cell^K, max fields per cell,)
+            indices_per_config = tf.convert_to_tensor(
+                list(product(*[list(range(max_fields_per_cell)) for _ in range(k)])))
+            # Shape: ((max fields per cell^K), max fields per cell, max fields per cell)
+            # indices_one_hot = tf.one_hot(indices_per_config, depth=self.max_n_place_fields_per_cell, axis=2, dtype=tf.float64)
+
+            possible_configurations_locations = []
+            for indices in indices_per_config:
+                config = []
+                for i, index in enumerate(indices):
+                    config.append(voting_locations[:, :, i, index, :])
+                # Shape: (batch size, seq length, 2, k)
+                config = tf.stack(config, axis=-1)
+                possible_configurations_locations.append(config)
+
+            # Shape: (batch size, seq length, 2, k, total num configs = max fields per cell ^ k)
+            possible_configurations_locations = tf.stack(possible_configurations_locations, axis=-1)
+
+            # Shape: (batch size, seq length, 2, total num configs)
+            possible_configurations_means, possible_configurations_variances = tf.nn.moments(
+                possible_configurations_locations,
+                axes=[3])
+            indices_of_configuration_with_smallest_variance = tf.argmin(
+                tf.reduce_sum(possible_configurations_variances, axis=2),
+                axis=2)
+            # Shape: (batch size, seq length, 2 i.e. XY, 1)
+            pred_pos = tf.gather(
+                possible_configurations_means,
+                tf.repeat(indices_of_configuration_with_smallest_variance[:, :, tf.newaxis, tf.newaxis], 2, axis=2),
+                batch_dims=-1)
+            # Remove trailing dimension
+            pred_pos = tf.squeeze(pred_pos, axis=3)
 
         return pred_pos
-
-    @staticmethod
-    def select_norm2_firing_field_then_normalize(norm2: tf.Tensor,
-                                                 dividing_scalars: tf.Tensor,
-                                                 place_field_normalization: str
-                                                 ) -> tf.Tensor:
-        """
-
-        :param norm2: (batch size, seq length, num place cells, num fields per cell)
-        :param dividing_scalars: (1, 1, num place cells, num fields per cell)
-        :param place_field_normalization:
-        :return: Shape: (batch size, seq len, num place cells)
-        """
-
-        # Shape: (batch size, seq length, num place cells, num fields per cell)
-        divided_norm2 = tf.divide(norm2, dividing_scalars)
-
-        # Compute the most likely firing pattern per place cell
-        # Shape: (batch size, seq length, num place cells)
-        max_divided_norm2 = tf.reduce_min(divided_norm2, axis=3)
-
-        if place_field_normalization == 'local':
-            output = tf.exp(-max_divided_norm2)
-        elif place_field_normalization == 'global':
-            output = tf.nn.softmax(-max_divided_norm2, axis=2)
-        else:
-            raise ValueError(f"Impermissible normalization: {place_field_normalization}")
-        return output
 
     @staticmethod
     def extract_floats_from_str(s: str) -> Tuple:
