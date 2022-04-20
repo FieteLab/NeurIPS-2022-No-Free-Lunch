@@ -126,10 +126,10 @@ class PlaceCells(object):
                 shape=(self.Np, self.max_n_place_fields_per_cell, 2),
                 minval=self.min_x,
                 maxval=self.max_x,
-                dtype=tf.float64)
+                dtype=tf.float32)
             self.fields_to_delete = tf.zeros(
                 shape=(self.Np, self.max_n_place_fields_per_cell),
-                dtype=tf.float64)
+                dtype=tf.float32)
 
         elif isinstance(options.n_place_fields_per_cell, str):
 
@@ -138,13 +138,13 @@ class PlaceCells(object):
                 n_fields_per_cell = 1 + tf.random.poisson(
                     shape=(self.Np,),
                     lam=rate,
-                    dtype=tf.float64)  # Add 1 to ensures that each cell has at least 1 field.
+                    dtype=tf.float32)  # Add 1 to ensures that each cell has at least 1 field.
                 self.max_n_place_fields_per_cell = int(tf.reduce_max(n_fields_per_cell))
 
                 # Shape: (num place cells, max num fields per cell)
                 # Create array of indices
                 fields_to_delete = tf.repeat(
-                    tf.range(self.max_n_place_fields_per_cell, dtype=tf.float64)[tf.newaxis, :],
+                    tf.range(self.max_n_place_fields_per_cell, dtype=tf.float32)[tf.newaxis, :],
                     repeats=self.Np,
                     axis=0)
                 fields_to_delete = fields_to_delete >= n_fields_per_cell
@@ -156,10 +156,10 @@ class PlaceCells(object):
                 shape=(self.Np, self.max_n_place_fields_per_cell, 2),
                 minval=self.min_x,
                 maxval=self.max_x,
-                dtype=tf.float64)
+                dtype=tf.float32)
 
             # Shape: (num place cells, max num fields per cell, 1)
-            self.fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float64)[:, :, tf.newaxis]
+            self.fields_to_delete = tf.cast(fields_to_delete, dtype=tf.float32)[:, :, tf.newaxis]
             # Rather than deleting, move the fields far away. By setting the locations
             # to a ridiculous value, these place fields will never be active.
             # 1e7 is a heuristic.
@@ -177,14 +177,14 @@ class PlaceCells(object):
 
         # if self.vr1d:
         #     # assert (self.min_y == self.max_y)
-        #     # usy = self.min_y * tf.ones((self.Np,), dtype=tf.float64)
+        #     # usy = self.min_y * tf.ones((self.Np,), dtype=tf.float32)
         #     raise NotImplementedError
         # else:
         #     usy = tf.random.uniform(
         #         shape=(self.Np, max_n_place_fields_per_cell),
         #         minval=self.min_y,
         #         maxval=self.max_y,
-        #         dtype=tf.float64)
+        #         dtype=tf.float32)
         #
         # # Shape: (Num place cells, num fields per cell, 2 for XY)
         # self.us = tf.stack([usx, usy], axis=-1)
@@ -194,7 +194,7 @@ class PlaceCells(object):
             # Add the 1, 1, to the shape for future broadcasting
             self.place_cell_rf = float(options.place_cell_rf) * tf.ones(
                 shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
-                dtype=tf.float64)
+                dtype=tf.float32)
         elif isinstance(options.place_cell_rf, str):
             if options.place_cell_rf.startswith('Uniform'):
                 low, high = self.extract_floats_from_str(s=options.place_cell_rf)
@@ -203,7 +203,7 @@ class PlaceCells(object):
                     shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
                     minval=low,
                     maxval=high,
-                    dtype=tf.float64)
+                    dtype=tf.float32)
             else:
                 raise NotImplementedError
         else:
@@ -214,7 +214,7 @@ class PlaceCells(object):
             # Add the 1, 1, to the shape for future broadcasting
             self.surround_scale = float(options.surround_scale) * tf.ones(
                 shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
-                dtype=tf.float64)
+                dtype=tf.float32)
         elif isinstance(options.surround_scale, str):
             if options.surround_scale.startswith('Uniform'):
                 # Add the 1, 1, to the shape for future broadcasting
@@ -223,7 +223,7 @@ class PlaceCells(object):
                     shape=(1, 1, self.Np, self.max_n_place_fields_per_cell),
                     minval=low,
                     maxval=high,
-                    dtype=tf.float64)
+                    dtype=tf.float32)
             else:
                 raise NotImplementedError
         else:
@@ -240,7 +240,7 @@ class PlaceCells(object):
             outputs: Place cell activations with shape [batch_size, sequence_length, Np].
         '''
         if self.place_field_values == 'cartesian':
-            outputs = tf.cast(tf.identity(pos), dtype=tf.float64)
+            outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
 
         # Shape: (batch size, sequence length, num place cells, num fields per cell, 2)
@@ -322,7 +322,7 @@ class PlaceCells(object):
         assert k == 3
 
         if self.place_field_values == 'cartesian':
-            pred_pos = tf.cast(tf.identity(activation), dtype=tf.float64)
+            pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
         else:
             # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
@@ -341,14 +341,12 @@ class PlaceCells(object):
             # We will construct a tensor of shape (batch size, seq length, 2, (max fields per cell)^K)
             # and then take the mean and variance over the last dimension. We will then return
             # the mean XY position of the configuration with the smallest variance.
-
-
             max_fields_per_cell = voting_locations.shape[3]
             # Shape: ((max fields per cell^K, max fields per cell,)
             indices_per_config = tf.convert_to_tensor(
                 list(product(*[list(range(max_fields_per_cell)) for _ in range(k)])))
             # Shape: ((max fields per cell^K), max fields per cell, max fields per cell)
-            # indices_one_hot = tf.one_hot(indices_per_config, depth=self.max_n_place_fields_per_cell, axis=2, dtype=tf.float64)
+            # indices_one_hot = tf.one_hot(itf.floatndices_per_config, depth=self.max_n_place_fields_per_cell, axis=2, dtype=tf.float32)
 
             possible_configurations_locations = []
             for indices in indices_per_config:

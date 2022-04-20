@@ -711,10 +711,14 @@ class TrajectoryGenerator(object):
             v = tf.stack([traj['ego_v'] * tf.cos(traj['target_hd']),
                           traj['ego_v'] * tf.sin(traj['target_hd'])], axis=-1)
 
-        pos = tf.stack([traj['target_x'], traj['target_y']], axis=-1)
+        pos = tf.cast(
+            tf.stack([traj['target_x'], traj['target_y']], axis=-1),
+            dtype=tf.float32)
         cell_outputs = self.place_cells.get_activation(pos)
 
-        init_pos = tf.stack([traj['init_x'], traj['init_y']], axis=-1)
+        init_pos = tf.cast(
+            tf.stack([traj['init_x'], traj['init_y']], axis=-1),
+            dtype=tf.float32)
         init_actv = tf.squeeze(self.place_cells.get_activation(init_pos))
         if self.Nhdc is not None:
             init_hd_actv = tf.squeeze(self.head_direction_cells.get_activation(traj['init_hd']))
