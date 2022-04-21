@@ -28,7 +28,7 @@ parameters:
   n_epochs:
     values: [20]
   n_grad_steps_per_epoch:
-    values: [5000]
+    values: [10000]
   n_place_fields_per_cell:
     values: [
       1.0,
