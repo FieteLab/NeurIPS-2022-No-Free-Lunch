@@ -278,7 +278,7 @@ class PlaceCells(object):
         # Compute distance over 2D cartesian position
         # Shape: (batch size, sequence length, num place cells, num fields per cell)
         dist_squared = tf.reduce_sum(d ** 2, axis=4)
-        divided_dist_squared = tf.divide(dist_squared, tf.square(self.place_cell_rf))
+        divided_dist_squared = tf.divide(dist_squared, 2.*tf.square(self.place_cell_rf))
         if self.place_field_normalization == 'local':
             normalized_dist_squared = tf.exp(-divided_dist_squared)
         elif self.place_field_normalization == 'global':
@@ -294,7 +294,7 @@ class PlaceCells(object):
             # Shape: (batch size, sequence length, num place cells, num fields per cell)
             other_divided_dist_squared = tf.divide(
                 dist_squared,
-                tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
+                2. * tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
             )
 
             if self.place_field_normalization == 'local':
@@ -338,60 +338,60 @@ class PlaceCells(object):
         if self.place_field_values == 'cartesian':
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
         else:
-            # Original:
-            _, idxs = tf.math.top_k(activation, k=k)
-            # Shape: (batch size, sequence length, Np)
-            # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
-            # Warning: only works with 1 field per place field
-            pred_pos = tf.reduce_mean(tf.gather(tf.squeeze(self.us), idxs), axis=-2)
+            # # Original:
+            # _, idxs = tf.math.top_k(activation, k=k)
+            # # Shape: (batch size, sequence length, Np)
+            # # pred_pos = tf.reduce_mean(tf.gather(self.us, idxs), axis=-2)
+            # # Warning: only works with 1 field per place field
+            # pred_pos = tf.reduce_mean(tf.gather(tf.squeeze(self.us), idxs), axis=-2)
 
-            # # top_k applies to the last dimension.
-            # # Shape: (batch size, sequence length, k)
-            # _, top_k_indices = tf.math.top_k(activation, k=k)
-            # # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY).
-            # # Ensure we can only gather the fields that we want to keep.
-            # voting_locations = tf.gather(self.us, top_k_indices)
-            #
-            # # Explanation: voting_locations has shape (batch size, seq length, K, max fields per cell, 2 i.e. XY).
-            # # Our approach is to consider all possible configurations of (max fields per cell)^K
-            # # We will construct a tensor of shape (batch size, seq length, 2, (max fields per cell)^K)
-            # # and then take the mean and variance over the last dimension. We will then return
-            # # the mean XY position of the configuration with the smallest variance.
-            # batch_size = voting_locations.shape[0]
-            # seq_len = voting_locations.shape[1]
-            # max_fields_per_cell = voting_locations.shape[3]
-            # # Shape: ((max fields per cell^K, max fields per cell,)
-            # indices_per_config = tf.convert_to_tensor(
-            #     list(product(*[list(range(max_fields_per_cell)) for _ in range(k)])))
-            # # Shape: ((max fields per cell^K), max fields per cell, max fields per cell)
-            # # indices_one_hot = tf.one_hot(itf.floatndices_per_config, depth=self.max_n_place_fields_per_cell, axis=2, dtype=tf.float32)
-            #
-            # possible_configurations_locations = []
-            # for indices in indices_per_config:
-            #     config = []
-            #     for i, index in enumerate(indices):
-            #         config.append(voting_locations[:, :, i, index, :])
-            #     # Shape: (batch size, seq length, 2, k)
-            #     config = tf.stack(config, axis=-1)
-            #     possible_configurations_locations.append(config)
-            #
-            # # Shape: (batch size, seq length, 2, k, total num configs = max fields per cell ^ k)
-            # possible_configurations_locations = tf.stack(possible_configurations_locations, axis=-1)
-            #
-            # # Shape: (batch size, seq length, 2, total num configs)
-            # possible_configurations_means, possible_configurations_variances = tf.nn.moments(
-            #     possible_configurations_locations,
-            #     axes=[3])
-            # indices_of_configuration_with_smallest_variance = tf.argmin(
-            #     tf.reduce_sum(possible_configurations_variances, axis=2),
-            #     axis=2)
-            # # Shape: (batch size, seq length, 2 i.e. XY, 1)
-            # pred_pos = tf.gather(
-            #     possible_configurations_means,
-            #     tf.repeat(indices_of_configuration_with_smallest_variance[:, :, tf.newaxis, tf.newaxis], 2, axis=2),
-            #     batch_dims=-1)
-            # # Remove trailing dimension
-            # pred_pos = tf.squeeze(pred_pos, axis=3)
+            # top_k applies to the last dimension.
+            # Shape: (batch size, sequence length, k)
+            _, top_k_indices = tf.math.top_k(activation, k=k)
+            # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY).
+            # Ensure we can only gather the fields that we want to keep.
+            voting_locations = tf.gather(self.us, top_k_indices)
+
+            # Explanation: voting_locations has shape (batch size, seq length, K, max fields per cell, 2 i.e. XY).
+            # Our approach is to consider all possible configurations of (max fields per cell)^K
+            # We will construct a tensor of shape (batch size, seq length, 2, (max fields per cell)^K)
+            # and then take the mean and variance over the last dimension. We will then return
+            # the mean XY position of the configuration with the smallest variance.
+            batch_size = voting_locations.shape[0]
+            seq_len = voting_locations.shape[1]
+            max_fields_per_cell = voting_locations.shape[3]
+            # Shape: ((max fields per cell^K, max fields per cell,)
+            indices_per_config = tf.convert_to_tensor(
+                list(product(*[list(range(max_fields_per_cell)) for _ in range(k)])))
+            # Shape: ((max fields per cell^K), max fields per cell, max fields per cell)
+            # indices_one_hot = tf.one_hot(itf.floatndices_per_config, depth=self.max_n_place_fields_per_cell, axis=2, dtype=tf.float32)
+
+            possible_configurations_locations = []
+            for indices in indices_per_config:
+                config = []
+                for i, index in enumerate(indices):
+                    config.append(voting_locations[:, :, i, index, :])
+                # Shape: (batch size, seq length, 2, k)
+                config = tf.stack(config, axis=-1)
+                possible_configurations_locations.append(config)
+
+            # Shape: (batch size, seq length, 2, k, total num configs = max fields per cell ^ k)
+            possible_configurations_locations = tf.stack(possible_configurations_locations, axis=-1)
+
+            # Shape: (batch size, seq length, 2, total num configs)
+            possible_configurations_means, possible_configurations_variances = tf.nn.moments(
+                possible_configurations_locations,
+                axes=[3])
+            indices_of_configuration_with_smallest_variance = tf.argmin(
+                tf.reduce_sum(possible_configurations_variances, axis=2),
+                axis=2)
+            # Shape: (batch size, seq length, 2 i.e. XY, 1)
+            pred_pos = tf.gather(
+                possible_configurations_means,
+                tf.repeat(indices_of_configuration_with_smallest_variance[:, :, tf.newaxis, tf.newaxis], 2, axis=2),
+                batch_dims=-1)
+            # Remove trailing dimension
+            pred_pos = tf.squeeze(pred_pos, axis=3)
 
         return pred_pos
 
