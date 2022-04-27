@@ -34,7 +34,7 @@ parameters:
   n_grad_steps_per_epoch:
     values: [2500]
   n_recurrent_units_to_sample:
-    values: [256]
+    values: [512]
   Ng:
     values: [4096]
   Np:

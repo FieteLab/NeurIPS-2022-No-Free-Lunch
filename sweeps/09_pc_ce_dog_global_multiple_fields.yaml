@@ -32,13 +32,12 @@ parameters:
   n_place_fields_per_cell:
     values: [
       1.0,
+      'Poisson( 0.25 )',
       'Poisson( 0.5 )',
-      'Poisson( 1.0 )',
       'Poisson( 1.5 )',
-      'Poisson( 2.5 )',
     ]
   n_recurrent_units_to_sample:
-    values: [256]
+    values: [512]
   Ng:
     values: [4096]
   Np:
@@ -72,7 +71,7 @@ parameters:
       'RNN',
     ]
   seed:
-    values: [ 0 ]
+    values: [ 0 , 1 ]
   sequence_length:
     values: [20]
   surround_scale:

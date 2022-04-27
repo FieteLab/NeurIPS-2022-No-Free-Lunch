@@ -31,18 +31,18 @@ parameters:
     values: [10000]
   n_place_fields_per_cell:
     values: [
-      1.0,
+      1,
     ]
   n_recurrent_units_to_sample:
     values: [512]
   Ng:
-    values: [4096]
+    values: [512]
   Np:
     values: [512]
   optimizer:
     values: [
         'adam',
-        'rmsprop',
+        'rmsprop'
     ]
   place_field_loss:
     values: [
@@ -59,8 +59,7 @@ parameters:
   place_cell_rf:
     values: [
       0.12,
-      'Uniform( 0.10 , 0.14 )',
-      'Uniform( 0.07 , 0.19 )',
+      0.20,
     ]
   readout_dropout:
     values: [0.]
@@ -71,12 +70,10 @@ parameters:
   seed:
     values: [ 0, 1 ]
   sequence_length:
-    values: [20]
+    values: [10, 15, 20, 25, 30, 35, 40, 45, 50]
   surround_scale:
     values: [
       2.,
-      'Uniform( 1.90 , 2.10 )',
-      'Uniform( 1.50 , 2.50 )',
     ]
   weight_decay:
       values: [ 0.0001 ]
