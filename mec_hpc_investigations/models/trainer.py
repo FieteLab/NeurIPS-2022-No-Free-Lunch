@@ -196,7 +196,8 @@ class Trainer(object):
             epoch_idx=epoch_idx,
             save=True,
             log_and_plot_grid_scores=log_and_plot_grid_scores,
-            n_samples=self.options.Ng)
+            n_samples=self.options.n_recurrent_units_to_sample,
+        )
 
     def load_ckpt(self, idx):
         ''' Restore model from earlier checkpoint. '''

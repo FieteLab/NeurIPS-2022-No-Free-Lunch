@@ -107,6 +107,27 @@ def plot_loss_vs_num_grad_steps(
     plt.close()
 
 
+def plot_loss_vs_num_grad_steps_by_optimizer(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="loss",
+                 x='num_grad_steps',
+                 hue='optimizer',
+                 data=runs_augmented_histories_df)
+    plt.ylabel(f'Loss (Avg Across All Runs)')
+    plt.yscale('log')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_vs_num_grad_steps_by_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_loss_vs_num_grad_steps_by_place_cell_rf(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
@@ -227,6 +248,55 @@ def plot_max_grid_score_vs_num_grad_steps(
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'max_grid_score_vs_num_grad_steps.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str,
+        grid_score_d60_threshold: int = 1.2,
+        grid_score_d90_threshold: int = 1.5):
+
+    plt.close()
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+
+    ax = axes[0]
+    sns.lineplot(y="max_grid_score_d=60_n=256",
+                 x='num_grad_steps',
+                 data=runs_augmented_histories_df,
+                 ax=ax,
+                 hue='optimizer',
+                 estimator='max',
+                 ci=None,
+                 )
+    ax.set_ylabel(f'Max Grid Score (Max Across All Runs)')
+    ax.set_xlabel('Num Grad Steps')
+    ax.set_title(r'$60^{\circ}$')
+    ax.axhline(y=grid_score_d60_threshold,
+               label='Likely Hexagonal Lattices',
+               color='r')
+
+    ax = axes[1]
+    sns.lineplot(y="max_grid_score_d=90_n=256",
+                 x='num_grad_steps',
+                 data=runs_augmented_histories_df,
+                 hue='optimizer',
+                 estimator='max',
+                 ci=None,
+                 ax=ax)
+    ax.set_ylabel(f'Max Grid Score (Max Across All Runs)')
+    ax.set_ylabel(None)  # Use ylabel from left plot
+    ax.set_xlabel('Num Grad Steps')
+    ax.set_title(r'$90^{\circ}$')
+    ax.axhline(y=grid_score_d90_threshold,
+               label='Likely Square Lattices',
+               color='r')
+    plt.savefig(os.path.join(plot_dir,
+                             f'max_grid_score_vs_num_grad_steps_by_optimizer.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -588,6 +658,27 @@ def plot_pos_decoding_error_vs_num_grad_steps(
 
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_error_vs_num_grad_steps.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_pos_decoding_error_vs_num_grad_steps_by_optimizer(
+        runs_augmented_histories_df: pd.DataFrame,
+        plot_dir: str, ):
+
+    plt.close()
+    sns.lineplot(y="pos_decoding_err",
+                 x='num_grad_steps',
+                 hue='optimizer',
+                 data=runs_augmented_histories_df)
+    plt.ylabel(f'Pos Decoding Error (cm) (Avg Across All Runs)')
+    plt.yscale('log')
+    plt.xlabel('Num Grad Steps')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_error_vs_num_grad_steps_by_optimizer.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()

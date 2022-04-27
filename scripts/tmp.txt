@@ -2,4 +2,4 @@ wandb sweep mec_hpc_investigations/configs/sweep.yaml
 
 source mec_hpc_venv/bin/activate
 export PYTHONPATH=.
-wandb agent rylan/mec-hpc-investigations/l89esicy
+wandb agent rylan/mec-hpc-investigations/m1ant8rg

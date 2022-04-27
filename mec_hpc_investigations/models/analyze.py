@@ -119,7 +119,9 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
                       'max_grid_score_d=90_n=256',
                       'pos_decoding_err',
                       'participation_ratio',
-                      'loss'])
+                      'loss',
+                      'num_grad_steps',
+                      ])
             if len(run_history_df) == 0:
                 continue
             run_history_df['run_id'] = run.id

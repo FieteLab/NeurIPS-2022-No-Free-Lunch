@@ -23,3 +23,4 @@ export PYTHONPATH=.
 set -x
 
 wandb agent rylan/mec-hpc-investigations/${id}
+wandb agent rylan/mec-hpc-investigations/rob5un4l
