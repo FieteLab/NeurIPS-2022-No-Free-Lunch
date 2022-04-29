@@ -42,7 +42,9 @@ parameters:
   optimizer:
     values: [
         'adam',
-        'rmsprop'
+        'adagrad',
+        'rmsprop',
+        'sgd',
     ]
   place_field_loss:
     values: [
@@ -67,7 +69,7 @@ parameters:
       'RNN',
     ]
   seed:
-    values: [ 0 , 1, 2, 3, 4]
+    values: [ 0, 1, 2, 3, 4]
   sequence_length:
     values: [20]
   surround_scale:

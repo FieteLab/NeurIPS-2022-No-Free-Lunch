@@ -47,7 +47,8 @@ def parameters():
     # Batch size: number of walks for training simultaneously
     params['batch_size'] = 16
     # Minimum length of a walk on one environment. Walk lengths are sampled uniformly from a window that shifts down until its lower limit is walk_it_min at the end of training
-    params['walk_it_min'] = 25
+    # params['walk_it_min'] = 25
+    params['walk_it_min'] = 299
     # Maximum length of a walk on one environment. Walk lengths are sampled uniformly from a window that starts with its upper limit at walk_it_max in the beginning of training, then shifts down
     params['walk_it_max'] = 300
     # Width of window from which walk lengths are sampled: at any moment, new walk lengths are sampled window_center +/- 0.5 * walk_it_window where window_center shifts down
@@ -138,9 +139,9 @@ def parameters():
     # Neurons for hippocampal grounded location p for each frequency
     params['n_p'] = [g * x for g, x in zip(params['n_g_subsampled'], params['n_x_f'])]
     # Initial frequencies of each module. For ease of interpretation (higher number = higher frequency) this is 1 - the frequency as James uses it
-    # params['f_initial'] = [0.99, 0.3, 0.09, 0.03, 0.01]
+    params['f_initial'] = [0.99, 0.3, 0.09, 0.03, 0.01]
     # params['f_initial'] = [0.01, 0.01, 0.01, 0.01, 0.01]
-    params['f_initial'] = [0.99, 0.99, 0.99, 0.99, 0.99]
+    # params['f_initial'] = [0.99, 0.99, 0.99, 0.99, 0.99]
     # Add frequencies of object vector cell modules, if object vector cells get separate modules
     params['f_initial'] = params['f_initial'] + params['f_initial'][0:params['n_f_ovc']]
 

@@ -361,6 +361,9 @@ class Trainer(object):
         score_60_by_neuron = score_60_by_neuron[~np.isnan(score_60_by_neuron)]
         score_90_by_neuron = score_90_by_neuron[~np.isnan(score_90_by_neuron)]
 
+        # W&B recommends saving
+        # wandb.run.id
+
         wandb.log({
             f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
             f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron),

@@ -6,7 +6,6 @@ import wandb
 
 
 def compute_minima_performance_metrics_from_runs_histories(runs_histories_df: pd.DataFrame):
-
     minima_performance_metrics = runs_histories_df.groupby(['run_id']).agg({
         'max_grid_score_d=60_n=256': 'max',
         'max_grid_score_d=90_n=256': 'max',
@@ -27,10 +26,9 @@ def download_wandb_project_runs_configs(wandb_project_path: str,
                                         finished_only: bool = True,
                                         refresh: bool = False,
                                         ) -> pd.DataFrame:
-
     runs_configs_df_path = os.path.join(
         data_dir,
-        'sweeps='+','.join(sweep_ids)+'_runs_configs.csv')
+        'sweeps=' + ','.join(sweep_ids) + '_runs_configs.csv')
     if refresh or not os.path.isfile(runs_configs_df_path):
 
         # Download sweep results
@@ -91,12 +89,21 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
                                           data_dir: str,
                                           sweep_ids: List[str] = None,
                                           num_samples: int = 10000,
-                                          refresh: bool = False
+                                          refresh: bool = False,
+                                          keys: List[str] = None,
                                           ) -> pd.DataFrame:
+    if keys is None:
+        keys = ['max_grid_score_d=60_n=256',
+                'max_grid_score_d=90_n=256',
+                'pos_decoding_err',
+                'participation_ratio',
+                'loss',
+                'num_grad_steps',
+                ]
 
     runs_histories_df_path = os.path.join(
         data_dir,
-        'sweeps=' + ','.join(sweep_ids)+'_runs_histories.csv')
+        'sweeps=' + ','.join(sweep_ids) + '_runs_histories.csv')
     if refresh or not os.path.isfile(runs_histories_df_path):
 
         # Download sweep results
@@ -115,18 +122,13 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         for run in runs:
             run_history_df = run.history(
                 samples=num_samples,
-                keys=['max_grid_score_d=60_n=256',
-                      'max_grid_score_d=90_n=256',
-                      'pos_decoding_err',
-                      'participation_ratio',
-                      'loss',
-                      'num_grad_steps',
-                      ])
+                keys=keys)
             if len(run_history_df) == 0:
                 continue
             run_history_df['run_id'] = run.id
             runs_histories_list.append(run_history_df)
 
+        assert len(runs_histories_list) > 0
         runs_histories_df = pd.concat(runs_histories_list, sort=False)
 
         runs_histories_df.sort_values(
@@ -137,14 +139,14 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         runs_histories_df['loss_over_min_loss'] = runs_histories_df.groupby('run_id')['loss'].apply(
             lambda col: col / np.min(col)
         )
-
         runs_histories_df.reset_index(inplace=True, drop=True)
 
-        runs_histories_df['pos_decoding_err_over_min_pos_decoding_err'] = runs_histories_df.groupby('run_id')['pos_decoding_err'].apply(
+        runs_histories_df['pos_decoding_err_over_min_pos_decoding_err'] = runs_histories_df.groupby('run_id')[
+            'pos_decoding_err'].apply(
             lambda col: col / np.min(col)
         )
-
         runs_histories_df.reset_index(inplace=True, drop=True)
+
         runs_histories_df.to_csv(runs_histories_df_path, index=False)
         print(f'Wrote {runs_histories_df_path} to disk')
     else:
@@ -152,4 +154,3 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         print(f'Loaded {runs_histories_df_path} from disk.')
 
     return runs_histories_df
-

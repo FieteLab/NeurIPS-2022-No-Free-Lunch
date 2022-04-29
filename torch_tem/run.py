@@ -8,6 +8,7 @@ Created on Thu Feb 20 14:57:45 2020
 
 import glob
 import importlib.util
+import joblib
 import os
 import shutil
 import time
@@ -119,6 +120,7 @@ visited = [[False for _ in range(env.n_locations)] for env in environments]
 # And make a single walk for each environment, where walk lengths can be any between the min and max length to de-sychronise world switches
 walks = [env.generate_walks(params['n_rollout'] * np.random.randint(params['walk_it_min'], params['walk_it_max']), 1)[0]
          for env in environments]
+# joblib.dump({'walks': walks, 'env': environments[0].env}, filename='env_and_walks.joblib')
 # Initialise the previous iteration as None: we start from the beginning of the walk, so there is no previous iteration yet
 prev_iter = None
 
@@ -173,7 +175,7 @@ for i in range(i_start, params['train_it']):
     for i_step, step in enumerate(chunk):
         chunk[i_step][1] = torch.stack(step[1], dim=0)
 
-        # Forward-pass this walk through the network
+    # Forward-pass this walk through the network
     forward = tem(chunk, prev_iter)
 
     # Accumulate loss from forward pass

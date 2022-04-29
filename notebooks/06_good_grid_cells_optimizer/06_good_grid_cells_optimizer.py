@@ -27,7 +27,7 @@ runs_configs_df = download_wandb_project_runs_configs(
 # Only take rf = 0.12m
 runs_configs_df = runs_configs_df[runs_configs_df['place_cell_rf'] == 0.12]
 
-# def sweep_to_run_group(row: pd.Series):
+# def add_human_readable_run_id(row: pd.Series):
 #     if row['Sweep'] == '05ljtf0t':
 #         run_group = 'CE\nDoG\nGlobal\nOthers\nN=72'
 #     else:
@@ -36,7 +36,7 @@ runs_configs_df = runs_configs_df[runs_configs_df['place_cell_rf'] == 0.12]
 #
 #
 # runs_configs_df['run_group'] = runs_configs_df.apply(
-#     sweep_to_run_group,
+#     add_human_readable_run_id,
 #     axis=1)
 
 # Keep only networks that achieved low position decoding error.

@@ -4,7 +4,6 @@ from mec_hpc_investigations.models.analyze import compute_minima_performance_met
     download_wandb_project_runs_configs, download_wandb_project_runs_histories
 from mec_hpc_investigations.models.plot import *
 
-
 # Declare
 notebook_dir = 'notebooks/05_dog_grid_period_distribution'
 data_dir = os.path.join(notebook_dir, 'data')
@@ -16,9 +15,8 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 1.2
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    '05ljtf0t',  # 05: DoG+Global+CE, sweeping others (and receptive field?)
+    'r83jf81o',  # 20: DoG+Global+CE good grid cells, with 2 sizes of receptive fields & 2 optimizers & 2 seeds
 ]
-
 
 runs_configs_df = download_wandb_project_runs_configs(
     wandb_project_path='mec-hpc-investigations',
@@ -27,69 +25,44 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True)
 
 
-def sweep_to_run_group(row: pd.Series):
-    if row['Sweep'] == '05ljtf0t':
-        run_group = 'CE\nDoG\nGlobal\nOthers\nN=72'
-    else:
-        run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
+def add_human_readable_run_id(row: pd.Series):
+    run_group = f"Opt={row['optimizer']}\nRF={row['place_cell_rf']}\nSeed={row['seed']}"
     return run_group
 
 
-runs_configs_df['run_group'] = runs_configs_df.apply(
-    sweep_to_run_group,
+runs_configs_df['human_readable_run_id'] = runs_configs_df.apply(
+    add_human_readable_run_id,
     axis=1)
 
+# Keep only low position decoding errors.
 runs_configs_df = runs_configs_df[runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold]
 
 runs_histories_df = download_wandb_project_runs_histories(
     wandb_project_path='mec-hpc-investigations',
     data_dir=data_dir,
-    sweep_ids=sweep_ids)
+    sweep_ids=sweep_ids,
+    keys=['max_grid_score_d=60_n=256',
+          'max_grid_score_d=90_n=256',
+          'pos_decoding_err',
+          'participation_ratio',
+          'loss',
+          'num_grad_steps',
+          'grid_score_histogram_d=60_n=256',
+          'grid_score_histogram_d=90_n=256',
+          ],
+    refresh=True)
 
-plot_loss_over_min_loss_vs_epoch_by_run_id(
-    runs_histories_df=runs_histories_df,
+runs_augmented_histories_df = runs_configs_df[[
+    'run_id', 'human_readable_run_id', 'optimizer', 'place_cell_rf', 'seed']].merge(
+    runs_histories_df,
+    on='run_id',
+    how='left')
+
+plot_grid_score_histograms_by_human_readable_run_id(
+    runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir,
 )
 
-plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
-    runs_histories_df=runs_histories_df,
-    plot_dir=results_dir,
-)
-
-minima_performance_metrics = compute_minima_performance_metrics_from_runs_histories(
-    runs_histories_df=runs_histories_df,
-)
-
-runs_performance_df = runs_configs_df[[
-    'run_id', 'run_group', 'place_field_loss', 'place_field_values',
-    'place_field_normalization', 'place_cell_rf', 'activation',
-    'rnn_type']].merge(
-        minima_performance_metrics,
-        on='run_id',
-        how='left')
-
-plot_max_grid_score_vs_place_cell_rf_by_activation(
-    runs_performance_df=runs_performance_df,
-    plot_dir=results_dir
-)
-
-plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
-    runs_performance_df=runs_performance_df,
-    plot_dir=results_dir,
-    grid_score_d60_threshold=grid_score_d60_threshold,
-    grid_score_d90_threshold=grid_score_d90_threshold,
-)
-
-plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
-    runs_performance_df=runs_performance_df,
-    plot_dir=results_dir,
-    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold,
-    grid_score_d60_threshold=grid_score_d60_threshold,
-    grid_score_d90_threshold=grid_score_d90_threshold)
-
-plot_participation_ratio_vs_architecture_and_activation(
-    runs_performance_df=runs_performance_df,
-    plot_dir=results_dir,
-)
+# plot_grid_period_distribution()
 
 print('Finished!')

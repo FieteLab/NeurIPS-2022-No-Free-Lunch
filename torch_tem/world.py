@@ -30,6 +30,7 @@ class World:
             json_text = file.read()
             env = json.loads(json_text)
             file.close()
+        self.env = env
 
         # Now env holds a dictionary that describes this world
         try:

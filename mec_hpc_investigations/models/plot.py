@@ -1,4 +1,6 @@
+import json
 import matplotlib.pyplot as plt
+import numpy as np
 import os
 import pandas as pd
 import seaborn as sns
@@ -38,29 +40,53 @@ sns.set_style("whitegrid")
 #     plt.close()
 
 
-def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
-        runs_histories_df: pd.DataFrame,
+def plot_grid_score_histograms_by_human_readable_run_id(
+        runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str):
-    plt.close()
-    sns.lineplot(
-        data=runs_histories_df,
-        x='_step',
-        y='pos_decoding_err_over_min_pos_decoding_err',
-        hue='run_id',
-        legend=False,
-        linewidth=1.5,
-    )
 
-    plt.yscale('log')
-    plt.ylabel('Pos Decoding Err / Min(Pos Decoding Err)')
-    plt.xlabel('Epoch')
+    # ncols = 4
+    # nrows = int(np.ceil(len(runs_augmented_histories_df['run_id'].unique()) / ncols))
+    #
+    # fig, axes = plt.subplots(
+    #     nrows=nrows,
+    #     ncols=ncols,
+    #     figsize=(ncols * 4, nrows * 4),
+    #     sharex=True,
+    #     sharey=True,
+    # )
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id.png'),
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
-    plt.close()
+    for idx, (human_readable_run_id, run_id_histories_df)\
+            in enumerate(runs_augmented_histories_df.groupby('human_readable_run_id')):
+        # ax = axes[idx // ncols, idx % ncols]
+        fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True, sharex=True)
+        axes[0].set_ylabel('Count')
+        for ax_idx, d in enumerate(['60', '90']):
+            ax = axes[ax_idx]
+            # The Histogram field is sometimes dictionaries, sometimes strings.
+            # When strings, the string contains single quotes. We need to replace these
+            # with double quotes for JSON to work.
+            last_histogram_dict = run_id_histories_df.iloc[-1][f'grid_score_histogram_d={d}_n=256']
+            if isinstance(last_histogram_dict, str):
+                last_histogram_dict = last_histogram_dict.replace("\'", "\"")
+                last_histogram_dict = json.loads(last_histogram_dict)
+            last_histogram_dict['values'] = np.array(last_histogram_dict['values'])
+            last_histogram_dict['bins'] = np.array(last_histogram_dict['bins'])
+            ax.bar(
+                (last_histogram_dict['bins'][:-1] + last_histogram_dict['bins'][1:]) / 2,
+                last_histogram_dict['values'],
+                width=last_histogram_dict['bins'][:-1] - last_histogram_dict['bins'][1:])
+            ax.set_title(d + r'$^{\circ}$')
+            ax.set_xlabel('Grid Score')
+
+        # ax.set_title(human_readable_run_id)
+        # fig.suptitle(human_readable_run_id)
+
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_score_histograms_run=_{human_readable_run_id}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
 
 
 def plot_loss_over_min_loss_vs_epoch_by_run_id(
@@ -116,7 +142,7 @@ def plot_loss_vs_num_grad_steps_by_optimizer(
                  x='num_grad_steps',
                  hue='optimizer',
                  data=runs_augmented_histories_df)
-    plt.ylabel(f'Loss (Avg Across All Runs)')
+    plt.ylabel(f'Loss (Avg Across Runs)')
     plt.yscale('log')
     plt.xlabel('Num Grad Steps')
 
@@ -273,7 +299,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
                  estimator='max',
                  ci=None,
                  )
-    ax.set_ylabel(f'Max Grid Score (Max Across All Runs)')
+    ax.set_ylabel(f'Max Grid Score (Max Across Runs)')
     ax.set_xlabel('Num Grad Steps')
     ax.set_title(r'$60^{\circ}$')
     ax.axhline(y=grid_score_d60_threshold,
@@ -288,7 +314,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
                  estimator='max',
                  ci=None,
                  ax=ax)
-    ax.set_ylabel(f'Max Grid Score (Max Across All Runs)')
+
     ax.set_ylabel(None)  # Use ylabel from left plot
     ax.set_xlabel('Num Grad Steps')
     ax.set_title(r'$90^{\circ}$')
@@ -605,6 +631,31 @@ def plot_percent_low_decoding_err_vs_run_group(
     plt.close()
 
 
+def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
+        runs_histories_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    sns.lineplot(
+        data=runs_histories_df,
+        x='_step',
+        y='pos_decoding_err_over_min_pos_decoding_err',
+        hue='run_id',
+        legend=False,
+        linewidth=1.5,
+    )
+
+    plt.yscale('log')
+    plt.ylabel('Pos Decoding Err / Min(Pos Decoding Err)')
+    plt.xlabel('Epoch')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
@@ -673,7 +724,7 @@ def plot_pos_decoding_error_vs_num_grad_steps_by_optimizer(
                  x='num_grad_steps',
                  hue='optimizer',
                  data=runs_augmented_histories_df)
-    plt.ylabel(f'Pos Decoding Error (cm) (Avg Across All Runs)')
+    plt.ylabel(f'Pos Decoding Error (cm)\n(Avg Across Runs)')
     plt.yscale('log')
     plt.xlabel('Num Grad Steps')
 
