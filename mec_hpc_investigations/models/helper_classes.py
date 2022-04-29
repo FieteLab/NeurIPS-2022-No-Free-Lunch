@@ -242,7 +242,8 @@ class PlaceCells(object):
         else:
             raise NotImplementedError
         # Ensure that surround receptive field is greater than receptive field.
-        assert tf.reduce_min(self.surround_scale) > 1.
+        if self.place_field_values == 'difference_of_gaussians':
+            assert tf.reduce_min(self.surround_scale) > 1.
 
     def get_activation(self, pos):
         '''

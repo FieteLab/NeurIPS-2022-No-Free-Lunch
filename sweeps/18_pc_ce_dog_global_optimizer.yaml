@@ -33,8 +33,6 @@ parameters:
     values: [
       1.0,
     ]
-  n_recurrent_units_to_sample:
-    values: [256]
   Ng:
     values: [512]
   Np:
