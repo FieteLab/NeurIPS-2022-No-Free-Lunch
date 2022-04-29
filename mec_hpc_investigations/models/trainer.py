@@ -192,11 +192,12 @@ class Trainer(object):
 
                 self.ckpt.step.assign_add(1)
 
-            wandb_vals_to_log = {
-                'loss': loss,
-                'pos_decoding_err': 100 * pos_decoding_err,
-            }
-            wandb.log(wandb_vals_to_log, step=epoch_idx + 1)
+            self.eval(
+                gen=gen,
+                epoch_idx=epoch_idx,
+                save=False,
+                log_and_plot_grid_scores=False,
+            )
 
         self.eval(
             gen=gen,
