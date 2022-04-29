@@ -26,7 +26,6 @@ class Options(object):
         self.n_grad_steps_per_epoch = None
         self.n_place_fields_per_cell = None
         self.Ng = None
-        self.n_recurrent_units_to_sample = None
         self.optimizer = None
         self.place_field_loss = None
         self.place_field_values = None

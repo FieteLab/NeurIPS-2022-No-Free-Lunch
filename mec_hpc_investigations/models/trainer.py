@@ -81,7 +81,7 @@ class Trainer(object):
     def eval(self,
              gen: TrajectoryGenerator,
              epoch_idx: int,
-             n_samples: int,
+             n_samples: int = 10,
              save: bool = False,
              log_and_plot_grid_scores: bool = True,
              ):
@@ -180,14 +180,6 @@ class Trainer(object):
         assert self.options.n_epochs > 0
         for epoch_idx in tqdm(range(self.options.n_epochs)):
 
-            self.eval(
-                gen=gen,
-                epoch_idx=epoch_idx,
-                save=save,
-                log_and_plot_grid_scores=log_and_plot_grid_scores,
-                n_samples=self.options.n_recurrent_units_to_sample,
-            )
-
             # t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
             for _ in range(self.options.n_grad_steps_per_epoch):
                 inputs, pc_outputs, pos = next(gen)
@@ -205,7 +197,6 @@ class Trainer(object):
             epoch_idx=epoch_idx,
             save=True,
             log_and_plot_grid_scores=log_and_plot_grid_scores,
-            n_samples=self.options.n_recurrent_units_to_sample,
         )
 
     def load_ckpt(self, idx):

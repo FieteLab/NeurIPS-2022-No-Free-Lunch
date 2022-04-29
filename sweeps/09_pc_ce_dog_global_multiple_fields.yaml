@@ -36,8 +36,7 @@ parameters:
       'Poisson( 0.5 )',
       'Poisson( 1.5 )',
     ]
-  n_recurrent_units_to_sample:
-    values: [512]
+
   Ng:
     values: [4096]
   Np:

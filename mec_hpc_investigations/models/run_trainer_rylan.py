@@ -22,7 +22,6 @@ default_config = {
     'learning_rate': 1e-4,
     'n_epochs': 3,
     'n_grad_steps_per_epoch': 5,
-    'n_recurrent_units_to_sample': 16,
     'n_place_fields_per_cell': 1,
     # 'n_place_fields_per_cell': 'Poisson ( 1.5 )',
     'Np': 32,

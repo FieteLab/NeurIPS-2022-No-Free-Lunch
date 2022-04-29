@@ -770,7 +770,6 @@ def configure_options(run_ID: str,
                       Ng: int = 4096,
                       Np: int = 512,
                       n_epochs: int = 100,
-                      n_recurrent_units_to_sample: int = 64,
                       n_grad_steps_per_epoch: int = 1000,
                       n_place_fields_per_cell: int = 1,
                       place_field_loss: str = 'crossentropy',
@@ -838,7 +837,6 @@ def configure_options(run_ID: str,
     options.is_periodic = is_periodic
     options.learning_rate = learning_rate  # gradient descent learning rate
     options.n_epochs = n_epochs  # number of training epochs
-    options.n_recurrent_units_to_sample = n_recurrent_units_to_sample
     options.n_grad_steps_per_epoch = n_grad_steps_per_epoch  # batches per epoch
     options.n_place_fields_per_cell = n_place_fields_per_cell
 
