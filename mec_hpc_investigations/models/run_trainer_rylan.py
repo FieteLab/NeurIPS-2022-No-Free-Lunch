@@ -72,7 +72,7 @@ options = configure_options(save_dir='results',
 model = configure_model(options=options)
 trainer = Trainer(options=options,
                   model=model)
-trainer.train(save=False,
+trainer.train(save=True,
               log_and_plot_grid_scores=False)
 # profiler.stop()
 print('Finished training.')

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
-import tensorflow as tf
+import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import skdim
 import seaborn as sns
+import tensorflow as tf
 from tqdm import tqdm
 import wandb
 
@@ -24,9 +25,10 @@ class Trainer(object):
                  model):
         self.options = options
         self.model = model
+
+        # Original
+        # Removed because we shouldn't duplicate PlaceCells
         # self.trajectory_generator = TrajectoryGenerator(self.options, PlaceCells(self.options))
-        # TODO: Why did Aran give the models' access to the place cells?
-        # Guess: to compute the loss
         self.trajectory_generator = TrajectoryGenerator(
             options=self.options,
             place_cells=model.place_cells)
@@ -51,6 +53,7 @@ class Trainer(object):
         # Set up checkpoints
         self.ckpt = tf.train.Checkpoint(step=tf.Variable(0), optimizer=self.optimizer, net=model)
         self.ckpt_dir = os.path.join(options.save_dir, options.run_ID, "ckpts")
+        os.makedirs(self.ckpt_dir, exist_ok=True)
         self.ckpt_manager = tf.train.CheckpointManager(self.ckpt, self.ckpt_dir, max_to_keep=500)
         self.ckpt.restore(self.ckpt_manager.latest_checkpoint)
         if self.ckpt_manager.latest_checkpoint:
@@ -149,7 +152,13 @@ class Trainer(object):
         # Save at beginning of training
         if save:
             self.ckpt_manager.save()
+
+            # Save options
             np.save(os.path.join(self.ckpt_dir, "options.npy"), vars(self.options))
+            joblib.dump(self.options, os.path.join(self.ckpt_dir, 'options.joblib'))
+
+            # Save model place cells.
+            joblib.dump(self.model.place_cells, os.path.join(self.ckpt_dir, 'place_cells.joblib'))
 
         if log_and_plot_grid_scores:
             # TODO: these values might need to be recalculated
