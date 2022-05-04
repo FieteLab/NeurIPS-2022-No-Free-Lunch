@@ -22,9 +22,14 @@ class Trainer(object):
 
     def __init__(self,
                  options: Options,
-                 model):
+                 model,
+                 split: str = 'train'):
+
+        assert split in {'train', 'eval'}
+
         self.options = options
         self.model = model
+        self.split = split
 
         # Original
         # Removed because we shouldn't duplicate PlaceCells
@@ -55,6 +60,8 @@ class Trainer(object):
         self.ckpt_dir = os.path.join(options.save_dir, options.run_ID, "ckpts")
         os.makedirs(self.ckpt_dir, exist_ok=True)
         self.ckpt_manager = tf.train.CheckpointManager(self.ckpt, self.ckpt_dir, max_to_keep=500)
+        if len(self.ckpt_manager.checkpoints) == 1 and split == 'eval':
+            raise ValueError('We currently only want to evaluate a trained model. 1 checkpoint means the model did not finish training.')
         self.ckpt.restore(self.ckpt_manager.latest_checkpoint)
         if self.ckpt_manager.latest_checkpoint:
             print("Restored trained model from {}".format(self.ckpt_manager.latest_checkpoint))
@@ -142,8 +149,12 @@ class Trainer(object):
 
         inputs, pc_outputs, pos = next(gen)
         loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
+        pos_decoding_err *= 100
+        print(f'Loss: {loss}')
+        print(f'Position Decoding Error: {pos_decoding_err}')
         intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
             inputs=inputs)
+        print(intrinsic_dimensionalities)
         results = self.log_and_plot_all(pos=pos,
                                         inputs=inputs,
                                         epoch_idx=None,
@@ -430,6 +441,8 @@ class Trainer(object):
                 score_60_by_neuron[storage_idx] = score_60
                 score_90_by_neuron[storage_idx] = score_90
                 rate_maps[storage_idx] = rate_map
+
+                print(f'Neuron: {storage_idx}\tScore60: {np.round(score_60, 3)}\tScore90: {np.round(score_90, 3)}')
 
             # These NaNs need to be zeroed out if logging as heatmaps to W&B,
             # otherwise W&B throws an error.
