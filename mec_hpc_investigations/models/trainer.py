@@ -149,9 +149,9 @@ class Trainer(object):
 
         inputs, pc_outputs, pos = next(gen)
         loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
-        pos_decoding_err *= 100
+        pos_decoding_err *= 100  # Convert position decoding error from m to cm
         print(f'Loss: {loss}')
-        print(f'Position Decoding Error: {pos_decoding_err}')
+        print(f'Position Decoding Error (cm): {pos_decoding_err}')
         intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
             inputs=inputs)
         print(intrinsic_dimensionalities)
@@ -350,20 +350,18 @@ class Trainer(object):
         period_results_joblib_path = os.path.join(run_dir, 'period_results_path.joblib')
         if not os.path.isfile(period_results_joblib_path):
 
-            likely_grid_cell_indices = score_60_by_neuron > threshold
-            if np.sum(likely_grid_cell_indices) == 0:
-                return
-
             period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
-            for rate_map in rate_maps[likely_grid_cell_indices]:
-                rate_map_copy = np.copy(rate_map)
-                # NOTE: This is new as of 2022/04/19.
-                rate_map_copy[np.isnan(rate_map_copy)] = 0.
-                period, period_err, orientations = self.scorer.calculate_grid_cell_periodicity_and_orientation(
-                    rate_map=rate_map_copy)
-                period_per_cell.append(period)
-                period_err_per_cell.append(period_err)
-                orientations_per_cell.append(orientations.tolist())
+            likely_grid_cell_indices = score_60_by_neuron > threshold
+            if np.sum(likely_grid_cell_indices) > 0:
+                for rate_map in rate_maps[likely_grid_cell_indices]:
+                    rate_map_copy = np.copy(rate_map)
+                    # NOTE: This is new as of 2022/04/19.
+                    rate_map_copy[np.isnan(rate_map_copy)] = 0.
+                    period, period_err, orientations = self.scorer.calculate_grid_cell_periodicity_and_orientation(
+                        rate_map=rate_map_copy)
+                    period_per_cell.append(period)
+                    period_err_per_cell.append(period_err)
+                    orientations_per_cell.append(orientations.tolist())
 
             if log_to_wandb:
                 wandb.log({
