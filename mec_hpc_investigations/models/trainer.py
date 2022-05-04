@@ -133,7 +133,7 @@ class Trainer(object):
 
     def eval_after_train(self,
                          gen: TrajectoryGenerator,
-                         epoch_idx: int,
+                         run_dir: str,
                          n_samples: int = None,
                          ):
 
@@ -146,9 +146,10 @@ class Trainer(object):
             inputs=inputs)
         results = self.log_and_plot_all(pos=pos,
                                         inputs=inputs,
-                                        epoch_idx=epoch_idx,
+                                        epoch_idx=None,
                                         n_samples=n_samples,
-                                        log_to_wandb=False)
+                                        log_to_wandb=False,
+                                        run_dir=run_dir)
         print(10)
 
     def train_step(self, inputs, pc_outputs, pos):
@@ -241,13 +242,14 @@ class Trainer(object):
                          log_to_wandb: bool = True,
                          run_dir: str = None):
 
-        num_grad_steps_taken = epoch_idx * self.options.n_grad_steps_per_epoch
-        num_trajectories_trained_on = num_grad_steps_taken * self.options.batch_size
+        if log_to_wandb:
+            num_grad_steps_taken = epoch_idx * self.options.n_grad_steps_per_epoch
+            num_trajectories_trained_on = num_grad_steps_taken * self.options.batch_size
 
-        wandb.log({
-            'num_grad_steps': num_grad_steps_taken,
-            'num_trajectories_trained_on': num_trajectories_trained_on,
-        }, step=epoch_idx + 1)
+            wandb.log({
+                'num_grad_steps': num_grad_steps_taken,
+                'num_trajectories_trained_on': num_trajectories_trained_on,
+            }, step=epoch_idx + 1)
 
         xs = tf.reshape(
             pos[:, :, 0],
