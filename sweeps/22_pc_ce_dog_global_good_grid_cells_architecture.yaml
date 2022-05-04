@@ -68,7 +68,7 @@ parameters:
       'URGRNN',
     ]
   seed:
-    values: [ 0 , 1, 2]
+    values: [ 0 , 1, 2, 3, 5]
   sequence_length:
     values: [20]
   surround_scale:

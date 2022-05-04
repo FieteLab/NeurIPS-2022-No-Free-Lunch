@@ -221,7 +221,7 @@ for i in range(pars['train_iters']):
         g2g = [v for v in tf.trainable_variables() if "mu_g2g" in v.name][0]
         np.save(save_path + '/A_RNN_' + str(index), a_rnn[:pars['n_envs_save']])
         np.save(save_path + '/A_RNN_inv_' + str(index), a_rnn_inv[:pars['n_envs_save']])
-        np.save(save_path + '/g2g_' + str(index), g2g.eval())
+        np.save(save_path + '/g2g_' + str(index), g2g.eval_during_train())
         np.save(save_path + '/shiny_states_' + str(index), shiny_states)
         np.save(save_path + '/widths_' + str(index), pars['widths'])
         np.save(save_path + '/adj_' + str(index), adjs[:pars['n_envs_save']])

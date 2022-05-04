@@ -53,7 +53,7 @@ model_weights = torch.load('summaries/' + date + '/run' + run + '/model/tem_' + 
 # Set the model weights to the loaded trained model weights
 tem.load_state_dict(model_weights)
 # Make sure model is in evaluate mode (not crucial because it doesn't currently use dropout or batchnorm layers)
-tem.eval()
+tem.eval_during_train()
 
 # Make list of all the environments that this model was trained on
 envs = list(glob.iglob('summaries/' + date + '/run' + run + '/script/envs/*'))

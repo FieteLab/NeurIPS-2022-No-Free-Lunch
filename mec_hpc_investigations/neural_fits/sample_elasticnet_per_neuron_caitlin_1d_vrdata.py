@@ -141,7 +141,7 @@ def compute_interanimal_consistencies(source_N,
                     val_results_mean = (1.0/num_cv_splits)*val_results_agg
                     results["val_scores"].append(val_results_mean)
 
-                    # fit to entire train set, and eval on test set
+                    # fit to entire train set, and eval_during_train on test set
                     curr_results = noise_estimation(target_N=curr_target_N,
                                                     source_N=source_N,
                                                     source_map_kwargs=source_map_kwargs,
