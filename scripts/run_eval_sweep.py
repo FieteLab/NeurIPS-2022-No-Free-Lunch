@@ -5,7 +5,7 @@ import subprocess
 results_dir = 'results'
 run_ids = list(os.listdir(results_dir))
 
-for run_id in run_ids:
+for idx, run_id in enumerate(run_ids):
     command_and_args = [
         'sbatch',
         'scripts/run_eval_one.sh',
@@ -14,4 +14,6 @@ for run_id in run_ids:
     print(f'Launching ' + ' '.join(command_and_args))
     subprocess.run(command_and_args)
     print(f'Launched ' + ' '.join(command_and_args))
-    break
+
+    if idx > 10:
+        break

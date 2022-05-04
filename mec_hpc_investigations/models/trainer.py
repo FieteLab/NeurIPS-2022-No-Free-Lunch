@@ -231,14 +231,14 @@ class Trainer(object):
                 gen=gen,
                 epoch_idx=epoch_idx,
                 save=False,
-                log_and_plot_grid_scores=False,
+                # log_and_plot_grid_scores=False,
             )
 
         self.eval_during_train(
             gen=gen,
             epoch_idx=epoch_idx,
             save=True,
-            log_and_plot_grid_scores=log_and_plot_grid_scores,
+            # log_and_plot_grid_scores=log_and_plot_grid_scores,
         )
 
     def load_ckpt(self, idx):

@@ -17,4 +17,4 @@ export PYTHONPATH=.
 # https://stackoverflow.com/questions/5750450/how-can-i-print-each-command-before-executing
 set -x
 
-python mec_hpc_investigations/models/run_scoring_rylan.py ${run_id}
+python -u mec_hpc_investigations/models/run_scoring_rylan.py ${run_id}
