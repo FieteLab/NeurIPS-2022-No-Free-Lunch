@@ -161,7 +161,7 @@ def load_runs_joblib_files(run_ids: List[str],
                            results_dir: str = 'results',
                            ) -> Dict[str, Dict[str, np.ndarray]]:
 
-    joblib_files_data_by_run_id = {run_id: dict() for run_id in run_ids}
+    joblib_files_data_by_run_id_dict = {run_id: dict() for run_id in run_ids}
 
     for run_id in run_ids:
 
@@ -179,7 +179,7 @@ def load_runs_joblib_files(run_ids: List[str],
         period_and_orientation_joblib_path = os.path.join(run_dir, 'period_results_path.joblib')
         period_and_orientation_results = joblib.load(period_and_orientation_joblib_path)
 
-        joblib_files_data_by_run_id[run_id] = {
+        joblib_files_data_by_run_id_dict[run_id] = {
             'loss': loss_pos_and_dimensionalities_results['loss'],
             'pos_decoding_err': loss_pos_and_dimensionalities_results['pos_decoding_err'],
             'participation_ratio': loss_pos_and_dimensionalities_results['participation_ratio'],
@@ -193,4 +193,4 @@ def load_runs_joblib_files(run_ids: List[str],
             'orientations_per_cell': period_and_orientation_results['orientations_per_cell'],
         }
 
-    return joblib_files_data_by_run_id
+    return joblib_files_data_by_run_id_dict

@@ -1,5 +1,4 @@
 #!/bin/bash
-#SBATCH -p fiete
 #SBATCH -n 2                    # one core
 #SBATCH --mem=14G               # RAM
 #SBATCH --time=99:99:99         # total run time limit (HH:MM:SS)
