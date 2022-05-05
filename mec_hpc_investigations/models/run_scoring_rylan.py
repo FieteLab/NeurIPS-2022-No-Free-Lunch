@@ -24,7 +24,8 @@ options = joblib.load(options_path)
 print('Loaded options')
 
 # Specify the length of trajectories for evaluation.
-options.sequence_length = 35
+options.sequence_length = 40
+# options.batch_size = 3
 
 # Create model.
 model = configure_model(options=options)
@@ -55,6 +56,7 @@ print('Created grid scorer.')
 
 trainer.eval_after_train(
     gen=trajectory_gen,
-    run_dir=run_dir)
+    run_dir=run_dir,
+    refresh=True)
 
 print('Finished scoring.')

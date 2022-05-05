@@ -15,5 +15,5 @@ for idx, run_id in enumerate(run_ids):
     subprocess.run(command_and_args)
     print(f'Launched ' + ' '.join(command_and_args))
 
-    if idx > 10:
+    if idx > 15:
         break

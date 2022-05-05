@@ -142,26 +142,29 @@ class Trainer(object):
                          gen: TrajectoryGenerator,
                          run_dir: str,
                          n_samples: int = None,
+                         refresh: bool = False,
                          ):
 
         if n_samples is None:
-            n_samples = self.options.Ng
+            # n_samples = self.options.Ng
+            n_samples = 512
 
         inputs, pc_outputs, pos = next(gen)
         loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
         pos_decoding_err *= 100  # Convert position decoding error from m to cm
         print(f'Loss: {loss}')
         print(f'Position Decoding Error (cm): {pos_decoding_err}')
-        intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
-            inputs=inputs)
-        print(intrinsic_dimensionalities)
         results = self.log_and_plot_all(pos=pos,
                                         inputs=inputs,
                                         epoch_idx=None,
                                         n_samples=n_samples,
                                         log_to_wandb=False,
-                                        run_dir=run_dir)
-        print(10)
+                                        run_dir=run_dir,
+                                        refresh=refresh)
+        intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
+            inputs=inputs)
+        print(intrinsic_dimensionalities)
+        print('Finished eval after training')
 
     def train_step(self, inputs, pc_outputs, pos):
         '''
@@ -251,7 +254,8 @@ class Trainer(object):
                          epoch_idx: int,
                          n_samples: int,
                          log_to_wandb: bool = True,
-                         run_dir: str = None):
+                         run_dir: str = None,
+                         refresh: bool = False):
 
         if log_to_wandb:
             num_grad_steps_taken = epoch_idx * self.options.n_grad_steps_per_epoch
@@ -262,17 +266,36 @@ class Trainer(object):
                 'num_trajectories_trained_on': num_trajectories_trained_on,
             }, step=epoch_idx + 1)
 
-        xs = tf.reshape(
-            pos[:, :, 0],
-            shape=[self.options.batch_size * self.options.sequence_length])
-        ys = tf.reshape(
-            pos[:, :, 1],
-            shape=[self.options.batch_size * self.options.sequence_length])
+        trajectories_and_activations_joblib_path = os.path.join(run_dir, 'trajectories_and_activations.joblib')
+        if refresh or not os.path.isfile(trajectories_and_activations_joblib_path):
 
-        activations = tf.reshape(
-            tf.stop_gradient(self.model.g(inputs)),
-            shape=[self.options.batch_size * self.options.sequence_length, self.options.Ng]
-        )
+            print('Generating trajectories and activations.')
+
+            xs = tf.reshape(
+                pos[:, :, 0],
+                shape=[self.options.batch_size * self.options.sequence_length])
+            ys = tf.reshape(
+                pos[:, :, 1],
+                shape=[self.options.batch_size * self.options.sequence_length])
+
+            activations = tf.reshape(
+                tf.stop_gradient(self.model.g(inputs)),
+                shape=[self.options.batch_size * self.options.sequence_length, self.options.Ng]
+            )
+
+            joblib.dump(
+                {'activations': activations,
+                 'xs': xs,
+                 'ys': ys},
+                filename=trajectories_and_activations_joblib_path)
+
+            print('Saved generated trajectories and activations to disk.')
+        else:
+            previously_generated_trajectories_and_activations = joblib.load(trajectories_and_activations_joblib_path)
+            activations = previously_generated_trajectories_and_activations['activations']
+            xs = previously_generated_trajectories_and_activations['xs']
+            ys = previously_generated_trajectories_and_activations['ys']
+            print('Loaded previously generated trajectories and activations from disk.')
 
         rate_maps, score_60_by_neuron, score_90_by_neuron = self.compute_and_log_rate_maps(
             xs=xs,
@@ -281,7 +304,8 @@ class Trainer(object):
             epoch_idx=epoch_idx,
             n_samples=n_samples,
             log_to_wandb=log_to_wandb,
-            run_dir=run_dir)
+            run_dir=run_dir,
+            refresh=refresh)
 
         period_per_cell, period_err_per_cell, orientations_per_cell = self.compute_and_log_grid_cell_periodicity_and_orientation(
             rate_maps=rate_maps,
@@ -290,6 +314,7 @@ class Trainer(object):
             epoch_idx=epoch_idx,
             log_to_wandb=log_to_wandb,
             run_dir=run_dir,
+            refresh=refresh,
         )
 
         self.plot_and_log_ratemaps(
@@ -345,15 +370,18 @@ class Trainer(object):
                                                               epoch_idx: int,
                                                               run_dir: str,
                                                               threshold: float = 0.9,
-                                                              log_to_wandb: bool = True):
+                                                              log_to_wandb: bool = True,
+                                                              refresh: bool = False):
 
         period_results_joblib_path = os.path.join(run_dir, 'period_results_path.joblib')
-        if not os.path.isfile(period_results_joblib_path):
+        if refresh or not os.path.isfile(period_results_joblib_path):
+
+            print('Computing grid cell periodicity and orientation.')
 
             period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
-            # likely_grid_cell_indices = score_60_by_neuron > threshold
-            for rate_map in rate_maps:
-                try:
+            likely_grid_cell_indices = score_60_by_neuron > threshold
+            for rate_map_idx, rate_map in enumerate(rate_maps):
+                if likely_grid_cell_indices[rate_map_idx]:
                     rate_map_copy = np.copy(rate_map)
                     # NOTE: This is new as of 2022/04/19.
                     rate_map_copy[np.isnan(rate_map_copy)] = 0.
@@ -362,7 +390,7 @@ class Trainer(object):
                     period_per_cell.append(period)
                     period_err_per_cell.append(period_err)
                     orientations_per_cell.append(orientations.tolist())
-                except Exception:
+                else:
                     period_per_cell.append(np.nan)
                     period_err_per_cell.append(np.nan)
                     orientations_per_cell.append(np.nan)
@@ -381,6 +409,8 @@ class Trainer(object):
                  'threshold': threshold},
                 filename=period_results_joblib_path
             )
+
+            print('Wrote computed grid cell periodicity and orientation to disk.')
         else:
             previously_generated_results = joblib.load(period_results_joblib_path)
             previous_threshold = previously_generated_results['threshold']
@@ -389,6 +419,7 @@ class Trainer(object):
             period_per_cell = previously_generated_results['period_per_cell']
             period_err_per_cell = previously_generated_results['period_err_per_cell']
             orientations_per_cell = previously_generated_results['orientations_per_cell']
+            print('Loaded previously computed grid cell periodicity and orientation from disk.')
 
         return period_per_cell, period_err_per_cell, orientations_per_cell
 
@@ -399,10 +430,13 @@ class Trainer(object):
                                   epoch_idx: int,
                                   n_samples: int,
                                   run_dir: str,
-                                  log_to_wandb: bool = True):
+                                  log_to_wandb: bool = True,
+                                  refresh: bool = False):
 
         rate_maps_and_scores_joblib_path = os.path.join(run_dir, 'rate_maps_and_scores.joblib')
-        if not os.path.isfile(rate_maps_and_scores_joblib_path):
+        if refresh or not os.path.isfile(rate_maps_and_scores_joblib_path):
+            print('Creating rate maps and grid scores.')
+
             # Create scores and ratemaps, then save to dis.
             score_60_by_neuron = np.zeros(n_samples)
             score_90_by_neuron = np.zeros(n_samples)
@@ -419,6 +453,8 @@ class Trainer(object):
 
             for storage_idx, neuron_idx in enumerate(neuron_indices):
 
+                print(f'Generating rate map for neuron: {neuron_idx}')
+
                 # Would recommend switching to visualize.py's `compute_and_log_rate_maps`
                 # Then util.py's `get_model_activations`
                 # then utils.py's get_model_gridscores
@@ -428,6 +464,8 @@ class Trainer(object):
                     ys=ys,
                     activations=activations[:, neuron_idx],
                 )
+
+                print(f'Generated rate map for neuron: {neuron_idx}')
 
                 scores = self.scorer.get_scores(rate_map=rate_map)
                 score_60 = scores[0]
@@ -480,6 +518,7 @@ class Trainer(object):
             rate_maps = previously_generated_results['rate_maps']
             score_60_by_neuron = previously_generated_results['score_60_by_neuron']
             score_90_by_neuron = previously_generated_results['score_90_by_neuron']
+            print(f'Loaded previously generated rate maps and scores from disk (N={len(score_60_by_neuron)}).')
 
         return rate_maps, score_60_by_neuron, score_90_by_neuron
 
