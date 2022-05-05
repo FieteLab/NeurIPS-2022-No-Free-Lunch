@@ -2,3 +2,4 @@
 torch_tem/.idea
 mec_hpc_investigations/subprojects
 zips/*.zip
+results/

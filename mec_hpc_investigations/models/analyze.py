@@ -157,15 +157,19 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
     return runs_histories_df
 
 
-def open_run_joblib_files(run_ids: List[str],
-                          results_dir: str = 'results',
-                          ) -> Dict[str, Dict[str, np.ndarray]]:
+def load_runs_joblib_files(run_ids: List[str],
+                           results_dir: str = 'results',
+                           ) -> Dict[str, Dict[str, np.ndarray]]:
 
     joblib_files_data_by_run_id = {run_id: dict() for run_id in run_ids}
 
     for run_id in run_ids:
 
         run_dir = os.path.join(results_dir, run_id)
+
+        # Extract loss, position decoding error and intrinsic dimensionalities.
+        loss_pos_and_dimensionalities_joblib_path = os.path.join(run_dir, 'loss_pos_and_dimensionalities.joblib')
+        loss_pos_and_dimensionalities_results = joblib.load(loss_pos_and_dimensionalities_joblib_path)
 
         # Extract rate maps and scores.
         rate_maps_and_scores_joblib_path = os.path.join(run_dir, 'rate_maps_and_scores.joblib')
@@ -176,6 +180,11 @@ def open_run_joblib_files(run_ids: List[str],
         period_and_orientation_results = joblib.load(period_and_orientation_joblib_path)
 
         joblib_files_data_by_run_id[run_id] = {
+            'loss': loss_pos_and_dimensionalities_results['loss'],
+            'pos_decoding_err': loss_pos_and_dimensionalities_results['pos_decoding_err'],
+            'participation_ratio': loss_pos_and_dimensionalities_results['participation_ratio'],
+            'method_of_moments_ID': loss_pos_and_dimensionalities_results['method_of_moments_ID'],
+            'two_NN': loss_pos_and_dimensionalities_results['two_NN'],
             'rate_maps': rate_maps_and_scores_results['rate_maps'],
             'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron'],
             'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron'],
