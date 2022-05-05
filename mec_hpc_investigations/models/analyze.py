@@ -1,3 +1,4 @@
+import joblib
 import numpy as np
 import os
 import pandas as pd
@@ -154,3 +155,33 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         print(f'Loaded {runs_histories_df_path} from disk.')
 
     return runs_histories_df
+
+
+def open_run_joblib_files(run_ids: List[str],
+                          results_dir: str = 'results',
+                          ) -> Dict[str, Dict[str, np.ndarray]]:
+
+    joblib_files_data_by_run_id = {run_id: dict() for run_id in run_ids}
+
+    for run_id in run_ids:
+
+        run_dir = os.path.join(results_dir, run_id)
+
+        # Extract rate maps and scores.
+        rate_maps_and_scores_joblib_path = os.path.join(run_dir, 'rate_maps_and_scores.joblib')
+        rate_maps_and_scores_results = joblib.load(rate_maps_and_scores_joblib_path)
+
+        # Extract periods, period errors and orientations.
+        period_and_orientation_joblib_path = os.path.join(run_dir, 'period_results_path.joblib')
+        period_and_orientation_results = joblib.load(period_and_orientation_joblib_path)
+
+        joblib_files_data_by_run_id[run_id] = {
+            'rate_maps': rate_maps_and_scores_results['rate_maps'],
+            'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron'],
+            'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron'],
+            'period_per_cell': period_and_orientation_results['period_per_cell'],
+            'period_err_per_cell': period_and_orientation_results['period_err_per_cell'],
+            'orientations_per_cell': period_and_orientation_results['orientations_per_cell'],
+        }
+
+    return joblib_files_data_by_run_id
