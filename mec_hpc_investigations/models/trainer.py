@@ -351,9 +351,9 @@ class Trainer(object):
         if not os.path.isfile(period_results_joblib_path):
 
             period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
-            likely_grid_cell_indices = score_60_by_neuron > threshold
-            if np.sum(likely_grid_cell_indices) > 0:
-                for rate_map in rate_maps[likely_grid_cell_indices]:
+            # likely_grid_cell_indices = score_60_by_neuron > threshold
+            for rate_map in rate_maps:
+                try:
                     rate_map_copy = np.copy(rate_map)
                     # NOTE: This is new as of 2022/04/19.
                     rate_map_copy[np.isnan(rate_map_copy)] = 0.
@@ -362,6 +362,10 @@ class Trainer(object):
                     period_per_cell.append(period)
                     period_err_per_cell.append(period_err)
                     orientations_per_cell.append(orientations.tolist())
+                except Exception:
+                    period_per_cell.append(np.nan)
+                    period_err_per_cell.append(np.nan)
+                    orientations_per_cell.append(np.nan)
 
             if log_to_wandb:
                 wandb.log({
