@@ -77,11 +77,11 @@ plot_loss_vs_num_grad_steps_by_place_cell_rf(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir)
 
-plot_pos_decoding_error_vs_num_grad_steps(
+plot_pos_decoding_err_vs_num_grad_steps(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir)
 
-plot_pos_decoding_error_vs_num_grad_steps_by_place_cell_rf(
+plot_pos_decoding_err_vs_num_grad_steps_by_place_cell_rf(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir)
 

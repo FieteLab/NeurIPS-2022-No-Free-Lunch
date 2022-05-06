@@ -39,6 +39,16 @@ overwrite_run_config_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_loss_min_vs_optimizer(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir
+)
+
+plot_pos_decoding_err_min_vs_optimizer(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir,
+)
+
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
@@ -75,7 +85,7 @@ plot_grid_score_max_vs_optimizer(
 #     runs_augmented_histories_df=runs_augmented_histories_df,
 #     plot_dir=results_dir)
 #
-# plot_pos_decoding_error_vs_num_grad_steps_by_optimizer(
+# plot_pos_decoding_err_vs_num_grad_steps_by_optimizer(
 #     runs_augmented_histories_df=runs_augmented_histories_df,
 #     plot_dir=results_dir)
 

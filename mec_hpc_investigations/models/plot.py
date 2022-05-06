@@ -241,6 +241,22 @@ def plot_loss_vs_num_grad_steps_by_place_cell_rf(
     plt.close()
 
 
+def plot_loss_min_vs_optimizer(runs_configs_df: pd.DataFrame,
+                               plot_dir: str):
+    sns.stripplot(y="loss",
+                  x='optimizer',
+                  data=runs_configs_df,
+                  )
+    plt.ylabel(f'Loss')
+    plt.xlabel('')
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_min_vs_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
@@ -758,7 +774,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
     plt.close()
 
 
-def plot_pos_decoding_error_vs_num_grad_steps(
+def plot_pos_decoding_err_vs_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
     plt.close()
@@ -777,7 +793,7 @@ def plot_pos_decoding_error_vs_num_grad_steps(
     plt.close()
 
 
-def plot_pos_decoding_error_vs_num_grad_steps_by_optimizer(
+def plot_pos_decoding_err_vs_num_grad_steps_by_optimizer(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
     plt.close()
@@ -797,7 +813,7 @@ def plot_pos_decoding_error_vs_num_grad_steps_by_optimizer(
     plt.close()
 
 
-def plot_pos_decoding_error_vs_num_grad_steps_by_place_cell_rf(
+def plot_pos_decoding_err_vs_num_grad_steps_by_place_cell_rf(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
     plt.close()
@@ -812,6 +828,27 @@ def plot_pos_decoding_error_vs_num_grad_steps_by_place_cell_rf(
 
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_error_vs_num_grad_steps_by_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_pos_decoding_err_min_vs_optimizer(runs_configs_df: pd.DataFrame,
+                                           plot_dir: str):
+    plt.close()
+    sns.stripplot(y="pos_decoding_err",
+                  x='optimizer',
+                  data=runs_configs_df,
+                  )
+    plt.axhline(y=100., color='r', linewidth=5)
+    plt.text(x=0, y=55, s='Untrained', color='r')
+    plt.ylim(0.1, 100.)
+    plt.yscale('log')
+    plt.ylabel(f'Pos Decoding Err (cm)')
+    plt.xlabel('')
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_err_min_vs_optimizer.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
