@@ -49,7 +49,8 @@ def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFra
                   x='optimizer',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax,
-                  size=2)
+                  # size=2,
+                  )
     ax.set_ylabel(
         f'Grid Score')
     ax.set_xlabel('')
@@ -60,7 +61,8 @@ def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFra
                   x='optimizer',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax,
-                  size=2)
+                  # size=2,
+                  )
     ax.set_ylabel(None)
     ax.set_xlabel('')
     ax.set_title(r'$90^{\circ}$')
@@ -81,7 +83,8 @@ def plot_grid_score_max_vs_optimizer(max_grid_scores_by_run_id_df: pd.DataFrame,
                   x='optimizer',
                   data=max_grid_scores_by_run_id_df,
                   ax=ax,
-                  size=2)
+                  # size=2,
+                  )
     ax.set_ylabel(
         f'Max Grid Score')
     ax.set_xlabel('')
@@ -92,7 +95,8 @@ def plot_grid_score_max_vs_optimizer(max_grid_scores_by_run_id_df: pd.DataFrame,
                   x='optimizer',
                   data=max_grid_scores_by_run_id_df,
                   ax=ax,
-                  size=2)
+                  # size=2,
+                  )
     ax.set_ylabel(None)
     ax.set_xlabel('')
     ax.set_title(r'$90^{\circ}$')
