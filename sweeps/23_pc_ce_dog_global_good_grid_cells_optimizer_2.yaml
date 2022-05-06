@@ -24,7 +24,7 @@ parameters:
   is_periodic:
     values: [False]
   learning_rate:
-    values: [0.0001]
+    values: [0.001]
   n_epochs:
     values: [20]
   n_grad_steps_per_epoch:
@@ -35,13 +35,13 @@ parameters:
     ]
 
   Ng:
-    values: [512]
+    values: [4096]
   Np:
     values: [512]
   optimizer:
     values: [
-        'adam',
-        'rmsprop'
+        'adagrad',
+        'sgd',
     ]
   place_field_loss:
     values: [
@@ -58,7 +58,6 @@ parameters:
   place_cell_rf:
     values: [
       0.12,
-      0.20,
     ]
   readout_dropout:
     values: [0.]
@@ -67,9 +66,9 @@ parameters:
       'RNN',
     ]
   seed:
-    values: [ 0, 1 ]
+    values: [ 0, 1, 2, 3]
   sequence_length:
-    values: [10, 15, 20, 25, 30, 35, 40, 45, 50]
+    values: [20]
   surround_scale:
     values: [
       2.,

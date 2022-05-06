@@ -6,6 +6,26 @@ from typing import Dict, List, Tuple, Union
 import wandb
 
 
+def convert_joblib_files_data_to_neurons_data_df(
+    joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]]) -> pd.DataFrame:
+
+    neurons_data_df_list = []
+    for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
+        neurons_data_df = pd.DataFrame({
+            'neuron_idx': np.arange(len(joblib_files_data['score_60_by_neuron'])),
+            'score_60_by_neuron': joblib_files_data['score_60_by_neuron'],
+            'score_90_by_neuron': joblib_files_data['score_90_by_neuron'],
+            'period_per_cell': joblib_files_data['period_per_cell'],
+            'period_err_per_cell': joblib_files_data['period_err_per_cell'],
+            'orientations_per_cell': joblib_files_data['orientations_per_cell'],
+        })
+        neurons_data_df['run_id'] = run_id
+        neurons_data_df_list.append(neurons_data_df)
+
+    neurons_data_by_run_id_df = pd.concat(neurons_data_df_list)
+    return neurons_data_by_run_id_df
+
+
 def compute_minima_performance_metrics_from_runs_histories(runs_histories_df: pd.DataFrame):
     minima_performance_metrics = runs_histories_df.groupby(['run_id']).agg({
         'max_grid_score_d=60_n=256': 'max',
@@ -194,3 +214,17 @@ def load_runs_joblib_files(run_ids: List[str],
         }
 
     return joblib_files_data_by_run_id_dict
+
+
+def overwrite_run_config_df_values_with_joblib_data(
+        runs_configs_df: pd.DataFrame,
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]]) -> None:
+
+    # Overwrite runs_configs_df's losses and pos decoding errors with post-evaluation
+    # values. We do this because the post-training loss and decoding are computed
+    # using newer code and longer trajectories.
+    keys = ['loss', 'pos_decoding_err', 'participation_ratio', 'two_NN', 'method_of_moments_ID']
+    for key in keys:
+        runs_configs_df[key] = runs_configs_df.apply(
+            lambda row: joblib_files_data_by_run_id_dict[row['run_id']][key],
+            axis=1)

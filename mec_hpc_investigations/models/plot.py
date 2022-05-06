@@ -39,11 +39,74 @@ sns.set_style("whitegrid")
 #     # plt.show()
 #     plt.close()
 
+def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFrame,
+                                 plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+
+    ax = axes[0]
+    sns.boxenplot(y="score_60_by_neuron",
+                  x='optimizer',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  size=2)
+    ax.set_ylabel(
+        f'Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.boxenplot(y="score_90_by_neuron",
+                  x='optimizer',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  size=2)
+    ax.set_ylabel(None)
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_vs_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_vs_optimizer(max_grid_scores_by_run_id_df: pd.DataFrame,
+                                     plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.stripplot(y="score_60_by_neuron_max",
+                  x='optimizer',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  size=2)
+    ax.set_ylabel(
+        f'Max Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron_max",
+                  x='optimizer',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  size=2)
+    ax.set_ylabel(None)
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_vs_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
 
 def plot_grid_score_histograms_by_human_readable_run_id(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str):
-
     # ncols = 4
     # nrows = int(np.ceil(len(runs_augmented_histories_df['run_id'].unique()) / ncols))
     #
@@ -55,7 +118,7 @@ def plot_grid_score_histograms_by_human_readable_run_id(
     #     sharey=True,
     # )
 
-    for idx, (human_readable_run_id, run_id_histories_df)\
+    for idx, (human_readable_run_id, run_id_histories_df) \
             in enumerate(runs_augmented_histories_df.groupby('human_readable_run_id')):
         # ax = axes[idx // ncols, idx % ncols]
         fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True, sharex=True)
@@ -136,7 +199,6 @@ def plot_loss_vs_num_grad_steps(
 def plot_loss_vs_num_grad_steps_by_optimizer(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="loss",
                  x='num_grad_steps',
@@ -285,7 +347,6 @@ def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
         plot_dir: str,
         grid_score_d60_threshold: int = 1.2,
         grid_score_d90_threshold: int = 1.5):
-
     plt.close()
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
@@ -435,7 +496,6 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
         plot_dir: str,
         grid_score_d60_threshold: float,
         grid_score_d90_threshold: float):
-
     plt.close()
     unique_rnn_types = runs_performance_df['rnn_type'].unique()
     ncols = len(unique_rnn_types)
@@ -444,7 +504,6 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
 
     axes[0].set_ylabel(r'Max $90^{\circ}$ Score')
     for ax_idx, unique_rnn_type in enumerate(unique_rnn_types):
-
         ax = axes[ax_idx]
         sns.scatterplot(
             data=runs_performance_df[runs_performance_df['rnn_type'] == unique_rnn_type],
@@ -490,7 +549,6 @@ def plot_participation_ratio_by_num_grad_steps(
 def plot_participation_ratio_vs_architecture_and_activation(
         runs_performance_df: pd.DataFrame,
         plot_dir: str):
-
     sns.barplot(
         data=runs_performance_df,
         x='rnn_type',
@@ -718,7 +776,6 @@ def plot_pos_decoding_error_vs_num_grad_steps(
 def plot_pos_decoding_error_vs_num_grad_steps_by_optimizer(
         runs_augmented_histories_df: pd.DataFrame,
         plot_dir: str, ):
-
     plt.close()
     sns.lineplot(y="pos_decoding_err",
                  x='num_grad_steps',
