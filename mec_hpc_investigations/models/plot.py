@@ -107,6 +107,37 @@ def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFra
     plt.close()
 
 
+def plot_grid_score_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.DataFrame,
+                                     plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.stripplot(y="score_60_by_neuron_max",
+                  x='place_cell_rf',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron_max",
+                  x='place_cell_rf',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  )
+    # ax.set_ylabel(None)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_vs_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_score_max_vs_architecture(max_grid_scores_by_run_id_df: pd.DataFrame,
                                         plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
@@ -177,10 +208,10 @@ def plot_grid_score_max_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFr
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
     ax = axes[0]
-    sns.lineplot(y="score_60_by_neuron_max",
-                 x='place_cell_rf',
-                 data=max_grid_scores_by_run_id_df,
-                 ax=ax)
+    sns.stripplot(y="score_60_by_neuron_max",
+                  x='place_cell_rf',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax)
     ax.set_ylabel(f'Max Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$60^{\circ}$')

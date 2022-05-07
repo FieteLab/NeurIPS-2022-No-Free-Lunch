@@ -182,36 +182,42 @@ def load_runs_joblib_files(run_ids: List[str],
                            ) -> Dict[str, Dict[str, np.ndarray]]:
 
     joblib_files_data_by_run_id_dict = {run_id: dict() for run_id in run_ids}
-
+    missing_joblib_runs = []
     for run_id in run_ids:
-
         run_dir = os.path.join(results_dir, run_id)
 
-        # Extract loss, position decoding error and intrinsic dimensionalities.
-        loss_pos_and_dimensionalities_joblib_path = os.path.join(run_dir, 'loss_pos_and_dimensionalities.joblib')
-        loss_pos_and_dimensionalities_results = joblib.load(loss_pos_and_dimensionalities_joblib_path)
+        try:
+            # Extract loss, position decoding error and intrinsic dimensionalities.
+            loss_pos_and_dimensionalities_joblib_path = os.path.join(run_dir, 'loss_pos_and_dimensionalities.joblib')
+            loss_pos_and_dimensionalities_results = joblib.load(loss_pos_and_dimensionalities_joblib_path)
 
-        # Extract rate maps and scores.
-        rate_maps_and_scores_joblib_path = os.path.join(run_dir, 'rate_maps_and_scores.joblib')
-        rate_maps_and_scores_results = joblib.load(rate_maps_and_scores_joblib_path)
+            # Extract rate maps and scores.
+            rate_maps_and_scores_joblib_path = os.path.join(run_dir, 'rate_maps_and_scores.joblib')
+            rate_maps_and_scores_results = joblib.load(rate_maps_and_scores_joblib_path)
 
-        # Extract periods, period errors and orientations.
-        period_and_orientation_joblib_path = os.path.join(run_dir, 'period_results_path.joblib')
-        period_and_orientation_results = joblib.load(period_and_orientation_joblib_path)
+            # Extract periods, period errors and orientations.
+            period_and_orientation_joblib_path = os.path.join(run_dir, 'period_results_path.joblib')
+            period_and_orientation_results = joblib.load(period_and_orientation_joblib_path)
 
-        joblib_files_data_by_run_id_dict[run_id] = {
-            'loss': loss_pos_and_dimensionalities_results['loss'],
-            'pos_decoding_err': loss_pos_and_dimensionalities_results['pos_decoding_err'],
-            'participation_ratio': loss_pos_and_dimensionalities_results['participation_ratio'],
-            'method_of_moments_ID': loss_pos_and_dimensionalities_results['method_of_moments_ID'],
-            'two_NN': loss_pos_and_dimensionalities_results['two_NN'],
-            'rate_maps': rate_maps_and_scores_results['rate_maps'],
-            'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron'],
-            'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron'],
-            'period_per_cell': period_and_orientation_results['period_per_cell'],
-            'period_err_per_cell': period_and_orientation_results['period_err_per_cell'],
-            'orientations_per_cell': period_and_orientation_results['orientations_per_cell'],
-        }
+            joblib_files_data_by_run_id_dict[run_id] = {
+                'loss': loss_pos_and_dimensionalities_results['loss'],
+                'pos_decoding_err': loss_pos_and_dimensionalities_results['pos_decoding_err'],
+                'participation_ratio': loss_pos_and_dimensionalities_results['participation_ratio'],
+                'method_of_moments_ID': loss_pos_and_dimensionalities_results['method_of_moments_ID'],
+                'two_NN': loss_pos_and_dimensionalities_results['two_NN'],
+                'rate_maps': rate_maps_and_scores_results['rate_maps'],
+                'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron'],
+                'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron'],
+                'period_per_cell': period_and_orientation_results['period_per_cell'],
+                'period_err_per_cell': period_and_orientation_results['period_err_per_cell'],
+                'orientations_per_cell': period_and_orientation_results['orientations_per_cell'],
+            }
+
+        except FileNotFoundError:
+            missing_joblib_runs.append(run_id)
+
+    if len(missing_joblib_runs) > 0:
+        raise FileNotFoundError(f'The following runs are missing joblib files: {missing_joblib_runs}')
 
     return joblib_files_data_by_run_id_dict
 
