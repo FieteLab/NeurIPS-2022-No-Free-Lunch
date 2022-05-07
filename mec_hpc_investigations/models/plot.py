@@ -39,6 +39,40 @@ sns.set_style("whitegrid")
 #     # plt.show()
 #     plt.close()
 
+
+def plot_grid_score_vs_architecture(augmented_neurons_data_by_run_id_df: pd.DataFrame,
+                                    plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+
+    ax = axes[0]
+    sns.boxenplot(y="score_60_by_neuron",
+                  x='rnn_type',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  )
+    ax.set_ylabel(
+        f'Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.boxenplot(y="score_90_by_neuron",
+                  x='rnn_type',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  )
+    ax.set_ylabel(None)
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_vs_architecture.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFrame,
                                  plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
@@ -51,8 +85,7 @@ def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFra
                   ax=ax,
                   # size=2,
                   )
-    ax.set_ylabel(
-        f'Grid Score')
+    ax.set_ylabel(f'Grid Score')
     ax.set_xlabel('')
     ax.set_title(r'$60^{\circ}$')
 
@@ -63,11 +96,42 @@ def plot_grid_score_vs_optimizer(augmented_neurons_data_by_run_id_df: pd.DataFra
                   ax=ax,
                   # size=2,
                   )
-    ax.set_ylabel(None)
+    ax.set_ylabel(f'Grid Score')
     ax.set_xlabel('')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'grid_score_vs_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_vs_architecture(max_grid_scores_by_run_id_df: pd.DataFrame,
+                                        plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.stripplot(y="score_60_by_neuron_max",
+                  x='rnn_type',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  )
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron_max",
+                  x='rnn_type',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  )
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_vs_architecture.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -102,6 +166,63 @@ def plot_grid_score_max_vs_optimizer(max_grid_scores_by_run_id_df: pd.DataFrame,
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'grid_score_max_vs_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFrame,
+                                         plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.lineplot(y="score_60_by_neuron_max",
+                 x='place_cell_rf',
+                 data=max_grid_scores_by_run_id_df,
+                 ax=ax)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron_max",
+                  x='place_cell_rf',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  )
+    # ax.set_ylabel(None)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_vs_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_90_vs_grid_score_max_60_by_architecture(
+        max_grid_scores_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    sns.scatterplot(
+        data=max_grid_scores_by_run_id_df,
+        x='score_60_by_neuron_max',
+        y='score_90_by_neuron_max',
+        hue='rnn_type',
+    )
+    # plt.hlines(grid_score_d90_threshold, 0., 2., colors='r')
+    # plt.vlines(grid_score_d60_threshold, 0., 2., colors='r')
+    plt.xlim(0., 2.)
+    plt.ylim(0., 2.)
+    # plt.legend(loc='lower left')
+
+    plt.xlabel(r'Max $60^{\circ}$ Score')
+    plt.ylabel(r'Max $90^{\circ}$ Score')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_90_vs_grid_score_max_60_by_architecture.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -235,6 +356,22 @@ def plot_loss_vs_num_grad_steps_by_place_cell_rf(
 
     plt.savefig(os.path.join(plot_dir,
                              f'loss_vs_num_grad_steps_by_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_loss_min_vs_architecture(runs_configs_df: pd.DataFrame,
+                                  plot_dir: str):
+    sns.stripplot(y="loss",
+                  x='rnn_type',
+                  data=runs_configs_df,
+                  )
+    plt.ylabel(f'Loss')
+    plt.xlabel('')
+    plt.savefig(os.path.join(plot_dir,
+                             f'loss_min_vs_architecture.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -477,34 +614,6 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'max_grid_score_vs_place_cell_rf_by_activation.png'),
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
-    plt.close()
-
-
-def plot_max_grid_score_90_vs_max_grid_score_60_by_activation(
-        runs_performance_df: pd.DataFrame,
-        plot_dir: str,
-        grid_score_d60_threshold: float,
-        grid_score_d90_threshold: float):
-    plt.close()
-    sns.scatterplot(
-        data=runs_performance_df,
-        x='max_grid_score_d=60_n=256',
-        y='max_grid_score_d=90_n=256',
-        hue='activation',
-    )
-    plt.hlines(grid_score_d90_threshold, 0., 2., colors='r')
-    plt.vlines(grid_score_d60_threshold, 0., 2., colors='r')
-    plt.xlim(0., 2.)
-    plt.ylim(0., 2.)
-    plt.legend(loc='lower left')
-
-    plt.xlabel(r'Max $60^{\circ}$ Score')
-    plt.ylabel(r'Max $90^{\circ}$ Score')
-    plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_90_vs_max_grid_score_60_by_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -834,6 +943,27 @@ def plot_pos_decoding_err_vs_num_grad_steps_by_place_cell_rf(
     plt.close()
 
 
+def plot_pos_decoding_err_min_vs_architecture(runs_configs_df: pd.DataFrame,
+                                              plot_dir: str):
+    plt.close()
+    sns.stripplot(y="pos_decoding_err",
+                  x='rnn_type',
+                  data=runs_configs_df,
+                  )
+    plt.axhline(y=100., color='r', linewidth=5)
+    plt.text(x=0, y=55, s='Untrained', color='r')
+    plt.ylim(0.1, 100.)
+    plt.yscale('log')
+    plt.ylabel(f'Pos Decoding Err (cm)')
+    plt.xlabel('')
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_err_min_vs_architecture.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_pos_decoding_err_min_vs_optimizer(runs_configs_df: pd.DataFrame,
                                            plot_dir: str):
     plt.close()
@@ -854,23 +984,22 @@ def plot_pos_decoding_err_min_vs_optimizer(runs_configs_df: pd.DataFrame,
     # plt.show()
     plt.close()
 
-
-def plot_pos_decoding_err_vs_run_group(
-        runs_performance_df: pd.DataFrame,
-        plot_dir: str):
-    plt.close()
-    fig, ax = plt.subplots(figsize=(24, 8))
-    sns.stripplot(x="run_group",
-                  y="pos_decoding_err",
-                  data=runs_performance_df,
-                  size=4,
-                  ax=ax)
-    ax.set_ylim(1., 100.)
-    ax.set_ylabel('Pos Decoding Err (cm)')
-    ax.set_xlabel('')
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_vs_run_group.png'),
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
-    plt.close()
+# def plot_pos_decoding_err_vs_run_group(
+#         runs_performance_df: pd.DataFrame,
+#         plot_dir: str):
+#     plt.close()
+#     fig, ax = plt.subplots(figsize=(24, 8))
+#     sns.stripplot(x="run_group",
+#                   y="pos_decoding_err",
+#                   data=runs_performance_df,
+#                   size=4,
+#                   ax=ax)
+#     ax.set_ylim(1., 100.)
+#     ax.set_ylabel('Pos Decoding Err (cm)')
+#     ax.set_xlabel('')
+#     plt.savefig(os.path.join(plot_dir,
+#                              f'pos_decoding_err_vs_run_group.png'),
+#                 bbox_inches='tight',
+#                 dpi=300)
+#     # plt.show()
+#     plt.close()

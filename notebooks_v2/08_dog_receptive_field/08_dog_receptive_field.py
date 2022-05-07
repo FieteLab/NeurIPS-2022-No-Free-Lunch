@@ -4,7 +4,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare variables.
-notebook_dir = 'notebooks_v2/06_optimizer'
+notebook_dir = 'notebooks_v2/08_dog_receptive_field'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -14,8 +14,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'lgaz57h1',  # Adam and RMSProp optimizers
-    'v5gndu30',  # SGD & Adagrad optimizers
+    'yzszqr74',  # DoG with swept receptive fields
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -37,35 +36,22 @@ overwrite_run_config_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
-plot_loss_min_vs_optimizer(
-    runs_configs_df=runs_configs_df,
-    plot_dir=results_dir)
-
-plot_pos_decoding_err_min_vs_optimizer(
-    runs_configs_df=runs_configs_df,
-    plot_dir=results_dir)
-
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'optimizer']].merge(
+    'run_id', 'place_cell_rf']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
 
-plot_grid_score_vs_optimizer(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir,
-)
-
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
     score_90_by_neuron_max=('score_90_by_neuron', 'max'),
-    optimizer=('optimizer', 'first')).reset_index()
+    place_cell_rf=('place_cell_rf', 'first')).reset_index()
 
-plot_grid_score_max_vs_optimizer(
+plot_grid_score_max_vs_place_cell_rf(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
-    plot_dir=results_dir)
+    plot_dir=results_dir,)
 
-print('Finished 06_optimizer/06_optimizer.py!')
+print('Finished 08_dog_receptive_field/08_dog_receptive_field.py!')

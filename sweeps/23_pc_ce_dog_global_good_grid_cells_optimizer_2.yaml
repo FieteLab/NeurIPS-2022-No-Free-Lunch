@@ -24,7 +24,7 @@ parameters:
   is_periodic:
     values: [False]
   learning_rate:
-    values: [0.001]
+    values: [0.01, 0.05]
   n_epochs:
     values: [20]
   n_grad_steps_per_epoch:
