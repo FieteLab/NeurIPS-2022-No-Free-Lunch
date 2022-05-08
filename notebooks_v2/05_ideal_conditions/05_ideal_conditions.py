@@ -45,6 +45,14 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
+# plot_grid_scores_histograms_by_run_id(
+#     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+#     plot_dir=results_dir)
+
+plot_grid_periods_histograms_by_run_id(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
     score_90_by_neuron_max=('score_90_by_neuron', 'max'),

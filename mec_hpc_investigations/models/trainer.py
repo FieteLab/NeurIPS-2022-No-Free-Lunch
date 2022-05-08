@@ -375,7 +375,7 @@ class Trainer(object):
                                                               score_90_by_neuron: np.ndarray,
                                                               epoch_idx: int,
                                                               run_dir: str,
-                                                              threshold: float = 0.9,
+                                                              threshold: float = 0.4,
                                                               log_to_wandb: bool = True,
                                                               refresh: bool = False):
 

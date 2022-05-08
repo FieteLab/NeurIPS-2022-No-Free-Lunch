@@ -58,9 +58,13 @@ runs_augmented_histories_df = runs_configs_df[[
     on='run_id',
     how='left')
 
-plot_grid_score_histograms_by_human_readable_run_id(
+plot_grid_scores_histograms_by_run_id(
     runs_augmented_histories_df=runs_augmented_histories_df,
     plot_dir=results_dir,
+)
+
+plot_grid_periods_histograms_by_run_id(
+
 )
 
 # plot_grid_period_distribution()
