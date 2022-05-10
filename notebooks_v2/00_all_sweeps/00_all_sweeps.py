@@ -1,41 +1,45 @@
 import os
 
-from mec_hpc_investigations.models.analyze import compute_minima_performance_metrics_from_runs_histories, \
-    download_wandb_project_runs_configs
+from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
-
-# Declare
+# Declare paths.
 notebook_dir = 'notebooks_v2/00_all_sweeps'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
 os.makedirs(results_dir, exist_ok=True)
+
 low_pos_decoding_err_threshold = 6.
-grid_score_d60_threshold = 1.2
+grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 
 sweep_ids = [
     '26gn9pfh',  # Cartesian + MSE
-    'rutsx042',  # G+Global+CE, sweeping most hyperparameters
+    'rutsx042',  # G+Global+CE, sweeping non-RF hyperparameters
     # '',  # G+Global+CE, sweeping RF from 0.01m to 2.0m
-    '2yfpvx86',  # DoG+Global+CE, various scales
-    'zqrq9ri3',  # DoG+Global+CE, various architectures
-    'lgaz57h1',  # DoG+Global+CE, various optimizers
+    # '2yfpvx86',  # DoG+Global+CE, various scales
+    # 'zqrq9ri3',  # DoG+Global+CE, various architectures
+    # 'lgaz57h1',  # DoG+Global+CE, various optimizers
     'gvwcljra',  # DoG+Global+CE, ideal grid cells
 ]
-
-
-os.makedirs(notebook_dir, exist_ok=True)
 
 #
 runs_configs_df = download_wandb_project_runs_configs(
     wandb_project_path='mec-hpc-investigations',
     data_dir=data_dir,
     sweep_ids=sweep_ids,
-    finished_only=True)
+    finished_only=True,
+    refresh=True)
 
-runs_configs_df = runs_configs_df[runs_configs_df['optimizer'] != 'sgd'].copy()
+
+joblib_files_data_by_run_id_dict = load_runs_joblib_files(
+    run_ids=list(runs_configs_df['run_id'].unique()))
+
+overwrite_run_config_df_values_with_joblib_data(
+    runs_configs_df=runs_configs_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+
 
 
 def sweep_to_run_group(row: pd.Series):

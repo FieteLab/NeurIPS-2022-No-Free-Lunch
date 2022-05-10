@@ -298,7 +298,8 @@ class PlaceCells(object):
 
         if self.place_field_values == 'gaussian':
             # Shape: (batch size, sequence length, num place cells,)
-            outputs = tf.reduce_sum(normalized_dist_squared, axis=3)
+            outputs = normalized_dist_squared
+
         elif self.place_field_values == 'difference_of_gaussians':
 
             # Shape: (batch size, sequence length, num place cells, num fields per cell)
