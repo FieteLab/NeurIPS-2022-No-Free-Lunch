@@ -51,14 +51,19 @@ parameters:
     ]
   place_cell_rf:
     values: [
-      0.01,
-      0.05,
+      0.08,
+      0.09,
       0.10,
+      0.11,
+      0.12,
+      0.13,
+      0.14,
       0.15,
+      0.20,
       0.25,
       0.50,
       1.00,
-      2.00
+      2.00,
     ]
   readout_dropout:
     values: [0.]
@@ -70,7 +75,7 @@ parameters:
       'GRU',
     ]
   seed:
-    values: [ 0, 1]
+    values: [ 0, 1, 2]
   sequence_length:
     values: [20]
   surround_scale:

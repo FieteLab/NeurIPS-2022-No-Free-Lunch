@@ -43,28 +43,32 @@ sns.set_style("whitegrid")
 def plot_grid_periods_histograms_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-    plt.close()
-    bins = np.linspace(0, 50, 51)
 
-    non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
-    sns.histplot(x="period_per_cell",
-                 data=augmented_neurons_data_by_run_id_df[non_nan_period_indices],
-                 hue='place_cell_rf',
-                 bins=bins,
-                 palette='Spectral_r',
-                 # legend='full',
-                 # legend='False',
-                 # kde=True,
-                 )
-    xlabel = r'$60^{\circ}$ Grid Period'
-    # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
-    plt.xlabel(xlabel)
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_periods_histograms_by_place_cell_rf.png'),
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
     plt.close()
+    bins = np.linspace(0, 150, 151)
+
+    for grid_score_threshold in [0.4, 0.6, 0.8, 1.0, 1.2]:
+
+        # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
+        likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
+        sns.histplot(x="period_per_cell",
+                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                     hue='place_cell_rf',
+                     bins=bins,
+                     palette='Spectral_r',
+                     # legend='full',
+                     # legend='False',
+                     # kde=True,
+                     )
+        xlabel = r'$60^{\circ}$ Grid Period'
+        # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
+        plt.xlabel(xlabel)
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_periods_histograms_by_place_cell_rf_threshold={grid_score_threshold}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
 
 
 def plot_grid_periods_kde_by_place_cell_rf(
@@ -72,22 +76,25 @@ def plot_grid_periods_kde_by_place_cell_rf(
         plot_dir: str):
 
     plt.close()
-    non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
-    sns.kdeplot(x="period_per_cell",
-                data=augmented_neurons_data_by_run_id_df[non_nan_period_indices],
-                hue='place_cell_rf',
-                palette='Spectral_r',
-                # legend='full',
-                )
-    xlabel = r'$60^{\circ}$ Grid Period'
-    # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
-    plt.xlabel(xlabel)
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_periods_kde_by_place_cell_rf.png'),
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
-    plt.close()
+
+    for grid_score_threshold in [0.4, 0.6, 0.8, 1.0, 1.2]:
+
+        likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
+        sns.kdeplot(x="period_per_cell",
+                    data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                    hue='place_cell_rf',
+                    palette='Spectral_r',
+                    # legend='full',
+                    )
+        xlabel = r'$60^{\circ}$ Grid Period'
+        # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
+        plt.xlabel(xlabel)
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_periods_kde_by_place_cell_rf_threshold={grid_score_threshold}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
 
 
 def plot_grid_periods_histograms_by_run_id(

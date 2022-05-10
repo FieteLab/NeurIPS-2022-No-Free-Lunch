@@ -1,11 +1,18 @@
 import os
 import subprocess
+import time
 import wandb
 
 
 ### Option 1: Manually specify sweep IDs, then fetch (finished) run IDs.
 
-# Different architectures.
+# DoG, sweeping RF.
+# sweep_ids = ['yzszqr74']
+
+# DoG, multiple scales.
+# sweep_ids = ['2yfpvx86']
+
+# DoG, sweeping architectures.
 sweep_ids = ['can8n6vd']
 
 
@@ -13,11 +20,11 @@ sweep_ids = ['can8n6vd']
 api = wandb.Api(timeout=60)
 run_ids = []
 for sweep_id in sweep_ids:
-    runs = api.runs(path='mec-hpc-investigations',
-                         filters={"Sweep": sweep_id})
-    run_ids.extend([run.id for run in runs.objects if run.state == 'Finished'])
-
-# print(run_ids)
+    runs = api.runs(path='mec-hpc-investigations', filters={"Sweep": sweep_id})
+    sweep_run_ids = [run.id for run in runs.objects if run.state == 'finished']
+    print(sweep_run_ids)
+    # TODO: why do I need to run this manually myself?
+    run_ids.extend(sweep_run_ids)
 
 
 ### Option 2: Manually specify run IDs.
@@ -38,8 +45,11 @@ for sweep_id in sweep_ids:
 # run_ids = ['8nfxn42y', 'yo4r34ao', 'n7syshxb', 'tcqow4co', '2uttb04y']
 
 # Different architectures.
-run_ids = ['fuocwcs5', '6a0b77a4', '64ymbvmu', 'i3bckef0', 'kofij0zt', 'xoc1k5xp', '03n18c8v', 'ysaxu030' 'r5hysyoa', 'l3jipv4s', 'strxn0n2',
-           'a8w0rsdv', '2tdtiomu', 'f7b216ba', 'xu7bzubn']
+# run_ids = ['fuocwcs5', '6a0b77a4', '64ymbvmu', 'i3bckef0', 'kofij0zt', 'xoc1k5xp', '03n18c8v', 'ysaxu030' 'r5hysyoa', 'l3jipv4s', 'strxn0n2',
+#            'a8w0rsdv', '2tdtiomu', 'f7b216ba', 'xu7bzubn']
+
+
+print(f'Run IDs: {run_ids}')
 
 for idx, run_id in enumerate(run_ids):
     command_and_args = [
@@ -47,8 +57,8 @@ for idx, run_id in enumerate(run_ids):
         'scripts/run_eval_one.sh',
         run_id]
 
+    print(' '.join(command_and_args))
     subprocess.run(command_and_args)
-    print(f'Launched ' + ' '.join(command_and_args))
 
     # if idx > 100:
     #     break
