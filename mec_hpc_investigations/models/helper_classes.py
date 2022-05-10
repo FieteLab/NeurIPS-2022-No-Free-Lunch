@@ -257,7 +257,7 @@ class PlaceCells(object):
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
 
-        # Shape: (batch size, sequence length, num place cells, num fields per cell, 2)
+        # Shape: (batch size, sequence length, num place cells, max num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
 
         # # Take the place field per cell closest to the position.
@@ -278,11 +278,21 @@ class PlaceCells(object):
         # Compute distance over 2D cartesian position
         # Shape: (batch size, sequence length, num place cells, num fields per cell)
         dist_squared = tf.reduce_sum(d ** 2, axis=4)
-        divided_dist_squared = tf.divide(dist_squared, 2.*tf.square(self.place_cell_rf))
+        divided_dist_squared = tf.divide(
+            dist_squared,
+            2.*tf.square(self.place_cell_rf),  # shape: (1, 1, num place cells, max num fields per cell)
+        )
+        # Shape: (batch size, trajectory length, num place cells)
+        min_indices = tf.math.argmin(
+            divided_dist_squared,
+            axis=3)
+        # Shape: (batch size, trajectory length, num place cells)
+        min_divided_dist_squared = tf.gather(divided_dist_squared, min_indices, batch_dims=3)
+
         if self.place_field_normalization == 'local':
-            normalized_dist_squared = tf.exp(-divided_dist_squared)
+            normalized_dist_squared = tf.exp(-min_divided_dist_squared)
         elif self.place_field_normalization == 'global':
-            normalized_dist_squared = tf.nn.softmax(-divided_dist_squared, axis=2)
+            normalized_dist_squared = tf.nn.softmax(-min_divided_dist_squared, axis=2)
         else:
             raise ValueError(f"Impermissible normalization: {self.place_field_normalization}")
 
@@ -296,19 +306,21 @@ class PlaceCells(object):
                 dist_squared,
                 2. * tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
             )
+            # Shape: (batch size, sequence length, num place cells)
+            min_other_divided_dist_squared = tf.gather(
+                other_divided_dist_squared,
+                min_indices,
+                batch_dims=3)
 
             if self.place_field_normalization == 'local':
-                other_normalized_dist_squared = tf.exp(-other_divided_dist_squared)
+                other_normalized_dist_squared = tf.exp(-min_other_divided_dist_squared)
             elif self.place_field_normalization == 'global':
-                other_normalized_dist_squared = tf.nn.softmax(-other_divided_dist_squared, axis=2)
+                other_normalized_dist_squared = tf.nn.softmax(-min_other_divided_dist_squared, axis=2)
             else:
                 raise ValueError(f"Impermissible normalization: {self.place_field_normalization}")
 
-            # Shape: (batch size, sequence length, num place cells, num fields per cell)
-            diff_of_normalized_dist_squared = normalized_dist_squared - other_normalized_dist_squared
-
-            # Shape: (batch size, sequence length, num place cells,)
-            outputs = tf.reduce_sum(diff_of_normalized_dist_squared, axis=3)
+            # Shape: (batch size, sequence length, num place cells)
+            outputs = normalized_dist_squared - other_normalized_dist_squared
 
             # Shift and scale outputs so that they lie in [0,1].
             outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))

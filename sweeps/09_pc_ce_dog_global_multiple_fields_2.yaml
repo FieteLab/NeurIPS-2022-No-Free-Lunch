@@ -8,8 +8,6 @@ parameters:
   activation:
     values: [
         'relu',
-        'tanh',
-        'sigmoid',
     ]
   batch_size:
     values: [200]
@@ -22,8 +20,6 @@ parameters:
   initializer:
     values: [
       'glorot_uniform',
-      'glorot_normal',
-      'orthogonal',
     ]
   is_periodic:
     values: [False]
@@ -33,6 +29,14 @@ parameters:
     values: [20]
   n_grad_steps_per_epoch:
     values: [10000]
+  n_place_fields_per_cell:
+    values: [
+      'Poisson( 0.25 )',
+      'Poisson( 0.5 )',
+      'Poisson( 0.75 )',
+      'Poisson( 1.0 )',
+      'Poisson( 1.5 )',
+    ]
   Ng:
     values: [4096]
   Np:
@@ -47,7 +51,7 @@ parameters:
     ]
   place_field_values:
     values: [
-      'gaussian',
+      'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
@@ -55,7 +59,7 @@ parameters:
     ]
   place_cell_rf:
     values: [
-      0.12,
+      0.15,
       0.20,
     ]
   readout_dropout:
@@ -63,15 +67,12 @@ parameters:
   rnn_type:
     values: [
       'RNN',
-      'LSTM',
-      'UGRNN',
-      'GRU',
     ]
   seed:
-    values: [ 0, 1, 2]
+    values: [ 0  ]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [1.]
+    values: [2.]
   weight_decay:
       values: [ 0.0001 ]

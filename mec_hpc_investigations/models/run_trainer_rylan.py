@@ -23,7 +23,7 @@ default_config = {
     'n_epochs': 3,
     'n_grad_steps_per_epoch': 5,
     'n_place_fields_per_cell': 1,
-    # 'n_place_fields_per_cell': 'Poisson ( 1.5 )',
+    # 'n_place_fields_per_cell': 'Poisson ( 0.25 )',
     'Np': 32,
     'Ng': 256,
     'optimizer': 'adam',
@@ -71,7 +71,6 @@ options = configure_options(save_dir='results',
 model = configure_model(options=options)
 trainer = Trainer(options=options,
                   model=model)
-trainer.train(save=True,
-              log_and_plot_grid_scores=False)
+trainer.train(save=True, log_and_plot_grid_scores=False)
 # profiler.stop()
 print('Finished training.')

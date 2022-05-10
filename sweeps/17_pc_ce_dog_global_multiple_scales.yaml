@@ -41,7 +41,6 @@ parameters:
   optimizer:
     values: [
         'adam',
-        'rmsprop',
     ]
   place_field_loss:
     values: [
@@ -59,7 +58,8 @@ parameters:
     values: [
       0.12,
       'Uniform( 0.10 , 0.14 )',
-      'Uniform( 0.07 , 0.19 )',
+      'Uniform( 0.08 , 0.16 )',
+      'Uniform( 0.06 , 0.18 )',
     ]
   readout_dropout:
     values: [0.]
@@ -68,13 +68,14 @@ parameters:
       'RNN',
     ]
   seed:
-    values: [ 0, 1, 2 ]
+    values: [ 0, 1, 2, 4 ]
   sequence_length:
     values: [20]
   surround_scale:
     values: [
       2.,
       'Uniform( 1.90 , 2.10 )',
+      'Uniform( 1.75 , 2.25 )',
       'Uniform( 1.50 , 2.50 )',
     ]
   weight_decay:
