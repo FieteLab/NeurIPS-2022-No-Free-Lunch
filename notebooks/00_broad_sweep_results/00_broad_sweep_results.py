@@ -101,7 +101,7 @@ plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
 
 plot_max_grid_score_vs_activation(
-    runs_performance_df=runs_performance_df,
+    runs_configs_with_scores_max_df=runs_performance_df,
     plot_dir=results_dir)
 
 plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(

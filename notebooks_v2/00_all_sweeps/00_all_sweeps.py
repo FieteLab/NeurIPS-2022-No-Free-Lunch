@@ -34,26 +34,18 @@ runs_configs_df = download_wandb_project_runs_configs(
 
 
 # Add human-readable sweep
-def sweep_to_human_readable_sweep(row: pd.Series):
-    if row['Sweep'] == '2vw5jbim':
+def convert_sweep_to_human_readable_sweep(row: pd.Series):
+    if row['Sweep'] == '26gn9pfh':
         # 01: Cartesian + MSE
-        human_readable_sweep = 'Cartesian\nMSE\nN=144'
+        human_readable_sweep = 'Cartesian\nMSE\nN='
     elif row['Sweep'] == '':
         # 02: Polar + MSE
         human_readable_sweep = 'Polar\nGeodesic'
         raise NotImplementedError
-    elif row['Sweep'] == 'qu0mobjm':
-        # 03: G+Global+CE, sweeping most hyperparameters
-        human_readable_sweep = 'Gaussian\nCE\nGlobal\nHyperparams-RF\nN='
-    elif row['Sweep'] == '8rvghgz1':
-        # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
-        human_readable_sweep = 'Gaussian\nCE\nGlobal\nRF\nTrain 5x\nN=64'
-    elif row['Sweep'] == 'ea06fmvq':
-        # 05: G+Global+CE, sweeping RF from 0.01m to 0.05m, training 100x
-        human_readable_sweep = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x\nN=9'
-    elif row['Sweep'] == '05ljtf0t':
-        # 05: DoG+Global+CE, sweeping most hyperparameters
-        human_readable_sweep = 'DoG\nCE\nGlobal\nOthers\nN=72'
+    elif row['Sweep'] == 'rutsx042':
+        human_readable_sweep = 'Gaussian\nCE\nGlobal\nHyperparams w/o RF)\nN='
+    elif row['Sweep'] == 'gvwcljra':
+        human_readable_sweep = 'DoG\nCE\nGlobal\nIdeal\nN='
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -61,7 +53,7 @@ def sweep_to_human_readable_sweep(row: pd.Series):
 
 
 runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
-    sweep_to_human_readable_sweep,
+    convert_sweep_to_human_readable_sweep,
     axis=1)
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
@@ -71,11 +63,11 @@ overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
-plot_pos_decoding_err_vs_run_group(
+plot_pos_decoding_err_vs_human_readable_sweep(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir)
 
-plot_percent_low_decoding_err_vs_run_group(
+plot_percent_low_decoding_err_vs_human_readable_sweep(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
@@ -107,25 +99,24 @@ plot_pos_decoding_err_vs_max_grid_score_kde(
 # runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 
-plot_pos_decoding_err_vs_max_grid_score_by_run_group(
+plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir)
 
-plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
+plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
 
 plot_max_grid_score_vs_activation(
-    runs_performance_df=runs_performance_df,
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir)
 
-plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
+plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold,
     grid_score_d60_threshold=grid_score_d60_threshold,
-    grid_score_d90_threshold=grid_score_d90_threshold,
-)
+    grid_score_d90_threshold=grid_score_d90_threshold)
 
 print('Finished!')

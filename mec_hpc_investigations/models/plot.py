@@ -479,12 +479,12 @@ def plot_loss_min_vs_optimizer(runs_configs_df: pd.DataFrame,
 
 
 def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
-        runs_performance_df: pd.DataFrame,
+        runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
     plt.close()
-    runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
-        runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+    runs_configs_with_scores_max_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
+        runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
@@ -492,7 +492,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
     ax = axes[0]
     sns.stripplot(y="max_grid_score_d=60_n=256",
                   x='human_readable_sweep',
-                  data=runs_performance_df,
+                  data=runs_configs_with_scores_max_df,
                   ax=ax,
                   size=2)
     ax.set_ylabel(
@@ -503,7 +503,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
     ax = axes[1]
     sns.stripplot(y="max_grid_score_d=90_n=256",
                   x='human_readable_sweep',
-                  data=runs_performance_df,
+                  data=runs_configs_with_scores_max_df,
                   ax=ax,
                   size=2)
     ax.set_ylabel(None)
@@ -517,7 +517,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
     plt.close()
 
 
-def plot_max_grid_score_vs_activation(runs_performance_df: pd.DataFrame,
+def plot_max_grid_score_vs_activation(runs_configs_with_scores_max_df: pd.DataFrame,
                                       plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
@@ -525,7 +525,7 @@ def plot_max_grid_score_vs_activation(runs_performance_df: pd.DataFrame,
     ax = axes[0]
     sns.stripplot(y="max_grid_score_d=60_n=256",
                   x='activation',
-                  data=runs_performance_df,
+                  data=runs_configs_with_scores_max_df,
                   ax=ax,
                   size=2)
     ax.set_ylabel(
@@ -536,7 +536,7 @@ def plot_max_grid_score_vs_activation(runs_performance_df: pd.DataFrame,
     ax = axes[1]
     sns.stripplot(y="max_grid_score_d=90_n=256",
                   x='activation',
-                  data=runs_performance_df,
+                  data=runs_configs_with_scores_max_df,
                   ax=ax,
                   size=2)
     ax.set_ylabel(None)
@@ -787,20 +787,20 @@ def plot_participation_ratio_vs_architecture_and_activation(
 
 
 def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
-        runs_performance_df: pd.DataFrame,
+        runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.,
         grid_score_d60_threshold: float = 1.2,
         grid_score_d90_threshold: float = 1.4):
     plt.close()
-    runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
-        runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+    runs_configs_with_scores_max_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
+        runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
-    runs_performance_df[f'has_grid_d60'] \
-        = runs_performance_df['max_grid_score_d=60_n=256'] > grid_score_d60_threshold
+    runs_configs_with_scores_max_df[f'has_grid_d60'] \
+        = runs_configs_with_scores_max_df['max_grid_score_d=60_n=256'] > grid_score_d60_threshold
 
-    runs_performance_df[f'has_grid_d90'] \
-        = runs_performance_df['max_grid_score_d=90_n=256'] > grid_score_d90_threshold
+    runs_configs_with_scores_max_df[f'has_grid_d90'] \
+        = runs_configs_with_scores_max_df['max_grid_score_d=90_n=256'] > grid_score_d90_threshold
 
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
@@ -808,7 +808,7 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sw
     ax = axes[0]
     sns.barplot(y="has_grid_d60",
                 x='human_readable_sweep',
-                data=runs_performance_df,
+                data=runs_configs_with_scores_max_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
     ax.set_title(r'$60^{\circ}$')
@@ -819,7 +819,7 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sw
     ax = axes[1]
     sns.barplot(y="has_grid_d90",
                 x='human_readable_sweep',
-                data=runs_performance_df,
+                data=runs_configs_with_scores_max_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
     ax.set_title(r'$90^{\circ}$')
