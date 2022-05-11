@@ -20,7 +20,7 @@ sns.set_style("whitegrid")
 #                     x="_step",
 #                     y='pos_decoding_err_over_min_pos_decoding_err',
 #                     hue='run_id',
-#                     col='run_group',
+#                     col='human_readable_sweep',
 #                     kind='line',
 #                     ci=None,
 #                     facet_kws=dict(sharex=True,
@@ -43,12 +43,10 @@ sns.set_style("whitegrid")
 def plot_grid_periods_histograms_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(0, 150, 151)
 
     for grid_score_threshold in [0.4, 0.6, 0.8, 1.0, 1.2]:
-
         # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.histplot(x="period_per_cell",
@@ -74,11 +72,9 @@ def plot_grid_periods_histograms_by_place_cell_rf(
 def plot_grid_periods_kde_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
 
     for grid_score_threshold in [0.4, 0.6, 0.8, 1.0, 1.2]:
-
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.kdeplot(x="period_per_cell",
                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
@@ -482,7 +478,7 @@ def plot_loss_min_vs_optimizer(runs_configs_df: pd.DataFrame,
     plt.close()
 
 
-def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
+def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
@@ -495,7 +491,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
 
     ax = axes[0]
     sns.stripplot(y="max_grid_score_d=60_n=256",
-                  x='run_group',
+                  x='human_readable_sweep',
                   data=runs_performance_df,
                   ax=ax,
                   size=2)
@@ -506,7 +502,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
 
     ax = axes[1]
     sns.stripplot(y="max_grid_score_d=90_n=256",
-                  x='run_group',
+                  x='human_readable_sweep',
                   data=runs_performance_df,
                   ax=ax,
                   size=2)
@@ -514,7 +510,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(
     ax.set_xlabel('')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_given_low_pos_decoding_err_vs_run_group.png'),
+                             f'max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -746,11 +742,11 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
 
 
 def plot_num_grid_cells_by_place_cell_rf(
-    augmented_neurons_data_by_run_id_df: pd.DataFrame,
-    plot_dir: str):
-
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
     # augmented_neurons_data_by_run_id_df.groupby('run_id')['period_per_cell'].()
     print(10)
+
 
 def plot_participation_ratio_by_num_grad_steps(
         runs_augmented_histories_df: pd.DataFrame,
@@ -790,7 +786,7 @@ def plot_participation_ratio_vs_architecture_and_activation(
     plt.close()
 
 
-def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
+def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.,
@@ -811,7 +807,7 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
 
     ax = axes[0]
     sns.barplot(y="has_grid_d60",
-                x='run_group',
+                x='human_readable_sweep',
                 data=runs_performance_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
@@ -822,7 +818,7 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
 
     ax = axes[1]
     sns.barplot(y="has_grid_d90",
-                x='run_group',
+                x='human_readable_sweep',
                 data=runs_performance_df,
                 ax=ax)
     ax.set_ylim(0., 1.)
@@ -832,7 +828,7 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group(
     ax.set_xlabel('')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'percent_have_grid_cells_given_low_pos_decoding_err_vs_run_group.png'),
+                             f'percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -889,24 +885,68 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
     plt.close()
 
 
-def plot_percent_low_decoding_err_vs_run_group(
-        runs_performance_df: pd.DataFrame,
+def plot_percent_low_pos_decoding_err_pie(runs_configs_with_scores_max_df: pd.DataFrame,
+                                          plot_dir: str,
+                                          low_pos_decoding_err_threshold: float = 6.):
+    plt.close()
+
+    pos_decoding_err_below_threshold_col = f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'
+    runs_configs_with_scores_max_df[pos_decoding_err_below_threshold_col] = \
+        runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+
+    num_runs_per_category = runs_configs_with_scores_max_df.groupby(pos_decoding_err_below_threshold_col).count()
+
+    plt.pie(
+        data=num_runs_per_category.values,
+        labels=num_runs_per_category.columns.values,
+        autopct='%.0f%%')
+
+    plt.savefig(os.path.join(plot_dir, f'percent_low_pos_decoding_err_pie.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_pos_decoding_err_vs_max_grid_score_kde(runs_configs_with_scores_max_df: pd.DataFrame,
+                                                plot_dir: str):
+    plt.close()
+
+    sns.kdeplot(
+        x='score_60_by_neuron_max',
+        y='score_90_by_neuron_max',
+        # cmap=cmap,
+        fill=True,
+        clip=(-5, 5),
+        levels=15,
+        data=runs_configs_with_scores_max_df,
+    )
+
+    plt.savefig(os.path.join(plot_dir, f'pos_decoding_err_vs_max_grid_score_kde.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_percent_low_decoding_err_vs_human_readable_sweep(
+        runs_configs_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold: float = 5.):
     plt.close()
-    runs_performance_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
-        runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+    runs_configs_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'] = \
+        runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
     fig, ax = plt.subplots(figsize=(24, 8))
-    sns.barplot(x="run_group",
+    sns.barplot(x="human_readable_sweep",
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold}',
-                data=runs_performance_df,
+                data=runs_configs_df,
                 ax=ax)
     ax.set_xlabel('')
     ax.set_ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold} cm')
     ax.set_ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
-                             f'percent_low_decoding_err_vs_run_group.png'),
+                             f'percent_low_decoding_err_vs_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -938,19 +978,19 @@ def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
     plt.close()
 
 
-def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
-        runs_performance_df: pd.DataFrame,
+def plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
+        runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
-    ymin = runs_performance_df['pos_decoding_err'].min()
-    ymax = runs_performance_df['pos_decoding_err'].max()
+    ymin = runs_configs_with_scores_max_df['pos_decoding_err'].min()
+    ymax = runs_configs_with_scores_max_df['pos_decoding_err'].max()
     ax = axes[0]
     sns.scatterplot(y="pos_decoding_err",
                     x='max_grid_score_d=60_n=256',
-                    data=runs_performance_df,
-                    hue='run_group',
+                    data=runs_configs_with_scores_max_df,
+                    hue='human_readable_sweep',
                     ax=ax,
                     s=10)
     ax.set_ylim(ymin, ymax)
@@ -961,8 +1001,8 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
     ax = axes[1]
     sns.scatterplot(y="pos_decoding_err",
                     x='max_grid_score_d=90_n=256',
-                    data=runs_performance_df,
-                    hue='run_group',
+                    data=runs_configs_with_scores_max_df,
+                    hue='human_readable_sweep',
                     ax=ax,
                     s=10)
     ax.set_ylim(ymin, ymax)
@@ -971,7 +1011,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_run_group(
     ax.set_title(r'$90^{\circ}$')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_vs_max_grid_score_by_run_group.png'),
+                             f'pos_decoding_err_vs_max_grid_score_by_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -1079,22 +1119,23 @@ def plot_pos_decoding_err_min_vs_optimizer(runs_configs_df: pd.DataFrame,
     # plt.show()
     plt.close()
 
-# def plot_pos_decoding_err_vs_run_group(
-#         runs_performance_df: pd.DataFrame,
-#         plot_dir: str):
-#     plt.close()
-#     fig, ax = plt.subplots(figsize=(24, 8))
-#     sns.stripplot(x="run_group",
-#                   y="pos_decoding_err",
-#                   data=runs_performance_df,
-#                   size=4,
-#                   ax=ax)
-#     ax.set_ylim(1., 100.)
-#     ax.set_ylabel('Pos Decoding Err (cm)')
-#     ax.set_xlabel('')
-#     plt.savefig(os.path.join(plot_dir,
-#                              f'pos_decoding_err_vs_run_group.png'),
-#                 bbox_inches='tight',
-#                 dpi=300)
-#     # plt.show()
-#     plt.close()
+
+def plot_pos_decoding_err_vs_human_readable_sweep(
+        runs_configs_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    fig, ax = plt.subplots(figsize=(24, 8))
+    sns.stripplot(x="human_readable_sweep",
+                  y="pos_decoding_err",
+                  data=runs_configs_df,
+                  size=4,
+                  ax=ax)
+    ax.set_ylim(1., 100.)
+    ax.set_ylabel('Pos Decoding Err (cm)')
+    ax.set_xlabel('')
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_err_vs_human_readable_sweep.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()

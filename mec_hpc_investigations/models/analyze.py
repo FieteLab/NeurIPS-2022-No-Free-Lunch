@@ -222,7 +222,7 @@ def load_runs_joblib_files(run_ids: List[str],
     return joblib_files_data_by_run_id_dict
 
 
-def overwrite_run_config_df_values_with_joblib_data(
+def overwrite_runs_configs_df_values_with_joblib_data(
         runs_configs_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]]) -> None:
 

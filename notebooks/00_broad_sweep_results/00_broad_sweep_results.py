@@ -83,16 +83,16 @@ runs_performance_df = runs_configs_df[[
         how='left')
 
 plot_pos_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
+    runs_configs_df=runs_performance_df,
     plot_dir=results_dir)
 
 plot_percent_low_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
+    runs_configs_df=runs_performance_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
 
 plot_pos_decoding_err_vs_max_grid_score_by_run_group(
-    runs_performance_df=runs_performance_df,
+    runs_configs_with_scores_max_df=runs_performance_df,
     plot_dir=results_dir)
 
 plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(

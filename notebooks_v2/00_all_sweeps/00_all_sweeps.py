@@ -33,72 +33,82 @@ runs_configs_df = download_wandb_project_runs_configs(
     refresh=True)
 
 
-joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_df['run_id'].unique()))
-
-overwrite_run_config_df_values_with_joblib_data(
-    runs_configs_df=runs_configs_df,
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
-
-
-
-def sweep_to_run_group(row: pd.Series):
+# Add human-readable sweep
+def sweep_to_human_readable_sweep(row: pd.Series):
     if row['Sweep'] == '2vw5jbim':
         # 01: Cartesian + MSE
-        run_group = 'Cartesian\nMSE\nN=144'
+        human_readable_sweep = 'Cartesian\nMSE\nN=144'
     elif row['Sweep'] == '':
         # 02: Polar + MSE
-        run_group = 'Polar\nGeodesic'
+        human_readable_sweep = 'Polar\nGeodesic'
         raise NotImplementedError
     elif row['Sweep'] == 'qu0mobjm':
         # 03: G+Global+CE, sweeping most hyperparameters
-        run_group = 'Gaussian\nCE\nGlobal\nHyperparams-RF\nN='
+        human_readable_sweep = 'Gaussian\nCE\nGlobal\nHyperparams-RF\nN='
     elif row['Sweep'] == '8rvghgz1':
         # 04: G+Global+CE, sweeping RF from 0.01m to 2.0m
-        run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 5x\nN=64'
+        human_readable_sweep = 'Gaussian\nCE\nGlobal\nRF\nTrain 5x\nN=64'
     elif row['Sweep'] == 'ea06fmvq':
         # 05: G+Global+CE, sweeping RF from 0.01m to 0.05m, training 100x
-        run_group = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x\nN=9'
+        human_readable_sweep = 'Gaussian\nCE\nGlobal\nRF\nTrain 100x\nN=9'
     elif row['Sweep'] == '05ljtf0t':
         # 05: DoG+Global+CE, sweeping most hyperparameters
-        run_group = 'DoG\nCE\nGlobal\nOthers\nN=72'
+        human_readable_sweep = 'DoG\nCE\nGlobal\nOthers\nN=72'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
-    return run_group
+    return human_readable_sweep
 
 
-runs_configs_df['run_group'] = runs_configs_df.apply(
-    sweep_to_run_group,
+runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
+    sweep_to_human_readable_sweep,
     axis=1)
 
-runs_histories_df = download_wandb_project_runs_histories(
-    wandb_project_path='mec-hpc-investigations',
-    data_dir=data_dir,
-    sweep_ids=sweep_ids)
+joblib_files_data_by_run_id_dict = load_runs_joblib_files(
+    run_ids=list(runs_configs_df['run_id'].unique()))
 
-minima_performance_metrics = compute_minima_performance_metrics_from_runs_histories(
-    runs_histories_df=runs_histories_df,
-)
-
-runs_performance_df = runs_configs_df[[
-    'run_id', 'run_group', 'place_field_loss', 'place_field_values',
-    'place_field_normalization', 'activation']].merge(
-        minima_performance_metrics,
-        on='run_id',
-        how='left')
+overwrite_runs_configs_df_values_with_joblib_data(
+    runs_configs_df=runs_configs_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 plot_pos_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
+    runs_configs_df=runs_configs_df,
     plot_dir=results_dir)
 
 plot_percent_low_decoding_err_vs_run_group(
-    runs_performance_df=runs_performance_df,
+    runs_configs_df=runs_configs_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
 
+neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+
+max_grid_scores_by_run_id_df = neurons_data_by_run_id_df.groupby('run_id').agg(
+    score_60_by_neuron_max=('score_60_by_neuron', 'max'),
+    score_90_by_neuron_max=('score_90_by_neuron', 'max')).reset_index()
+
+runs_configs_with_scores_max_df = runs_configs_df.merge(
+    neurons_data_by_run_id_df,
+    on='run_id',
+    how='left')
+
+plot_percent_low_pos_decoding_err_pie(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+    plot_dir=results_dir,
+    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
+
+plot_pos_decoding_err_vs_max_grid_score_kde(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+    plot_dir=results_dir)
+
+# # Keep only networks that achieved low position decoding error.
+# low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+# print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+# runs_configs_df = runs_configs_df[low_pos_decoding_indices]
+
+
 plot_pos_decoding_err_vs_max_grid_score_by_run_group(
-    runs_performance_df=runs_performance_df,
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir)
 
 plot_max_grid_score_given_low_pos_decoding_err_vs_run_group(

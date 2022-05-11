@@ -27,7 +27,7 @@ runs_configs_df = download_wandb_project_runs_configs(
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
-overwrite_run_config_df_values_with_joblib_data(
+overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
