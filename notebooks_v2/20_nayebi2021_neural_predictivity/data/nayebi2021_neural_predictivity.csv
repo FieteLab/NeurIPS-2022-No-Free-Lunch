@@ -1,0 +1,21 @@
+Architecture,Nonlinearity,Untrained,Trained,Generalization,Position Loss
+RNN,Linear,0.25,0.63,0.14,0.21
+RNN,Tanh,0.25,0.71,0.28,0.27
+RNN,Sigmoid,0.23,0.32,0.24,0.4
+RNN,ReLU,0.52,0.68,0.71,0.41
+SRNN,Linear,0.25,0.63,0.22,0.22
+SRNN,Tanh,0.25,0.63,0.22,0.35
+SRNN,Sigmoid,0.23,0.24,0.31,0.42
+SRNN,ReLU,0.52,0.78,0.45,0.47
+GRU,Linear,0.42,0.65,0.66,0.27
+GRU,Tanh,0.42,0.68,0.66,0.26
+GRU,Sigmoid,0.26,0.75,0.26,0.41
+GRU,ReLU,0.66,0.76,0.71,0.46
+LSTM,Linear,0.42,0.64,0.72,0.22
+LSTM,Tanh,0.42,0.64,0.71,0.23
+LSTM,Sigmoid,0.28,0.59,0.28,0.3
+LSTM,ReLU,0.64,0.79,0.74,0.4
+UGRNN,Linear,0.56,0.73,0.69,0.22
+UGRNN,Tanh,0.56,0.74,0.69,0.23
+UGRNN,Sigmoid,0.31,0.79,0.33,0.38
+UGRNN,ReLU,0.69,0.81,0.75,0.51

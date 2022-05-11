@@ -40,7 +40,7 @@ class Options(object):
         self.weight_decay = None
 
     def check_valid(self):
-        assert self.activation in {'relu', 'tanh', 'sigmoid'}
+        assert self.activation in {'relu', 'tanh', 'sigmoid', 'linear'}
         self.assert_var_is_positive_int(self.batch_size)
         assert self.place_field_loss in {'cartesian',
                                          'gaussian',

@@ -6,6 +6,28 @@ from typing import Dict, List, Tuple, Union
 import wandb
 
 
+def compute_frac_neurons_score60_above_threshold_by_run_id_df(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame) -> pd.DataFrame:
+
+    # https://stackoverflow.com/a/50772444/4570472
+    frac_neurons_score60_above_threshold_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby(
+        'run_id')['score_60_by_neuron'].agg(
+        frac_neurons_with_score_60_above_0p37=('score_60_by_neuron', lambda x: x.gt(0.37).mean()),
+        frac_neurons_with_score_60_above_0p8=('score_60_by_neuron', lambda x: x.gt(0.8).mean()),
+        frac_neurons_with_score_60_above_0p85=('score_60_by_neuron', lambda x: x.gt(0.85).mean()),
+        frac_neurons_with_score_60_above_0p9=('score_60_by_neuron', lambda x: x.gt(0.90).mean()),
+        frac_neurons_with_score_60_above_1p0=('score_60_by_neuron', lambda x: x.gt(1.0).mean()),
+        frac_neurons_with_score_60_above_1p18=('score_60_by_neuron', lambda x: x.gt(1.18).mean())).reset_index()
+
+    frac_neurons_score60_above_threshold_by_run_id_df = pd.melt(
+        frac_neurons_score60_above_threshold_by_run_id_df,
+        id_vars=['run_id'],
+        value_vars=[]
+    )
+
+    return frac_neurons_score60_above_threshold_by_run_id_df
+
+
 def convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]]) -> pd.DataFrame:
 

@@ -13,8 +13,8 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 
 
 results_dir = 'results'
-# wandb_run_id = sys.argv[1]  # '0dxm9nbz'
-wandb_run_id = 'gaqt4cge'
+wandb_run_id = sys.argv[1]  # '0dxm9nbz'
+# wandb_run_id = 'gaqt4cge'
 run_dir = os.path.join(results_dir, wandb_run_id)
 ckpts_dir_path = os.path.join(run_dir, 'ckpts')
 options_path = os.path.join(ckpts_dir_path, 'options.joblib')

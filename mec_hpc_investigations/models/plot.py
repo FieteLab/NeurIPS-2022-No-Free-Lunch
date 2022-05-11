@@ -842,8 +842,9 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
 def plot_num_grid_cells_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-    # augmented_neurons_data_by_run_id_df.groupby('run_id')['period_per_cell'].()
-    print(10)
+
+    raise NotImplementedError
+
 
 
 def plot_participation_ratio_by_num_grad_steps(

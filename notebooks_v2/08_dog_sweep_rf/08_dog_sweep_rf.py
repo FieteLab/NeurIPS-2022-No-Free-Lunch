@@ -45,17 +45,23 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
-# augmented_neurons_data_by_run_id_df.groupby('run_id')['period_per_cell']
+plot_grid_scores_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+
+frac_neurons_score60_above_threshold_by_run_id_df = compute_frac_neurons_score60_above_threshold_by_run_id_df(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
+
+plot_num_grid_cells_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=frac_neurons_score60_above_threshold_by_run_id_df,
+    plot_dir=results_dir)
 
 plot_grid_periods_histograms_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
 plot_grid_periods_kde_by_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_num_grid_cells_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
