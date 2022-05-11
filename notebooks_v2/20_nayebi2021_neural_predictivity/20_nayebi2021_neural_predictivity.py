@@ -38,8 +38,13 @@ runs_configs_df = download_wandb_project_runs_configs(
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
-ratemap_rank_by_run_id_dict = compute_ratemap_rank(
+ratemap_rank_by_run_id_df = compute_ratemap_rank_from_joblib_files_data(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+
+runs_configs_df = runs_configs_df.merge(
+    ratemap_rank_by_run_id_df,
+    on=['run_id'],
+    how='left')
 
 trained_neural_predictivity_and_ID_df = runs_configs_df[[
     'run_id', 'rnn_type', 'activation', 'participation_ratio', 'two_NN', 'method_of_moments_ID']].merge(
@@ -49,7 +54,7 @@ trained_neural_predictivity_and_ID_df = runs_configs_df[[
 
 # trained_neural_predictivity_and_ID_df = pd.melt(
 #     trained_neural_predictivity_and_ID_df,
-#     id_vars=['run_id', 'rnn_type', 'activation', 'Trained'],
+#     id_vars=['run_id', 'rnn_type', '3activation', 'Trained'],
 #     var_name='Intrinsic Dim Measure',
 #     value_name='Intrinsic Dim'
 # )
@@ -60,5 +65,10 @@ trained_neural_predictivity_and_ID_df.rename(
     inplace=True)
 
 plot_neural_predictivity_vs_participation_ratio_by_architecture_and_activation(
+    trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
+    plot_dir=results_dir)
+
+
+plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
     plot_dir=results_dir)
