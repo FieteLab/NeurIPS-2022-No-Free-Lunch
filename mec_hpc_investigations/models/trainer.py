@@ -150,6 +150,14 @@ class Trainer(object):
             n_samples = 512
 
         inputs, pc_outputs, pos = next(gen)
+        results = self.log_and_plot_all(pos=pos,
+                                        inputs=inputs,
+                                        epoch_idx=None,
+                                        n_samples=n_samples,
+                                        log_to_wandb=False,
+                                        run_dir=run_dir,
+                                        refresh=refresh)
+
         loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
         pos_decoding_err *= 100  # Convert position decoding error from meters to cm
         values_to_dump = {'loss': loss, 'pos_decoding_err': pos_decoding_err}
@@ -162,13 +170,6 @@ class Trainer(object):
 
         print(f'Loss: {loss}')
         print(f'Position Decoding Error (cm): {pos_decoding_err}')
-        results = self.log_and_plot_all(pos=pos,
-                                        inputs=inputs,
-                                        epoch_idx=None,
-                                        n_samples=n_samples,
-                                        log_to_wandb=False,
-                                        run_dir=run_dir,
-                                        refresh=refresh)
 
         print('Finished eval after training')
 
@@ -490,28 +491,6 @@ class Trainer(object):
 
                 print(f'Neuron: {storage_idx}\tScore60: {np.round(score_60, 3)}\tScore90: {np.round(score_90, 3)}')
 
-            # These NaNs need to be zeroed out if logging as heatmaps to W&B,
-            # otherwise W&B throws an error.
-            best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
-            best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
-
-            # Sometimes, scores can be NaN if a neuron's ratemap is all 0.
-            # Remove these.
-            score_60_by_neuron = score_60_by_neuron[~np.isnan(score_60_by_neuron)]
-            score_90_by_neuron = score_90_by_neuron[~np.isnan(score_90_by_neuron)]
-
-            # W&B recommends saving
-            # wandb.run.id
-            if log_to_wandb:
-                wandb.log({
-                    f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
-                    f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron),
-                    f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
-                    f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
-                    f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron),
-                    f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
-                }, step=epoch_idx + 1)
-
             joblib.dump(
                 {'rate_maps': rate_maps,
                  'score_60_by_neuron': score_60_by_neuron,
@@ -519,12 +498,32 @@ class Trainer(object):
                 filename=rate_maps_and_scores_joblib_path
             )
 
+            # W&B recommends saving
+            if log_to_wandb:
+
+                # These NaNs need to be zeroed out if logging as heatmaps to W&B,
+                # otherwise W&B throws an error.
+                best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
+                best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
+
+                wandb.log({
+                    f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
+                    f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron[~np.isnan(score_60_by_neuron)]),
+                    f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
+                    f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
+                    f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron[~np.isnan(score_90_by_neuron)]),
+                    f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
+                }, step=epoch_idx + 1)
+
         else:
             previously_generated_results = joblib.load(rate_maps_and_scores_joblib_path)
             rate_maps = previously_generated_results['rate_maps']
             score_60_by_neuron = previously_generated_results['score_60_by_neuron']
             score_90_by_neuron = previously_generated_results['score_90_by_neuron']
             print(f'Loaded previously generated rate maps and scores from disk (N={len(score_60_by_neuron)}).')
+
+        assert len(rate_maps) == len(score_60_by_neuron)
+        assert len(rate_maps) == len(score_90_by_neuron)
 
         return rate_maps, score_60_by_neuron, score_90_by_neuron
 
