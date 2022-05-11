@@ -839,12 +839,43 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
     plt.close()
 
 
+def plot_neural_predictivity_vs_participation_ratio_by_architecture_and_activation(
+    trained_neural_predictivity_and_ID_df: pd.DataFrame,
+        plot_dir: str):
+
+    # g = sns.lmplot(
+    #     x='participation_ratio',
+    #     y='Trained',
+    #     hue='Architecture',
+    #     style='Activation',
+    #     data=trained_neural_predictivity_and_ID_df,)
+
+    g = sns.scatterplot(
+        x='participation_ratio',
+        y='Trained',
+        hue='Architecture',
+        style='Activation',
+        data=trained_neural_predictivity_and_ID_df,)
+    g.legend(
+        bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        loc='center left',  # Legend goes center-left of anchor
+    )
+    plt.xlabel('Participation Ratio')
+    plt.ylabel('Neural Predictivity')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'neural_predictivity_vs_participation_ratio_by_architecture_and_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_num_grid_cells_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
 
     raise NotImplementedError
-
 
 
 def plot_participation_ratio_by_num_grad_steps(

@@ -64,9 +64,10 @@ parameters:
       'LSTM',
       'UGRNN',
       'GRU',
+      'VanillaRNN',
     ]
   seed:
-    values: [ 0, 1 ]
+    values: [ 0, 1, 2, 3 ]
   sequence_length:
     values: [20]
   surround_scale:
