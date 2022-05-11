@@ -4,7 +4,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare variables.
-notebook_dir = 'notebooks_v2/08_dog_receptive_field'
+notebook_dir = 'notebooks_v2/09_dog_heterogeneous_rf'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -14,7 +14,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'yzszqr74',  # DoG with swept receptive fields
+    '2yfpvx86',  # DoG with heterogeneous RF & SS
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -45,18 +45,12 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
-# augmented_neurons_data_by_run_id_df.groupby('run_id')['period_per_cell']
+# plot_grid_scores_histograms_by_run_id(
+#     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+#     plot_dir=results_dir)
 
-plot_grid_periods_histograms_by_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_grid_periods_kde_by_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_num_grid_cells_by_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+plot_grid_periods_histograms_by_run_id(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
@@ -68,4 +62,4 @@ plot_grid_score_max_vs_place_cell_rf(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
     plot_dir=results_dir,)
 
-print('Finished 08_dog_receptive_field/08_dog_receptive_field.py!')
+print('Finished 09_heterogeneous_receptive_field/09_heterogeneous_receptive_field.py!')

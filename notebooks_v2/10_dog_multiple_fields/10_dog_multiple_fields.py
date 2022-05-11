@@ -3,8 +3,8 @@ import os
 from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
-# Declare paths.
-notebook_dir = 'notebooks_v2/05_ideal_conditions'
+# Declare variables.
+notebook_dir = 'notebooks_v2/10_dog_multiple_fields'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -14,7 +14,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'gvwcljra',  # DoG with ideal conditions (rf=0.12 or 0.20, adam or RMSprop)
+
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -33,24 +33,30 @@ overwrite_runs_configs_df_values_with_joblib_data(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+print(f'Frac Low Pos Decoding Err Runs: {np.round(low_pos_decoding_indices.mean(), 3)}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'place_cell_rf']].merge(
+    'run_id', 'n_place_fields_per_cell']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
 
-# plot_grid_scores_histograms_by_run_id(
-#     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
-#     plot_dir=results_dir)
+# augmented_neurons_data_by_run_id_df.groupby('run_id')['period_per_cell']
 
-plot_grid_periods_histograms_by_run_id(
-    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+plot_grid_periods_histograms_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_periods_kde_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_num_grid_cells_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(

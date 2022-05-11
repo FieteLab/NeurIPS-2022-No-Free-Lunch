@@ -4,7 +4,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare variables.
-notebook_dir = 'notebooks_v2/07_architecture'
+notebook_dir = 'notebooks_v2/08_dog_sweep_rf'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -14,8 +14,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'zqrq9ri3',  # DoG+Global+CE, RNN, LSTM, GRU
-    'f06nu0ul',  # DoG+Global+CE, UGRNN
+    'yzszqr74',  # DoG with swept receptive fields
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -37,39 +36,36 @@ low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decodin
 print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
-plot_loss_min_vs_architecture(
-    runs_configs_df=runs_configs_df,
-    plot_dir=results_dir)
-
-plot_pos_decoding_err_min_vs_architecture(
-    runs_configs_df=runs_configs_df,
-    plot_dir=results_dir)
-
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'rnn_type']].merge(
+    'run_id', 'place_cell_rf']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
 
-plot_grid_scores_vs_architecture(
+# augmented_neurons_data_by_run_id_df.groupby('run_id')['period_per_cell']
+
+plot_grid_periods_histograms_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir,
-)
+    plot_dir=results_dir)
+
+plot_grid_periods_kde_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_num_grid_cells_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
     score_90_by_neuron_max=('score_90_by_neuron', 'max'),
-    rnn_type=('rnn_type', 'first')).reset_index()
+    place_cell_rf=('place_cell_rf', 'first')).reset_index()
 
-plot_grid_score_max_vs_architecture(
+plot_grid_score_max_vs_place_cell_rf(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
-    plot_dir=results_dir)
+    plot_dir=results_dir,)
 
-plot_grid_score_max_90_vs_grid_score_max_60_by_architecture(
-    max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
-    plot_dir=results_dir)
-
-print('Finished 07_architecture/07_architecture.py!')
+print('Finished 08_dog_receptive_field/08_dog_receptive_field.py!')
