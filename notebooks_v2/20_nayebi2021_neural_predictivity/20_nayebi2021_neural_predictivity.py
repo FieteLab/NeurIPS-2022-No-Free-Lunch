@@ -35,6 +35,12 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
+joblib_files_data_by_run_id_dict = load_runs_joblib_files(
+    run_ids=list(runs_configs_df['run_id'].unique()))
+
+ratemap_rank_by_run_id_dict = compute_ratemap_rank(
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+
 trained_neural_predictivity_and_ID_df = runs_configs_df[[
     'run_id', 'rnn_type', 'activation', 'participation_ratio', 'two_NN', 'method_of_moments_ID']].merge(
     neural_predictivity_df[['rnn_type', 'activation', 'Trained']],

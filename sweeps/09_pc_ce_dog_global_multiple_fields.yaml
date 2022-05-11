@@ -36,7 +36,6 @@ parameters:
       'Poisson( 0.5 )',
       'Poisson( 0.75 )',
       'Poisson( 1.0 )',
-      'Poisson( 1.5 )',
     ]
   Ng:
     values: [4096]

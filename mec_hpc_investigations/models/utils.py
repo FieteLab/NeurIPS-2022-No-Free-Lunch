@@ -921,7 +921,7 @@ def configure_model(options: Options):
         model = LSTM(options=options, place_cells=place_cells)
     elif rnn_type.lower() == "ugrnn":
         model = UGRNN(options=options, place_cells=place_cells)
-    elif rnn_type.lower() == "vanillarnn":
+    elif rnn_type.lower() == "vanillarnn" or rnn_type.lower() == 'srnn':
         model = VanillaRNN(options=options, place_cells=place_cells)
     elif rnn_type.lower() == "gru":
         model = GRU(options=options, place_cells=place_cells)

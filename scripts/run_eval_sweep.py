@@ -33,8 +33,8 @@ import wandb
 ### Option 2: Manually specify run IDs.
 
 # All runs.
-# results_dir = 'results'
-# run_ids = list(sorted(os.listdir(results_dir)))
+results_dir = 'results'
+run_ids = list(sorted(os.listdir(results_dir)))
 
 # Ideal grid cells
 # run_ids = ['wxt06g20', 'y5qdmmqx', 'ryrmls1x', 'otuv2dhn', 'kfpr44o9', '08jmt76g', '1ez9xulc', '6lgoiwhw', '0svwod2a', 'zg5hbvxx', 'ebb8dp9b', 'd47g0wpn', 'goo0np7q', 'qg3a3h8e', 'p0osju5b', 'ltzh0j9x']
@@ -52,7 +52,7 @@ import wandb
 #            'a8w0rsdv', '2tdtiomu', 'f7b216ba', 'xu7bzubn']
 
 # Heterogeneous receptive field, surround scale.
-run_ids = ['um8jit7d', 'l4yjfv8n', 'hqrll4sn', '0z33otxl', 'nmceq30r', 'txosm82o', 'b6fbastc', 'epott27f', '29d1jkqb', 'kktzqrv3', 'le421kb9', '808a1f2m', 'gmwtkhk0', 'rqkbbnfe', 'ljwe85yd', 'ynbh610u', 'cyvs3cbm', '3fc1li75', 'rafm28vd', 'zcbvfrt1', 'fd39ygyi', 'nlj570av', 'mua6s4v4', '26q58ptj', 'xr5jw6ru', '6h5yfwsq', 'sacjobil', '6bhs50u1', 'nf1awso0', 'q0bkrvx4', 'uz5ugfg5', 'cusnttc9', 'wxx5z3xf', '54i2m5f5', '04csbzc5', 'i22iuilt']
+# run_ids = ['um8jit7d', 'l4yjfv8n', 'hqrll4sn', '0z33otxl', 'nmceq30r', 'txosm82o', 'b6fbastc', 'epott27f', '29d1jkqb', 'kktzqrv3', 'le421kb9', '808a1f2m', 'gmwtkhk0', 'rqkbbnfe', 'ljwe85yd', 'ynbh610u', 'cyvs3cbm', '3fc1li75', 'rafm28vd', 'zcbvfrt1', 'fd39ygyi', 'nlj570av', 'mua6s4v4', '26q58ptj', 'xr5jw6ru', '6h5yfwsq', 'sacjobil', '6bhs50u1', 'nf1awso0', 'q0bkrvx4', 'uz5ugfg5', 'cusnttc9', 'wxx5z3xf', '54i2m5f5', '04csbzc5', 'i22iuilt']
 
 print(f'Run IDs: {run_ids}')
 

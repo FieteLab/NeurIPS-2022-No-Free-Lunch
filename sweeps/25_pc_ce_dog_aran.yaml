@@ -64,7 +64,7 @@ parameters:
       'LSTM',
       'UGRNN',
       'GRU',
-      'VanillaRNN',
+      'SRNN',
     ]
   seed:
     values: [ 0, 1, 2, 3 ]

@@ -28,6 +28,18 @@ def compute_frac_neurons_score60_above_threshold_by_run_id_df(
     return frac_neurons_score60_above_threshold_by_run_id_df
 
 
+def compute_ratemap_rank(
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],) -> Dict[str, float]:
+
+    ratemap_rank_by_run_id_dict = dict()
+    for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
+        rate_maps = joblib_files_data['rate_maps']
+        rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
+        ratemap_rank_by_run_id_dict[run_id] = np.linalg.matrix_rank(rate_maps)
+
+    return ratemap_rank_by_run_id_dict
+
+
 def convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]]) -> pd.DataFrame:
 
