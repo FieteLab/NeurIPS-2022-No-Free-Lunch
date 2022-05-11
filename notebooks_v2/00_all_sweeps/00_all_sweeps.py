@@ -85,7 +85,7 @@ runs_configs_with_scores_max_df = runs_configs_df.merge(
     how='left')
 
 plot_percent_low_pos_decoding_err_pie(
-    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+    runs_configs_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
 

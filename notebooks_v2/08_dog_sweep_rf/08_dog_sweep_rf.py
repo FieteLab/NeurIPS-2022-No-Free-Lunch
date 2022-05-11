@@ -14,7 +14,7 @@ low_pos_decoding_err_threshold = 6.
 grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'yzszqr74',  # DoG with swept receptive fields
+    'yzszqr74',  # DoG sweeping receptive field size
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -64,8 +64,12 @@ max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_
     score_90_by_neuron_max=('score_90_by_neuron', 'max'),
     place_cell_rf=('place_cell_rf', 'first')).reset_index()
 
-plot_grid_score_max_vs_place_cell_rf(
+plot_grid_score_max_as_dots_vs_place_cell_rf(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
     plot_dir=results_dir,)
+
+plot_grid_score_max_as_lines_vs_place_cell_rf(
+    max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
+    plot_dir=results_dir)
 
 print('Finished 08_dog_receptive_field/08_dog_receptive_field.py!')

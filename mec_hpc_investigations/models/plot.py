@@ -80,6 +80,7 @@ def plot_grid_periods_kde_by_place_cell_rf(
                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
                     hue='place_cell_rf',
                     palette='Spectral_r',
+                    fill=True,
                     # legend='full',
                     )
         xlabel = r'$60^{\circ}$ Grid Period'
@@ -239,6 +240,38 @@ def plot_grid_scores_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.Da
     plt.close()
 
 
+def plot_grid_scores_vs_place_cell_rf_by_place_cell_ss(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.boxenplot(y="score_60_by_neuron",
+                  x='place_cell_rf',
+                  hue='surround_scale',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.boxenplot(y="score_90_by_neuron_max",
+                  x='place_cell_rf',
+                  hue='surround_scale',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax)
+    # ax.set_ylabel(None)
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_vs_place_cell_rf_by_place_cell_ss.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_score_max_vs_architecture(max_grid_scores_by_run_id_df: pd.DataFrame,
                                         plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
@@ -304,8 +337,8 @@ def plot_grid_score_max_vs_optimizer(max_grid_scores_by_run_id_df: pd.DataFrame,
     plt.close()
 
 
-def plot_grid_score_max_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFrame,
-                                         plot_dir: str):
+def plot_grid_score_max_as_dots_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFrame,
+                                                 plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
     ax = axes[0]
@@ -313,7 +346,7 @@ def plot_grid_score_max_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFr
                   x='place_cell_rf',
                   data=max_grid_scores_by_run_id_df,
                   ax=ax)
-    ax.set_ylabel(f'Max Grid Score')
+    ax.set_ylabel(f'Max Grid Score (Dot = 1 Run)')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$60^{\circ}$')
 
@@ -328,7 +361,72 @@ def plot_grid_score_max_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFr
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
-                             f'grid_score_max_vs_place_cell_rf.png'),
+                             f'grid_score_max_as_dots_vs_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_as_lines_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFrame,
+                                                  plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.lineplot(y="score_60_by_neuron_max",
+                 x='place_cell_rf',
+                 data=max_grid_scores_by_run_id_df,
+                 ax=ax)
+    ax.set_ylabel(f'Max Grid Score (Avg Across Runs)')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.lineplot(y="score_90_by_neuron_max",
+                 x='place_cell_rf',
+                 data=max_grid_scores_by_run_id_df,
+                 ax=ax,
+                 )
+    # ax.set_ylabel(None)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_as_lines_vs_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
+        runs_configs_with_scores_max_df: pd.DataFrame,
+        plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.barplot(y="score_60_by_neuron_max",
+                x='place_cell_rf',
+                hue='surround_scale',
+                data=runs_configs_with_scores_max_df,
+                ax=ax)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron_max",
+                  x='place_cell_rf',
+                  hue='surround_scale',
+                  data=runs_configs_with_scores_max_df,
+                  ax=ax,
+                  )
+    # ax.set_ylabel(None)
+    # ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel(r'$\sigma$')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_vs_place_cell_rf_by_place_cell_ss.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -885,16 +983,16 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
     plt.close()
 
 
-def plot_percent_low_pos_decoding_err_pie(runs_configs_with_scores_max_df: pd.DataFrame,
+def plot_percent_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
                                           plot_dir: str,
                                           low_pos_decoding_err_threshold: float = 6.):
     plt.close()
 
     pos_decoding_err_below_threshold_col = f'pos_decoding_err_below_{low_pos_decoding_err_threshold}'
-    runs_configs_with_scores_max_df[pos_decoding_err_below_threshold_col] = \
-        runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+    runs_configs_df[pos_decoding_err_below_threshold_col] = \
+        runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
-    num_runs_per_category = runs_configs_with_scores_max_df.groupby(pos_decoding_err_below_threshold_col).count()
+    num_runs_per_category = runs_configs_df.groupby(pos_decoding_err_below_threshold_col).count()
 
     plt.pie(
         data=num_runs_per_category.values,

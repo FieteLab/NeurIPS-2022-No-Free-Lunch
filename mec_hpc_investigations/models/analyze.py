@@ -217,7 +217,7 @@ def load_runs_joblib_files(run_ids: List[str],
             missing_joblib_runs.append(run_id)
 
     if len(missing_joblib_runs) > 0:
-        raise FileNotFoundError(f'The following runs are missing joblib files: {missing_joblib_runs}')
+        raise FileNotFoundError(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
 
     return joblib_files_data_by_run_id_dict
 
