@@ -50,13 +50,13 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
-plot_grid_scores_vs_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
+# plot_grid_scores_vs_place_cell_rf(
+#     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+#     plot_dir=results_dir)
 
-plot_grid_scores_boxen_vs_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
+# plot_grid_scores_boxen_vs_place_cell_rf(
+#     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+#     plot_dir=results_dir)
 
 percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
@@ -71,9 +71,18 @@ plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
     augmented_percent_neurons_score60_above_threshold_by_run_id_df=augmented_percent_neurons_score60_above_threshold_by_run_id_df,
     plot_dir=results_dir)
 
+plot_grid_periods_kde_facet_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 plot_grid_periods_histograms_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
+
+plot_grid_periods_mode_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir
+)
 
 plot_grid_periods_kde_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

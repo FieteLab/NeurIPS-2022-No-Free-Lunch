@@ -1,9 +1,12 @@
 import json
+
+import matplotlib.collections
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
 import seaborn as sns
+from sklearn.neighbors import KernelDensity
 
 plt.rcParams["font.family"] = ["Times New Roman"]
 plt.rcParams["font.size"] = 20  # was previously 22
@@ -43,7 +46,6 @@ sns.set_style("whitegrid")
 def plot_grid_periods_histograms_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(0, 100, 101)
 
@@ -103,7 +105,6 @@ def plot_grid_periods_kde_by_place_cell_rf(
         xlabel = r'$60^{\circ}$ Grid Period'
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
-        plt.xlim(0, 60)
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
         plt.savefig(os.path.join(plot_dir,
                                  f'grid_periods_kde_by_place_cell_rf_threshold={grid_score_threshold}.png'),
@@ -113,10 +114,100 @@ def plot_grid_periods_kde_by_place_cell_rf(
         plt.close()
 
 
+def plot_grid_periods_kde_facet_by_place_cell_rf(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+
+    norm = plt.Normalize(
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].min(),
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].max())
+    sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
+    sm.set_array([])
+
+    for grid_score_threshold in [0.37, 0.8, 1.0, 1.18]:
+        likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
+        plt.close()
+        g = sns.displot(
+            data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+            x='period_per_cell',
+            col='place_cell_rf',
+            hue='place_cell_rf',
+            kind='hist',
+            kde=True,
+            palette='Spectral_r',
+            # sharex=True,
+            # sharey=True,
+        )
+        g.set_titles(r"$\sigma={col_name}$")  # use this argument literally
+        g.set_xlabels(r'$60^{\circ}$ Grid Period')
+        g.set_ylabels(r'Number of Units')
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_periods_kde_facet_by_place_cell_rf_threshold={grid_score_threshold}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+
+
+def plot_grid_periods_mode_vs_place_cell_rf(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+
+    norm = plt.Normalize(
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].min(),
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].max())
+    sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
+    sm.set_array([])
+
+    # bins = np.linspace(0, 100, 50)
+    x_assess_values = np.linspace(0, 150, 1000)[:, np.newaxis]
+
+    # Construct KDE plot
+    for grid_score_threshold in [0.37, 0.8, 1.18]:
+
+        plt.close()
+
+        place_cell_rfs, place_cell_rfs_modes = [], []
+        for rf in augmented_neurons_data_by_run_id_df['place_cell_rf'].unique():
+            # Construct KDE, then extract lines to get mode.
+            indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == rf)\
+                                       & (augmented_neurons_data_by_run_id_df['score_60_by_neuron'].values > grid_score_threshold)\
+                                       & (~pd.isna(augmented_neurons_data_by_run_id_df['period_per_cell']))
+            if indices.sum() == 0:
+                continue
+            kde = KernelDensity(kernel='gaussian').fit(
+                augmented_neurons_data_by_run_id_df['period_per_cell'].values[indices][:, np.newaxis])
+            log_density_values = kde.score_samples(x_assess_values)
+            mode = x_assess_values[np.argmax(log_density_values), 0]
+            place_cell_rfs.append(rf)
+            place_cell_rfs_modes.append(mode)
+
+        sns.scatterplot(data=pd.DataFrame.from_dict({'kde_mode': place_cell_rfs_modes,
+                                                     'place_cell_rf': place_cell_rfs}),
+                        x='place_cell_rf',
+                        y='kde_mode',
+                        hue='place_cell_rf',
+                        palette='Spectral_r')
+
+        plt.gca().get_legend().remove()
+        plt.gca().figure.colorbar(sm, label=r'$\sigma$')
+
+        plt.ylabel('Grid Period Mode')
+        plt.xlabel(r'$\sigma$')
+        plt.title(f'Grid Score Threshold: {grid_score_threshold}')
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_periods_mode_vs_place_cell_rf_threshold={grid_score_threshold}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+
+
 def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(0, 100, 101)
 
@@ -150,7 +241,6 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
 def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
 
     for group, group_df in augmented_neurons_data_by_run_id_df.groupby(['place_cell_rf', 'surround_scale']):
@@ -234,7 +324,6 @@ def plot_grid_scores_histograms_by_run_id(
 def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
     homogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == '0.12') \
@@ -1169,9 +1258,9 @@ def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
 def plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
         augmented_percent_neurons_score60_above_threshold_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
-    for threshold, group_df in augmented_percent_neurons_score60_above_threshold_by_run_id_df.groupby('Grid Score Threshold'):
+    for threshold, group_df in augmented_percent_neurons_score60_above_threshold_by_run_id_df.groupby(
+            'Grid Score Threshold'):
         sns.heatmap(
             pd.pivot_table(group_df, index='surround_scale', columns='place_cell_rf', values='Percent'),
             cmap='Spectral_r',
