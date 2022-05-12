@@ -221,6 +221,38 @@ def plot_grid_scores_histograms_by_run_id(
         plt.close()
 
 
+def plot_grid_scores_histograms_homo_and_hetero(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    bins = np.linspace(-0.6, 1.4, 75)
+    homogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == '0.12') \
+                          & (augmented_neurons_data_by_run_id_df['surround_scale'] == '2')
+    heterogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                            & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+    indices_to_keep = homogeneous_indices | heterogeneous_indices
+    subset_df = augmented_neurons_data_by_run_id_df[indices_to_keep]
+    subset_df['Group'] = ''
+    subset_df['Group'][homogeneous_indices] = r'$\sigma=0.12$' + '\n' + r'$s=2.0$'
+    subset_df['Group'][heterogeneous_indices] = r'$\sigma=Unif(0.06, 0.18)$' + '\n' + r'$s=Unif(1.5, 2.5)$'
+    sns.histplot(
+        data=subset_df,
+        x='score_60_by_neuron',
+        bins=bins,
+        kde=True,
+        hue='Group'
+    )
+    plt.xlabel('Grid Score')
+    plt.ylabel('Count')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_histograms_homo_and_hetero.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_scores_vs_architecture(augmented_neurons_data_by_run_id_df: pd.DataFrame,
                                      plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),

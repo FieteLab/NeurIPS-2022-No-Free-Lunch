@@ -2,6 +2,7 @@ import joblib
 import numpy as np
 import os
 import pandas as pd
+import skdim
 from typing import Dict, List, Tuple, Union
 import wandb
 
@@ -42,7 +43,29 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
     return percent_neurons_score60_above_threshold_by_run_id_df
 
 
-def compute_ratemap_rank_from_joblib_files_data(
+def compute_rate_map_participation_ratio_from_joblib_files_data(
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],) -> pd.DataFrame:
+
+    run_ids = []
+    rate_maps_participation_ratios = []
+    for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
+        run_ids.append(run_id)
+        rate_maps = joblib_files_data['rate_maps']
+        rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
+        # Use skdim implementation for trustworthiness.
+        rate_maps_pr = skdim.id.lPCA(ver='participation_ratio').fit_transform(
+            X=rate_maps)
+
+        rate_maps_participation_ratios.append(rate_maps_pr)
+
+    rate_maps_participation_ratio_by_run_id_df = pd.DataFrame.from_dict({
+        'run_id': run_ids,
+        'rate_maps_participation_ratio': rate_maps_participation_ratios})
+
+    return rate_maps_participation_ratio_by_run_id_df
+
+
+def compute_rate_maps_rank_from_joblib_files_data(
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],) -> pd.DataFrame:
 
     run_ids = []

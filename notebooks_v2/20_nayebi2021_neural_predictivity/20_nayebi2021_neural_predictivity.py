@@ -38,7 +38,7 @@ runs_configs_df = download_wandb_project_runs_configs(
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
-ratemap_rank_by_run_id_df = compute_ratemap_rank_from_joblib_files_data(
+ratemap_rank_by_run_id_df = compute_rate_maps_rank_from_joblib_files_data(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 runs_configs_df = runs_configs_df.merge(
