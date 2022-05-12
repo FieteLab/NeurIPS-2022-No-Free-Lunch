@@ -22,7 +22,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
@@ -46,6 +46,10 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     how='left')
 
 plot_grid_scores_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_boxen_vs_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 

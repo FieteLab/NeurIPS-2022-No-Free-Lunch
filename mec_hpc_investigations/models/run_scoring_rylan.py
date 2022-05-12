@@ -58,8 +58,8 @@ print('Created grid scorer.')
 trainer.eval_after_train(
     gen=trajectory_gen,
     run_dir=run_dir,
-    # refresh=True,
-    refresh=False,
+    refresh=True,
+    # refresh=False,
 )
 
 print('Finished scoring.')
