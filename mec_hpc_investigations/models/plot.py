@@ -43,10 +43,11 @@ sns.set_style("whitegrid")
 def plot_grid_periods_histograms_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
     bins = np.linspace(0, 150, 151)
 
-    for grid_score_threshold in [0.4, 0.6, 0.8, 1.0, 1.2]:
+    for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
         # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.histplot(x="period_per_cell",
@@ -72,9 +73,10 @@ def plot_grid_periods_histograms_by_place_cell_rf(
 def plot_grid_periods_kde_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
 
-    for grid_score_threshold in [0.4, 0.6, 0.8, 1.0, 1.2]:
+    for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.kdeplot(x="period_per_cell",
                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
@@ -214,22 +216,22 @@ def plot_grid_scores_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.Da
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
     ax = axes[0]
-    sns.stripplot(y="score_60_by_neuron_max",
+    sns.stripplot(y="score_60_by_neuron",
                   x='place_cell_rf',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax)
-    ax.set_ylabel(f'Max Grid Score')
+    ax.set_ylabel(f'Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.stripplot(y="score_90_by_neuron_max",
+    sns.stripplot(y="score_90_by_neuron",
                   x='place_cell_rf',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax,
                   )
     # ax.set_ylabel(None)
-    ax.set_ylabel(f'Max Grid Score')
+    ax.set_ylabel(f'Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
@@ -896,18 +898,11 @@ def plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
     plt.ylabel('Neural Predictivity')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation'),
+                             f'neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
-
-
-def plot_num_grid_cells_by_place_cell_rf(
-        augmented_neurons_data_by_run_id_df: pd.DataFrame,
-        plot_dir: str):
-
-    raise NotImplementedError
 
 
 def plot_participation_ratio_by_num_grad_steps(
@@ -945,6 +940,32 @@ def plot_participation_ratio_vs_architecture_and_activation(
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
+    plt.close()
+
+
+def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
+        augmented_percent_neurons_score60_above_threshold_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    g = sns.lineplot(
+        data=augmented_percent_neurons_score60_above_threshold_by_run_id_df,
+        x='place_cell_rf',
+        y='Percent',
+        hue='Grid Score Threshold',
+    )
+    g.legend(
+        bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        loc='center left',  # Legend goes center-left of anchor
+    )
+    plt.xlabel(r'$\sigma$')
+    plt.ylabel('% Grid Cells')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'percent_grid_cells_vs_place_cell_rf_by_threshold.png'),
+                bbox_inches='tight',
+                dpi=300)
+    plt.show()
     plt.close()
 
 
