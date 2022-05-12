@@ -78,6 +78,7 @@ def plot_grid_periods_histograms_by_place_cell_rf(
 def plot_grid_periods_kde_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
 
     for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
@@ -103,6 +104,41 @@ def plot_grid_periods_kde_by_place_cell_rf(
                     dpi=300)
         # plt.show()
         plt.close()
+
+
+def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+
+    for group, group_df in augmented_neurons_data_by_run_id_df.groupby(['place_cell_rf', 'surround_scale']):
+
+        rf, ss = group
+
+        for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
+
+            likely_grid_cell_indices = group_df['score_60_by_neuron'] > grid_score_threshold
+            sns.kdeplot(x="period_per_cell",
+                        data=group_df[likely_grid_cell_indices],
+                        hue='place_cell_rf',
+                        palette='Spectral_r',
+                        fill=True,
+                        # legend='full',
+                        )
+            # Move the legend off to the right.
+            # plt.legend(
+            #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
+            # )
+            xlabel = r'$60^{\circ}$ Grid Period'
+            plt.xlabel(xlabel)
+            plt.title(f'RF: {rf}, SS: {ss}, Threshold: {grid_score_threshold}')
+            plt.savefig(os.path.join(plot_dir,
+                                     f'grid_periods_kde_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png'),
+                        bbox_inches='tight',
+                        dpi=300)
+            # plt.show()
+            plt.close()
 
 
 def plot_grid_periods_histograms_by_run_id(
@@ -335,8 +371,10 @@ def plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
                   hue='surround_scale',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
     ax.set_ylabel(f'Grid Scores')
+    ax.set_xlabel(r'$\sigma$')
+    # https://stackoverflow.com/a/68225877/4570472
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$60^{\circ}$')
 
@@ -346,9 +384,10 @@ def plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
                   hue='surround_scale',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax)
-    # ax.set_ylabel(None)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
     ax.set_ylabel(f'Grid Scores')
+    ax.set_xlabel(r'$\sigma$')
+    # https://stackoverflow.com/a/68225877/4570472
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
@@ -499,6 +538,8 @@ def plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
                 ax=ax)
     ax.set_ylabel(f'Max Grid Score (Avg Across Runs)')
     ax.set_xlabel(r'$\sigma$')
+    # https://stackoverflow.com/a/68225877/4570472
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
@@ -510,7 +551,10 @@ def plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
                 )
     # ax.set_ylabel(None)
     # ax.set_ylabel(f'Max Grid Score')
+    ax.set_ylabel(f'Max Grid Scores (Avg Across Runs)')
     ax.set_xlabel(r'$\sigma$')
+    # https://stackoverflow.com/a/68225877/4570472
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'grid_score_max_vs_place_cell_rf_by_place_cell_ss.png'),
