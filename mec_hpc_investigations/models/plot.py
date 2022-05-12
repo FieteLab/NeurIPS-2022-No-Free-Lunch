@@ -121,6 +121,7 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
                          # hue='place_cell_rf',
                          palette='Spectral_r',
                          bins=bins,
+                         kde=True,
                          # legend='full',
                          )
             # Move the legend off to the right.
@@ -160,9 +161,9 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
             # plt.legend(
             #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
             # )
-            xlabel = r'$60^{\circ}$ Grid Period'
+            xlabel = r'Grid Period'
             plt.xlabel(xlabel)
-            plt.title(f'RF: {rf}, SS: {ss}, Threshold: {grid_score_threshold}')
+            plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nThreshold: {grid_score_threshold}')
             plt.savefig(os.path.join(plot_dir,
                                      f'grid_periods_kde_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png'),
                         bbox_inches='tight',
@@ -221,7 +222,7 @@ def plot_grid_scores_histograms_by_run_id(
         plt.close()
 
 
-def plot_grid_scores_histograms_homo_and_hetero(
+def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
 
@@ -233,20 +234,20 @@ def plot_grid_scores_histograms_homo_and_hetero(
                             & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
     indices_to_keep = homogeneous_indices | heterogeneous_indices
     subset_df = augmented_neurons_data_by_run_id_df[indices_to_keep]
-    subset_df['Group'] = ''
-    subset_df['Group'][homogeneous_indices] = r'$\sigma=0.12$' + '\n' + r'$s=2.0$'
-    subset_df['Group'][heterogeneous_indices] = r'$\sigma=Unif(0.06, 0.18)$' + '\n' + r'$s=Unif(1.5, 2.5)$'
+    subset_df['DoG Params'] = ''
+    subset_df['DoG Params'][homogeneous_indices] = r'$\sigma=0.12$' + '\n' + r'$s=2.0$'
+    subset_df['DoG Params'][heterogeneous_indices] = r'$\sigma=Unif(0.06, 0.18)$' + '\n' + r'$s=Unif(1.5, 2.5)$'
     sns.histplot(
         data=subset_df,
         x='score_60_by_neuron',
         bins=bins,
         kde=True,
-        hue='Group'
+        hue='DoG Params'
     )
     plt.xlabel('Grid Score')
-    plt.ylabel('Count')
+    plt.ylabel('Number of Units')
     plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_histograms_homo_and_hetero.png'),
+                             f'grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
