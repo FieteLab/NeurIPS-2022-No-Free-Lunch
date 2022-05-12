@@ -43,6 +43,7 @@ sns.set_style("whitegrid")
 def plot_grid_periods_histograms_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
     bins = np.linspace(0, 100, 101)
 
@@ -56,7 +57,7 @@ def plot_grid_periods_histograms_by_place_cell_rf(
                      palette='Spectral_r',
                      # legend='full',
                      # legend='False',
-                     # kde=True,
+                     kde=True,
                      )
         # https://stackoverflow.com/questions/30490740/move-legend-outside-figure-in-seaborn-tsplot
         # Move the legend off to the right.
@@ -128,9 +129,9 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
             # plt.legend(
             #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
             # )
-            xlabel = r'$60^{\circ}$ Grid Period'
-            plt.xlabel(xlabel)
-            plt.title(f'RF: {rf}, SS: {ss}, Threshold: {grid_score_threshold}')
+            plt.xlabel(r'$60^{\circ}$ Grid Period')
+            plt.ylabel('Number of Units')
+            plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
             plt.savefig(os.path.join(plot_dir,
                                      f'grid_periods_histograms_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png'),
                         bbox_inches='tight',
@@ -142,6 +143,7 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
 def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
 
     for group, group_df in augmented_neurons_data_by_run_id_df.groupby(['place_cell_rf', 'surround_scale']):
@@ -161,9 +163,9 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
             # plt.legend(
             #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
             # )
-            xlabel = r'Grid Period'
+            xlabel = r'$60^{\circ}$ Grid Period'
             plt.xlabel(xlabel)
-            plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nThreshold: {grid_score_threshold}')
+            plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
             plt.savefig(os.path.join(plot_dir,
                                      f'grid_periods_kde_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png'),
                         bbox_inches='tight',
@@ -1142,6 +1144,7 @@ def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
         hue='Grid Score Threshold',
     )
     g.legend(
+        title='Grid Score Threshold',  # For some reason, the legend title disappears, so add it manually.
         bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
         loc='center left',  # Legend goes center-left of anchor
     )
