@@ -57,7 +57,7 @@ def plot_grid_periods_histograms_by_place_cell_rf(
                      palette='Spectral_r',
                      # legend='full',
                      # legend='False',
-                     kde=True,
+                     # kde=True,
                      )
         # https://stackoverflow.com/questions/30490740/move-legend-outside-figure-in-seaborn-tsplot
         # Move the legend off to the right.
@@ -81,6 +81,12 @@ def plot_grid_periods_kde_by_place_cell_rf(
         plot_dir: str):
     plt.close()
 
+    norm = plt.Normalize(
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].min(),
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].max())
+    sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
+    sm.set_array([])
+
     for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.kdeplot(x="period_per_cell",
@@ -90,13 +96,14 @@ def plot_grid_periods_kde_by_place_cell_rf(
                     fill=True,
                     # legend='full',
                     )
-        # Move the legend off to the right.
-        # plt.legend(
-        #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
-        # )
+        # Remove the legend and replace with a color bar.
+        # https://stackoverflow.com/questions/62884183/trying-to-add-a-colorbar-to-a-seaborn-scatterplot
+        plt.gca().get_legend().remove()
+        plt.gca().figure.colorbar(sm, label=r'$\sigma$')
         xlabel = r'$60^{\circ}$ Grid Period'
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
+        plt.xlim(0, 60)
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
         plt.savefig(os.path.join(plot_dir,
                                  f'grid_periods_kde_by_place_cell_rf_threshold={grid_score_threshold}.png'),
