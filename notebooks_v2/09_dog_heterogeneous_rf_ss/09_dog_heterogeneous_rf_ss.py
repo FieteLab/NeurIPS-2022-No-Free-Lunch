@@ -63,6 +63,19 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
+percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
+
+augmented_percent_neurons_score60_above_threshold_by_run_id_df = runs_configs_df[[
+    'run_id', 'place_cell_rf', 'surround_scale']].merge(
+    percent_neurons_score60_above_threshold_by_run_id_df,
+    on='run_id',
+    how='left')
+
+plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
+    augmented_percent_neurons_score60_above_threshold_by_run_id_df=augmented_percent_neurons_score60_above_threshold_by_run_id_df,
+    plot_dir=results_dir)
+
 plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
