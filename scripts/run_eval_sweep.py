@@ -1,4 +1,5 @@
 import os
+import random
 import subprocess
 import time
 import wandb
@@ -53,6 +54,9 @@ run_ids = list(sorted(os.listdir(results_dir)))
 
 # Heterogeneous receptive field, surround scale.
 # run_ids = ['um8jit7d', 'l4yjfv8n', 'hqrll4sn', '0z33otxl', 'nmceq30r', 'txosm82o', 'b6fbastc', 'epott27f', '29d1jkqb', 'kktzqrv3', 'le421kb9', '808a1f2m', 'gmwtkhk0', 'rqkbbnfe', 'ljwe85yd', 'ynbh610u', 'cyvs3cbm', '3fc1li75', 'rafm28vd', 'zcbvfrt1', 'fd39ygyi', 'nlj570av', 'mua6s4v4', '26q58ptj', 'xr5jw6ru', '6h5yfwsq', 'sacjobil', '6bhs50u1', 'nf1awso0', 'q0bkrvx4', 'uz5ugfg5', 'cusnttc9', 'wxx5z3xf', '54i2m5f5', '04csbzc5', 'i22iuilt']
+
+# random.shuffle functions in-place.
+random.shuffle(run_ids)
 
 print(f'Run IDs: {run_ids}')
 

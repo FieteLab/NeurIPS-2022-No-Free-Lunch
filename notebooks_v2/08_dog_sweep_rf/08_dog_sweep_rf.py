@@ -31,6 +31,11 @@ overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_percent_low_pos_decoding_err_pie(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir,
+    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
+
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')

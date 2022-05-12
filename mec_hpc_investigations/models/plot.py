@@ -253,6 +253,7 @@ def plot_grid_scores_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.Da
 
 def plot_grid_scores_boxen_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.DataFrame,
                                             plot_dir: str):
+
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
     ax = axes[0]
@@ -288,26 +289,70 @@ def plot_grid_scores_vs_place_cell_rf_by_place_cell_ss(
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
     ax = axes[0]
+    sns.stripplot(y="score_60_by_neuron",
+                  x='place_cell_rf',
+                  hue='surround_scale',
+                  dodge=True,  # Otherwise different SS will overlap
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax)
+    ax.set_ylabel(f'Grid Scores')
+    ax.set_xlabel(r'$\sigma$')
+    # https://stackoverflow.com/a/68225877/4570472
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron",
+                  x='place_cell_rf',
+                  hue='surround_scale',
+                  dodge=True,  # Otherwise different SS will overlap
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax)
+    # ax.set_ylabel(None)
+    ax.set_ylabel(f'Grid Scores')
+    ax.set_xlabel(r'$\sigma$')
+    # https://stackoverflow.com/a/68225877/4570472
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+    # ax.set_xticklabels(ax.get_xticklabels(), rotation=30)
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_vs_place_cell_rf_by_place_cell_ss.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
     sns.boxenplot(y="score_60_by_neuron",
                   x='place_cell_rf',
                   hue='surround_scale',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax)
-    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+    ax.set_ylabel(f'Grid Scores')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.boxenplot(y="score_90_by_neuron_max",
+    sns.boxenplot(y="score_90_by_neuron",
                   x='place_cell_rf',
                   hue='surround_scale',
                   data=augmented_neurons_data_by_run_id_df,
                   ax=ax)
     # ax.set_ylabel(None)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+    ax.set_ylabel(f'Grid Scores')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_vs_place_cell_rf_by_place_cell_ss.png'),
+                             f'grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -452,17 +497,17 @@ def plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
                 hue='surround_scale',
                 data=runs_configs_with_scores_max_df,
                 ax=ax)
-    ax.set_ylabel(f'Max Grid Score')
+    ax.set_ylabel(f'Max Grid Score (Avg Across Runs)')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.stripplot(y="score_90_by_neuron_max",
-                  x='place_cell_rf',
-                  hue='surround_scale',
-                  data=runs_configs_with_scores_max_df,
-                  ax=ax,
-                  )
+    sns.barplot(y="score_90_by_neuron_max",
+                x='place_cell_rf',
+                hue='surround_scale',
+                data=runs_configs_with_scores_max_df,
+                ax=ax,
+                )
     # ax.set_ylabel(None)
     # ax.set_ylabel(f'Max Grid Score')
     ax.set_xlabel(r'$\sigma$')
@@ -1114,12 +1159,17 @@ def plot_percent_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
     runs_configs_df[pos_decoding_err_below_threshold_col] = \
         runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
 
-    num_runs_per_category = runs_configs_df.groupby(pos_decoding_err_below_threshold_col).count()
+    num_runs_per_category = runs_configs_df.groupby(pos_decoding_err_below_threshold_col)[
+        pos_decoding_err_below_threshold_col].count()
 
     plt.pie(
-        data=num_runs_per_category.values,
-        labels=num_runs_per_category.columns.values,
+        x=num_runs_per_category.values,
+        labels=num_runs_per_category.index.values,
+        colors=['tab:blue' if label == True else 'tab:orange'
+                for label in num_runs_per_category.index.values],
+        # shadow=True,
         autopct='%.0f%%')
+    plt.title('Achieves Low Position Decoding Error')
 
     plt.savefig(os.path.join(plot_dir, f'percent_low_pos_decoding_err_pie.png'),
                 bbox_inches='tight',
