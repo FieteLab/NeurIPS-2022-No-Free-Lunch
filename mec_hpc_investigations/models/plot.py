@@ -49,20 +49,20 @@ def plot_grid_periods_histograms_by_place_cell_rf(
     for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
         # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
-        g = sns.histplot(x="period_per_cell",
-                         data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
-                         hue='place_cell_rf',
-                         bins=bins,
-                         palette='Spectral_r',
-                         # legend='full',
-                         # legend='False',
-                         # kde=True,
-                         )
+        sns.histplot(x="period_per_cell",
+                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                     hue='place_cell_rf',
+                     bins=bins,
+                     palette='Spectral_r',
+                     # legend='full',
+                     # legend='False',
+                     # kde=True,
+                     )
+        # https://stackoverflow.com/questions/30490740/move-legend-outside-figure-in-seaborn-tsplot
         # Move the legend off to the right.
-        g.legend(
-            bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
-            loc='center left',  # Legend goes center-left of anchor
-        )
+        # plt.legend(
+        #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        # )
         xlabel = r'$60^{\circ}$ Grid Period'
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
@@ -82,18 +82,17 @@ def plot_grid_periods_kde_by_place_cell_rf(
 
     for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
-        g = sns.kdeplot(x="period_per_cell",
-                        data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
-                        hue='place_cell_rf',
-                        palette='Spectral_r',
-                        fill=True,
-                        # legend='full',
-                        )
+        sns.kdeplot(x="period_per_cell",
+                    data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                    hue='place_cell_rf',
+                    palette='Spectral_r',
+                    fill=True,
+                    # legend='full',
+                    )
         # Move the legend off to the right.
-        g.legend(
-            bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
-            loc='center left',  # Legend goes center-left of anchor
-        )
+        # plt.legend(
+        #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        # )
         xlabel = r'$60^{\circ}$ Grid Period'
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
