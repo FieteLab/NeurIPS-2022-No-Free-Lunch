@@ -467,8 +467,9 @@ class ThreeLayerRNNBase(Model):
         wandb_vals_to_log = {
             'input_matrix_norm': tf.reduce_sum(self.RNN.weights[0] ** 2).numpy(),
             'recurrent_matrix_norm': tf.reduce_sum(self.RNN.weights[1] ** 2).numpy(),
-            'bias_norm': tf.reduce_sum(self.RNN.weights[2] ** 2).numpy(),
         }
+        if len(self.RNN.weights) > 2:
+            wandb_vals_to_log['bias_norm'] = tf.reduce_sum(self.RNN.weights[2] ** 2).numpy()
 
         wandb.log(wandb_vals_to_log, step=epoch_idx + 1)
 

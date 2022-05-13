@@ -1129,7 +1129,7 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
     plt.close()
 
 
-def plot_neural_predictivity_vs_participation_ratio_by_architecture_and_activation(
+def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
     # g = sns.lmplot(
@@ -1149,11 +1149,42 @@ def plot_neural_predictivity_vs_participation_ratio_by_architecture_and_activati
         bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
         loc='center left',  # Legend goes center-left of anchor
     )
-    plt.xlabel('Participation Ratio')
+    plt.xlabel('Activity Participation Ratio')
     plt.ylabel('Neural Predictivity')
 
     plt.savefig(os.path.join(plot_dir,
                              f'neural_predictivity_vs_participation_ratio_by_architecture_and_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
+        trained_neural_predictivity_and_ID_df: pd.DataFrame,
+        plot_dir: str):
+    # g = sns.lmplot(
+    #     x='participation_ratio',
+    #     y='Trained',
+    #     hue='Architecture',
+    #     style='Activation',
+    #     data=trained_neural_predictivity_and_ID_df,)
+
+    g = sns.scatterplot(
+        x='rate_maps_participation_ratio',
+        y='Trained',
+        hue='Architecture',
+        style='Activation',
+        data=trained_neural_predictivity_and_ID_df, )
+    g.legend(
+        bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        loc='center left',  # Legend goes center-left of anchor
+    )
+    plt.xlabel('Rate Maps Participation Ratio')
+    plt.ylabel('Neural Predictivity')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -1232,6 +1263,7 @@ def plot_participation_ratio_vs_architecture_and_activation(
 def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
         augmented_percent_neurons_score60_above_threshold_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
     g = sns.lineplot(
         data=augmented_percent_neurons_score60_above_threshold_by_run_id_df,

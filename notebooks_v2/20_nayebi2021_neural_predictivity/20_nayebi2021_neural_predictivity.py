@@ -38,16 +38,28 @@ runs_configs_df = download_wandb_project_runs_configs(
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
-ratemap_rank_by_run_id_df = compute_rate_maps_rank_from_joblib_files_data(
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+rate_map_participation_ratio_by_run_id_df = compute_rate_map_participation_ratio_from_joblib_files_data(
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    data_dir=data_dir)
 
 runs_configs_df = runs_configs_df.merge(
-    ratemap_rank_by_run_id_df,
+    rate_map_participation_ratio_by_run_id_df,
     on=['run_id'],
     how='left')
 
+rate_map_rank_by_run_id_df = compute_rate_maps_rank_from_joblib_files_data(
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    data_dir=data_dir)
+
+runs_configs_df = runs_configs_df.merge(
+    rate_map_rank_by_run_id_df,
+    on=['run_id'],
+    how='left')
+
+
 trained_neural_predictivity_and_ID_df = runs_configs_df[[
-    'run_id', 'rnn_type', 'activation', 'participation_ratio', 'two_NN', 'method_of_moments_ID']].merge(
+    'run_id', 'rnn_type', 'activation', 'participation_ratio', 'rate_maps_participation_ratio',
+    'rate_maps_rank', 'two_NN', 'method_of_moments_ID']].merge(
     neural_predictivity_df[['rnn_type', 'activation', 'Trained']],
     on=['rnn_type', 'activation'],
     how='left')
@@ -61,10 +73,10 @@ trained_neural_predictivity_and_ID_df = runs_configs_df[[
 
 trained_neural_predictivity_and_ID_df.rename(
     columns={'rnn_type': 'Architecture',
-             'activation': 'Activation',},
+             'activation': 'Activation'},
     inplace=True)
 
-plot_neural_predictivity_vs_participation_ratio_by_architecture_and_activation(
+plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation(
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
     plot_dir=results_dir)
 

@@ -2,6 +2,7 @@ import joblib
 import numpy as np
 import os
 import pandas as pd
+import scipy.ndimage
 import skdim
 from typing import Dict, List, Tuple, Union
 import wandb
@@ -15,8 +16,6 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
         'run_id').agg(
         frac_neurons_with_score_60_above_0p37=('score_60_by_neuron', lambda x: 100*x.gt(0.37).mean()),
         frac_neurons_with_score_60_above_0p8=('score_60_by_neuron', lambda x: 100*x.gt(0.8).mean()),
-        frac_neurons_with_score_60_above_0p85=('score_60_by_neuron', lambda x: 100*x.gt(0.85).mean()),
-        frac_neurons_with_score_60_above_1p0=('score_60_by_neuron', lambda x: 100*x.gt(1.0).mean()),
         frac_neurons_with_score_60_above_1p18=('score_60_by_neuron', lambda x: 100*x.gt(1.18).mean())
     ).reset_index()
 
@@ -24,8 +23,6 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
         columns={
             'frac_neurons_with_score_60_above_0p37': '0.37',
             'frac_neurons_with_score_60_above_0p8': '0.8',
-            'frac_neurons_with_score_60_above_0p85': '0.85',
-            'frac_neurons_with_score_60_above_1p0': '1.0',
             'frac_neurons_with_score_60_above_1p18': '1.18',
         },
         inplace=True
@@ -44,41 +41,81 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
 
 
 def compute_rate_map_participation_ratio_from_joblib_files_data(
-        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],) -> pd.DataFrame:
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
+        data_dir: str,
+        refresh: bool = False) -> pd.DataFrame:
 
-    run_ids = []
-    rate_maps_participation_ratios = []
-    for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
-        run_ids.append(run_id)
-        rate_maps = joblib_files_data['rate_maps']
-        rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
-        # Use skdim implementation for trustworthiness.
-        rate_maps_pr = skdim.id.lPCA(ver='participation_ratio').fit_transform(
-            X=rate_maps)
+    rate_maps_participation_ratio_by_run_id_df_path = os.path.join(
+        data_dir,
+        'rate_maps_participation_ratio_by_run_id.csv')
 
-        rate_maps_participation_ratios.append(rate_maps_pr)
+    if refresh or not os.path.isfile(rate_maps_participation_ratio_by_run_id_df_path):
+        run_ids = []
+        rate_maps_participation_ratios = []
+        for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
+            run_ids.append(run_id)
+            rate_maps = joblib_files_data['rate_maps']
+            rate_maps[np.isnan(rate_maps)] = 0.
+            for idx in range(len(rate_maps)):
+                rate_maps[idx] = scipy.ndimage.gaussian_filter(rate_maps[idx], sigma=2.)
+            rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
+            # Use skdim implementation for trustworthiness.
+            rate_maps_pr = skdim.id.lPCA(ver='participation_ratio').fit_transform(
+                X=rate_maps)
+            rate_maps_singular_vals = np.linalg.svd(rate_maps, full_matrices=False, compute_uv=False)
+            rate_maps_eigen_vals = np.square(rate_maps_singular_vals)
+            rate_maps_pr_2 = np.square(np.sum(rate_maps_eigen_vals)) / np.sum(np.square(rate_maps_eigen_vals))
 
-    rate_maps_participation_ratio_by_run_id_df = pd.DataFrame.from_dict({
-        'run_id': run_ids,
-        'rate_maps_participation_ratio': rate_maps_participation_ratios})
+            rate_maps_participation_ratios.append(rate_maps_pr)
+            print(10)
+            break
+
+        rate_maps_participation_ratio_by_run_id_df = pd.DataFrame.from_dict({
+            'run_id': run_ids,
+            'rate_maps_participation_ratio': rate_maps_participation_ratios})
+
+        rate_maps_participation_ratio_by_run_id_df.to_csv(
+            rate_maps_participation_ratio_by_run_id_df_path,
+            index=False)
+
+    else:
+        rate_maps_participation_ratio_by_run_id_df = pd.read_csv(
+            rate_maps_participation_ratio_by_run_id_df_path)
 
     return rate_maps_participation_ratio_by_run_id_df
 
 
 def compute_rate_maps_rank_from_joblib_files_data(
-        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],) -> pd.DataFrame:
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
+        data_dir: str,
+        refresh: bool = False) -> pd.DataFrame:
 
-    run_ids = []
-    rate_maps_ranks = []
-    for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
-        run_ids.append(run_id)
-        rate_maps = joblib_files_data['rate_maps']
-        rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
-        rate_maps_ranks.append(np.linalg.matrix_rank(rate_maps))
+    ratemap_rank_by_run_id_df_path = os.path.join(data_dir, 'ratemap_rank_by_run_id.csv')
 
-    ratemap_rank_by_run_id_df = pd.DataFrame.from_dict({
-        'run_id': run_ids,
-        'rate_maps_rank': rate_maps_ranks})
+    if refresh or not os.path.isfile(ratemap_rank_by_run_id_df_path):
+
+        run_ids = []
+        rate_maps_ranks = []
+        for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
+            run_ids.append(run_id)
+            rate_maps = joblib_files_data['rate_maps']
+            rate_maps[np.isnan(rate_maps)] = 0.
+            for idx in range(len(rate_maps)):
+                rate_maps[idx] = scipy.ndimage.gaussian_filter(rate_maps[idx], sigma=2.)
+            rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
+            rate_maps_ranks.append(np.linalg.matrix_rank(rate_maps))
+
+        ratemap_rank_by_run_id_df = pd.DataFrame.from_dict({
+            'run_id': run_ids,
+            'rate_maps_rank': rate_maps_ranks})
+
+        ratemap_rank_by_run_id_df.to_csv(
+            ratemap_rank_by_run_id_df_path,
+            index=False)
+
+    else:
+        ratemap_rank_by_run_id_df = pd.read_csv(
+            ratemap_rank_by_run_id_df_path)
 
     return ratemap_rank_by_run_id_df
 
