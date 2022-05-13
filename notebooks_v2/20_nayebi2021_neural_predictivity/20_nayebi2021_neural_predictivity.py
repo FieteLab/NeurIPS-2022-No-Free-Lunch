@@ -38,12 +38,12 @@ runs_configs_df = download_wandb_project_runs_configs(
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
-rate_map_participation_ratio_by_run_id_df = compute_rate_map_participation_ratio_from_joblib_files_data(
+rate_maps_participation_ratio_by_run_id_df = compute_rate_maps_participation_ratio_from_joblib_files_data(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     data_dir=data_dir)
 
 runs_configs_df = runs_configs_df.merge(
-    rate_map_participation_ratio_by_run_id_df,
+    rate_maps_participation_ratio_by_run_id_df,
     on=['run_id'],
     how='left')
 
@@ -80,6 +80,9 @@ plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_act
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
     plot_dir=results_dir)
 
+plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
+    trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
+    plot_dir=results_dir)
 
 plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,

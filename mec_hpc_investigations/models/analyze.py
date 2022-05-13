@@ -40,14 +40,15 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
     return percent_neurons_score60_above_threshold_by_run_id_df
 
 
-def compute_rate_map_participation_ratio_from_joblib_files_data(
+def compute_rate_maps_participation_ratio_from_joblib_files_data(
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         data_dir: str,
-        refresh: bool = False) -> pd.DataFrame:
+        refresh: bool = False,
+        sigma: float = 2.) -> pd.DataFrame:
 
     rate_maps_participation_ratio_by_run_id_df_path = os.path.join(
         data_dir,
-        'rate_maps_participation_ratio_by_run_id.csv')
+        f'rate_maps_participation_ratio_by_run_id_sigma={sigma}.csv')
 
     if refresh or not os.path.isfile(rate_maps_participation_ratio_by_run_id_df_path):
         run_ids = []
@@ -57,18 +58,14 @@ def compute_rate_map_participation_ratio_from_joblib_files_data(
             rate_maps = joblib_files_data['rate_maps']
             rate_maps[np.isnan(rate_maps)] = 0.
             for idx in range(len(rate_maps)):
-                rate_maps[idx] = scipy.ndimage.gaussian_filter(rate_maps[idx], sigma=2.)
+                rate_maps[idx] = scipy.ndimage.gaussian_filter(rate_maps[idx], sigma=sigma)
             rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
+
             # Use skdim implementation for trustworthiness.
             rate_maps_pr = skdim.id.lPCA(ver='participation_ratio').fit_transform(
                 X=rate_maps)
-            rate_maps_singular_vals = np.linalg.svd(rate_maps, full_matrices=False, compute_uv=False)
-            rate_maps_eigen_vals = np.square(rate_maps_singular_vals)
-            rate_maps_pr_2 = np.square(np.sum(rate_maps_eigen_vals)) / np.sum(np.square(rate_maps_eigen_vals))
-
             rate_maps_participation_ratios.append(rate_maps_pr)
-            print(10)
-            break
+            print(f'Computed participation ratio for run_id={run_id}')
 
         rate_maps_participation_ratio_by_run_id_df = pd.DataFrame.from_dict({
             'run_id': run_ids,
@@ -80,7 +77,8 @@ def compute_rate_map_participation_ratio_from_joblib_files_data(
 
     else:
         rate_maps_participation_ratio_by_run_id_df = pd.read_csv(
-            rate_maps_participation_ratio_by_run_id_df_path)
+            rate_maps_participation_ratio_by_run_id_df_path,
+            index_col=False)
 
     return rate_maps_participation_ratio_by_run_id_df
 
@@ -88,9 +86,10 @@ def compute_rate_map_participation_ratio_from_joblib_files_data(
 def compute_rate_maps_rank_from_joblib_files_data(
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         data_dir: str,
-        refresh: bool = False) -> pd.DataFrame:
+        refresh: bool = False,
+        sigma: float = 2.) -> pd.DataFrame:
 
-    ratemap_rank_by_run_id_df_path = os.path.join(data_dir, 'ratemap_rank_by_run_id.csv')
+    ratemap_rank_by_run_id_df_path = os.path.join(data_dir, f'ratemap_rank_by_run_id_sigma={sigma}.csv')
 
     if refresh or not os.path.isfile(ratemap_rank_by_run_id_df_path):
 
@@ -101,9 +100,10 @@ def compute_rate_maps_rank_from_joblib_files_data(
             rate_maps = joblib_files_data['rate_maps']
             rate_maps[np.isnan(rate_maps)] = 0.
             for idx in range(len(rate_maps)):
-                rate_maps[idx] = scipy.ndimage.gaussian_filter(rate_maps[idx], sigma=2.)
+                rate_maps[idx] = scipy.ndimage.gaussian_filter(rate_maps[idx], sigma=sigma)
             rate_maps = np.reshape(rate_maps, newshape=(rate_maps.shape[0], -1))
             rate_maps_ranks.append(np.linalg.matrix_rank(rate_maps))
+            print(f'Computed rank for run_id={run_id}')
 
         ratemap_rank_by_run_id_df = pd.DataFrame.from_dict({
             'run_id': run_ids,
@@ -115,7 +115,8 @@ def compute_rate_maps_rank_from_joblib_files_data(
 
     else:
         ratemap_rank_by_run_id_df = pd.read_csv(
-            ratemap_rank_by_run_id_df_path)
+            ratemap_rank_by_run_id_df_path,
+            index_col=False)
 
     return ratemap_rank_by_run_id_df
 

@@ -1132,12 +1132,6 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
 def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
-    # g = sns.lmplot(
-    #     x='participation_ratio',
-    #     y='Trained',
-    #     hue='Architecture',
-    #     style='Activation',
-    #     data=trained_neural_predictivity_and_ID_df,)
 
     g = sns.scatterplot(
         x='participation_ratio',
@@ -1153,7 +1147,7 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
     plt.ylabel('Neural Predictivity')
 
     plt.savefig(os.path.join(plot_dir,
-                             f'neural_predictivity_vs_participation_ratio_by_architecture_and_activation.png'),
+                             f'neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
