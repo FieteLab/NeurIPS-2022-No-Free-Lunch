@@ -1157,12 +1157,11 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
-    # g = sns.lmplot(
-    #     x='participation_ratio',
-    #     y='Trained',
-    #     hue='Architecture',
-    #     style='Activation',
-    #     data=trained_neural_predictivity_and_ID_df,)
+
+    # trained_neural_predictivity_and_ID_df.groupby(['Architecture', 'Activation']).agg({
+    #     'Trained': 'first',
+    #     'rate_maps_participation_ratio': ['mean', 'sem']
+    # }).reset_index()
 
     g = sns.scatterplot(
         x='rate_maps_participation_ratio',
@@ -1181,19 +1180,13 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
                              f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
-    # plt.show()
+    plt.show()
     plt.close()
 
 
 def plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
-    # g = sns.lmplot(
-    #     x='participation_ratio',
-    #     y='Trained',
-    #     hue='Architecture',
-    #     style='Activation',
-    #     data=trained_neural_predictivity_and_ID_df,)
 
     g = sns.scatterplot(
         x='rate_maps_rank',
