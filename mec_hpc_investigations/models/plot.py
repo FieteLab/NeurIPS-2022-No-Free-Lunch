@@ -292,33 +292,39 @@ def plot_grid_periods_histograms_by_run_id(
         plt.close()
 
 
-def plot_grid_scores_histograms_by_run_id(
-        neurons_data_by_run_id_df: pd.DataFrame,
+def plot_grid_scores_histograms_by_n_place_fields_per_cell(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-    bins = np.linspace(-1., 1.8, 50)
-    for run_id, neurons_data_df in neurons_data_by_run_id_df.groupby('run_id'):
-        fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True, sharex=True)
+    
+    plt.close()
+    bins = np.linspace(-0.6, 1.4, 75)
 
-        ax = axes[0]
-        sns.histplot(x="score_60_by_neuron",
-                     data=neurons_data_df,
-                     ax=ax,
-                     bins=bins)
-        ax.set_xlabel('$60^{\circ}$ Grid Score')
+    indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1')\
+                      | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
+    sns.histplot(
+        data=augmented_neurons_data_by_run_id_df[indices_to_keep],
+        x='score_60_by_neuron',
+        bins=bins,
+        kde=True,
+        hue='n_place_fields_per_cell'
+    )
+    # sns.displot(
+    #     data=augmented_neurons_data_by_run_id_df,
+    #     x='score_60_by_neuron',
+    #     bins=bins,
+    #     kde=True,
+    #     hue='n_place_fields_per_cell',
+    #     col='n_place_fields_per_cell'
+    # )
 
-        ax = axes[1]
-        sns.histplot(x="score_90_by_neuron",
-                     data=neurons_data_df,
-                     ax=ax,
-                     bins=bins)
-        ax.set_xlabel(r'$90^{\circ}$ Grid Score')
-
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_score_histograms_run={run_id}.png'),
-                    bbox_inches='tight',
-                    dpi=300)
-        # plt.show()
-        plt.close()
+    plt.xlabel('Grid Score')
+    plt.ylabel('Number of Units')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_n_place_fields_per_cell.png'),
+                bbox_inches='tight',
+                dpi=300)
+    plt.show()
+    plt.close()
 
 
 def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
@@ -350,6 +356,35 @@ def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
                 dpi=300)
     # plt.show()
     plt.close()
+
+
+def plot_grid_scores_histograms_by_run_id(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    bins = np.linspace(-1., 1.8, 50)
+    for run_id, neurons_data_df in neurons_data_by_run_id_df.groupby('run_id'):
+        fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True, sharex=True)
+
+        ax = axes[0]
+        sns.histplot(x="score_60_by_neuron",
+                     data=neurons_data_df,
+                     ax=ax,
+                     bins=bins)
+        ax.set_xlabel('$60^{\circ}$ Grid Score')
+
+        ax = axes[1]
+        sns.histplot(x="score_90_by_neuron",
+                     data=neurons_data_df,
+                     ax=ax,
+                     bins=bins)
+        ax.set_xlabel(r'$90^{\circ}$ Grid Score')
+
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_score_histograms_run={run_id}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
 
 
 def plot_grid_scores_vs_architecture(augmented_neurons_data_by_run_id_df: pd.DataFrame,

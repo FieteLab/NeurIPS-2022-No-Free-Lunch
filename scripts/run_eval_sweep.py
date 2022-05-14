@@ -14,7 +14,7 @@ import wandb
 # sweep_ids = ['2yfpvx86']
 
 # DoG, multiple fields.
-sweep_ids = ['rbrvuf2g']
+# sweep_ids = ['rbrvuf2g']
 
 # DoG, sweeping architectures.
 # sweep_ids = ['can8n6vd']
@@ -23,14 +23,14 @@ sweep_ids = ['rbrvuf2g']
 
 
 # # Fetch runs associated with the relevant sweeps.
-api = wandb.Api(timeout=60)
-run_ids = []
-for sweep_id in sweep_ids:
-    runs = api.runs(path='mec-hpc-investigations', filters={"sweep": sweep_id})
-    sweep_run_ids = [run.id for run in runs.objects if run.state == 'finished']
-    print(sweep_run_ids)
-    # TODO: why do I need to run this manually myself?
-    run_ids.extend(sweep_run_ids)
+# api = wandb.Api(timeout=60)
+# run_ids = []
+# for sweep_id in sweep_ids:
+#     runs = api.runs(path='mec-hpc-investigations', filters={"sweep": sweep_id})
+#     sweep_run_ids = [run.id for run in runs.objects if run.state == 'finished']
+#     print(sweep_run_ids)
+#     # TODO: why do I need to run this manually myself?
+#     run_ids.extend(sweep_run_ids)
 
 
 ### Option 2: Manually specify run IDs.
@@ -56,6 +56,10 @@ for sweep_id in sweep_ids:
 
 # Heterogeneous receptive field, surround scale.
 # run_ids = ['um8jit7d', 'l4yjfv8n', 'hqrll4sn', '0z33otxl', 'nmceq30r', 'txosm82o', 'b6fbastc', 'epott27f', '29d1jkqb', 'kktzqrv3', 'le421kb9', '808a1f2m', 'gmwtkhk0', 'rqkbbnfe', 'ljwe85yd', 'ynbh610u', 'cyvs3cbm', '3fc1li75', 'rafm28vd', 'zcbvfrt1', 'fd39ygyi', 'nlj570av', 'mua6s4v4', '26q58ptj', 'xr5jw6ru', '6h5yfwsq', 'sacjobil', '6bhs50u1', 'nf1awso0', 'q0bkrvx4', 'uz5ugfg5', 'cusnttc9', 'wxx5z3xf', '54i2m5f5', '04csbzc5', 'i22iuilt']
+
+# Multiple fields per cell
+# run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
+run_ids = ['txayqzm5']
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)
