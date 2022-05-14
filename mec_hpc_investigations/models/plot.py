@@ -301,13 +301,13 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
 
     indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1')\
                       | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
-    sns.histplot(
+    g = sns.histplot(
         data=augmented_neurons_data_by_run_id_df[indices_to_keep],
         x='score_60_by_neuron',
         bins=bins,
         kde=True,
-        hue='n_place_fields_per_cell'
-    )
+        hue='n_place_fields_per_cell')
+    g.legend_.set_title('Num Fields Per Place Cell')
     # sns.displot(
     #     data=augmented_neurons_data_by_run_id_df,
     #     x='score_60_by_neuron',
@@ -323,7 +323,7 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
                              f'grid_scores_histograms_by_n_place_fields_per_cell.png'),
                 bbox_inches='tight',
                 dpi=300)
-    plt.show()
+    # plt.show()
     plt.close()
 
 
@@ -340,7 +340,7 @@ def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
     subset_df = augmented_neurons_data_by_run_id_df[indices_to_keep]
     subset_df['DoG Params'] = ''
     subset_df['DoG Params'][homogeneous_indices] = r'$\sigma=0.12$' + '\n' + r'$s=2.0$'
-    subset_df['DoG Params'][heterogeneous_indices] = r'$\sigma=Unif(0.06, 0.18)$' + '\n' + r'$s=Unif(1.5, 2.5)$'
+    subset_df['DoG Params'][heterogeneous_indices] = r'$\sigma \sim$ Unif(0.06, 0.18)' + '\n' + r'$s \sim$ Unif(1.5, 2.5)'
     sns.histplot(
         data=subset_df,
         x='score_60_by_neuron',
