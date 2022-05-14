@@ -10,7 +10,7 @@ os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
 os.makedirs(results_dir, exist_ok=True)
 
-low_pos_decoding_err_threshold = 6.
+low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.85
 grid_score_d90_threshold = 1.5
 sweep_ids = [
@@ -31,10 +31,10 @@ overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
-plot_percent_low_pos_decoding_err_pie(
+plot_percent_runs_with_low_pos_decoding_err_pie(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir,
-    low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
+    low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold)
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold

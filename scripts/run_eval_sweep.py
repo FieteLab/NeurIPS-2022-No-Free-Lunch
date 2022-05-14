@@ -59,7 +59,9 @@ import wandb
 
 # Multiple fields per cell
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
-run_ids = ['txayqzm5']
+# run_ids = ['txayqzm5']
+
+run_ids = ['crrksavw', 'z7w0z230', 'c1fyk378', '9senvt2t', 'ukygyw96', 'z6rgp9fd', '5lnzwz16', 'p3kid04a', '3i295puo', 'w6h5eogl', 'vf07ubps', '6w5kg5xl', 'qbcprjmz', '0lgi0b81', 'en89o5vk', '4ks9cfkx', 'bt39ilvx', 'k9hz4k3r', 'mv3d1vsh', 'lctf4zhi', '9qtzgwx8', 'vwhdqj8a', 'c8gqw3qv', 'jznfzk4z']
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)
