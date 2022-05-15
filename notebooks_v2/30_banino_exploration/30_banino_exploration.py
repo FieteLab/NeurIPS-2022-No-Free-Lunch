@@ -1,4 +1,5 @@
 import joblib
+from matplotlib.colors import LogNorm
 import matplotlib.pyplot as plt
 import numpy as np
 import os
@@ -17,7 +18,8 @@ exp_dir = 'notebooks_v2/30_banino_exploration'
 num_grid_cells = 4096
 num_place_cells = 512
 num_spatial_positions = 1000
-num_grad_steps = 10000
+# num_grad_steps = 10001
+num_grad_steps = 0
 sigma = 0.12
 sigma_squared = np.square(sigma)
 
@@ -36,7 +38,7 @@ distances = scipy.spatial.distance.cdist(
     XA=spatial_locations,
     XB=place_cell_locations)
 
-# Shape: (num place cells, num spatial points)
+# Shape: (num spatial points, num place cells)
 pc_activity_numpy = np.exp(-0.5 * distances / sigma_squared)
 pc_activity_numpy /= np.sum(pc_activity_numpy, axis=0, keepdims=True)
 
@@ -112,12 +114,47 @@ for grad_step in range(num_grad_steps):
              },
             filename=os.path.join(exp_dir, f'ckpt_grad_step={grad_step}.joblib'))
 
-print(10)
+
+# Load data from disk.
+joblib_data = joblib.load(
+    filename=os.path.join(exp_dir, f'ckpt_grad_step={9000}.joblib'))
+loss_per_grad_step = joblib_data['loss_per_grad_step']
+grad_step = joblib_data['grad_step']
+
+# plt.close()
+# plt.plot(1 + np.arange(grad_step),
+#          loss_per_grad_step[:grad_step])
+# plt.yscale('log')
+# plt.ylabel(r'$|| A_2(d(A_1(G))) - P ||_F^2$')
+# plt.xlabel('Grad Step')
+# plt.show()
+
+# plt.close()
+# im = plt.imshow(pc_second_moment_matrix_numpy, cmap='Spectral_r')
+# cbar = plt.colorbar(im)
+# plt.show()
+
+W_2 = joblib_data['W_2']
+W_2_T_inv = np.linalg.inv(W_2.T)
+b_2 = joblib_data['b_2']
+
+# Shape: (num spatial points, num spatial points)
+banino_dropout_target = np.matmul(pc_activity_numpy - b_2, W_2_T_inv)
+banino_second_moment_matrix_numpy = np.matmul(banino_dropout_target, banino_dropout_target.T)
+
+
 plt.close()
-plt.plot(1 + np.arange(len(loss_per_grad_step)),
-         loss_per_grad_step)
-plt.yscale('log')
-plt.ylabel(r'$|| A_2(d(A_1(G))) - P ||_F^2$')
-plt.xlabel('Grad Step')
+im = plt.imshow(banino_second_moment_matrix_numpy, cmap='Spectral_r')
+cbar = plt.colorbar(im)
 plt.show()
+
+
+plt.imshow()
+
+sns.heatmap(banino_second_moment_matrix_numpy,
+            mask=(banino_second_moment_matrix_numpy < -50000) & (banino_second_moment_matrix_numpy > 50000))
+plt.show()
+
+
+# plt.show()
 print(11)
