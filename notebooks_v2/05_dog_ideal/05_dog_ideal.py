@@ -32,15 +32,20 @@ overwrite_runs_configs_df_values_with_joblib_data(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 # Keep only networks that achieved low position decoding error.
-low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_rate_maps_examples(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
+
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'place_cell_rf']].merge(
+    'run_id', 'place_cell_rf', 'optimizer']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')

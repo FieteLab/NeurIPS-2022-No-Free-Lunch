@@ -7,6 +7,7 @@ import os
 import pandas as pd
 import seaborn as sns
 from sklearn.neighbors import KernelDensity
+from typing import Dict, List
 
 plt.rcParams["font.family"] = ["Times New Roman"]
 plt.rcParams["font.size"] = 20  # was previously 22
@@ -1434,33 +1435,31 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
     thresholds = [0.37, 0.8, 1.18]
 
     for threshold in thresholds:
+        # plt.close()
+        #
+        # pos_decoding_err_below_threshold_col = f'pos_decoding_err_below_{threshold}'
+        # runs_configs_with_scores_max_df[pos_decoding_err_below_threshold_col] = \
+        #     runs_configs_with_scores_max_df['pos_decoding_err'] < threshold
+        #
+        # num_runs_per_category = runs_configs_with_scores_max_df.groupby(pos_decoding_err_below_threshold_col)[
+        #     pos_decoding_err_below_threshold_col].count()
+        #
+        # plt.pie(
+        #     x=num_runs_per_category.values,
+        #     labels=num_runs_per_category.index.values,
+        #     colors=['tab:blue' if label == True else 'tab:orange'
+        #             for label in num_runs_per_category.index.values],
+        #     # shadow=True,
+        #     autopct='%.0f%%')
+        # plt.title('Achieves Low Position Decoding Error')
+        #
+        # plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
+        #             bbox_inches='tight',
+        #             dpi=300)
+        # # plt.show()
+        # plt.close()
 
-        plt.close()
-
-        pos_decoding_err_below_threshold_col = f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'
-        runs_configs_with_scores_max_df[pos_decoding_err_below_threshold_col] = \
-            runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-
-        num_runs_per_category = runs_configs_with_scores_max_df.groupby(pos_decoding_err_below_threshold_col)[
-            pos_decoding_err_below_threshold_col].count()
-
-        num_runs_per_category = runs_configs_with_scores_max_df.groupby(pos_decoding_err_below_threshold_col)[
-            pos_decoding_err_below_threshold_col].count()
-
-        plt.pie(
-            x=num_runs_per_category.values,
-            labels=num_runs_per_category.index.values,
-            colors=['tab:blue' if label == True else 'tab:orange'
-                    for label in num_runs_per_category.index.values],
-            # shadow=True,
-            autopct='%.0f%%')
-        plt.title('Achieves Low Position Decoding Error')
-
-        plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
-                    bbox_inches='tight',
-                    dpi=300)
-        # plt.show()
-        plt.close()
+        raise NotImplementedError
 
 
 def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
@@ -1722,3 +1721,79 @@ def plot_pos_decoding_err_vs_human_readable_sweep(
                 dpi=300)
     # plt.show()
     plt.close()
+
+
+def plot_rate_maps_examples(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
+        plot_dir: str,
+        max_num_ratemaps_per_range: int = 12):
+
+    grid_score_ranges = [
+        (0.35, 0.45),
+        (0.45, 0.55),
+        (0.55, 0.65),
+        (0.80, 0.90),
+        (1.15, 10)]
+
+    # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
+    n_cols = 4
+    n_rows = int(max_num_ratemaps_per_range // n_cols)
+
+    for grid_score_range in grid_score_ranges:
+
+        low, high = grid_score_range
+
+        indices = (neurons_data_by_run_id_df['score_60_by_neuron'] >= low)\
+                  & (neurons_data_by_run_id_df['score_60_by_neuron'] < high)
+
+        neurons_in_range_df = neurons_data_by_run_id_df[indices]
+        neurons_to_plot_df = neurons_in_range_df.sample(
+            n=min(n_cols * n_rows, len(neurons_in_range_df)),
+            replace=False,
+            random_state=0,  # for reproducibility
+        )
+
+        fig, axes = plt.subplots(
+            nrows=n_rows,
+            ncols=n_cols,
+            figsize=(2 * n_rows, 2 * n_cols),
+            sharey=True,
+            sharex=True,
+            gridspec_kw={'width_ratios': [1] * n_cols})
+
+        for ax_idx, (row_idx, row) in enumerate(neurons_to_plot_df.iterrows()):
+            run_id = row['run_id']
+            neuron_idx = row['neuron_idx']
+            score_60 = row['score_60_by_neuron']
+            rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
+
+            row, col = ax_idx // n_cols, ax_idx % n_cols
+            ax = axes[row, col]
+
+            sns.heatmap(
+                data=rate_map,
+                # vmin=np.nanmin(rate_maps[storage_idx]),
+                # vmax=np.nanmax(rate_maps[storage_idx]),
+                ax=ax,
+                cbar=False,
+                cmap='Spectral_r',
+                square=True,
+                yticklabels=False,
+                xticklabels=False)
+
+            ax.set_title(f'{np.round(score_60, 2)}')
+
+            # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
+            ax.invert_yaxis()
+
+        plt.tight_layout()
+
+        plt.savefig(os.path.join(plot_dir,
+                                 f'rate_maps_examples_low={low}_high={high}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+
+
