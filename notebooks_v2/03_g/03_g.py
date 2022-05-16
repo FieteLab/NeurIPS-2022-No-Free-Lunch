@@ -4,7 +4,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare paths.
-notebook_dir = 'notebooks_v2/01_mse'
+notebook_dir = 'notebooks_v2/03_g'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -14,7 +14,6 @@ low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    '26gn9pfh',  # MSE
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -52,17 +51,9 @@ runs_configs_with_scores_max_df = runs_configs_df.merge(
     on='run_id',
     how='left')
 
-plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
-    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
-    plot_dir=results_dir)
-
 plot_percent_runs_with_grid_cells_pie(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,)
-
-plot_grid_scores_histogram(
-    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
-    plot_dir=results_dir)
 
 plot_rate_maps_examples(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,

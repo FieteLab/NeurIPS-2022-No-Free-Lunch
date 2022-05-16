@@ -311,6 +311,35 @@ def plot_grid_periods_histograms_by_run_id(
         plt.close()
 
 
+def plot_grid_scores_histogram(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    bins = np.linspace(-1., 1.8, 50)
+    fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True, sharex=True)
+
+    ax = axes[0]
+    sns.histplot(x="score_60_by_neuron",
+                 data=neurons_data_by_run_id_df,
+                 ax=ax,
+                 bins=bins)
+    ax.set_xlabel('$60^{\circ}$ Grid Score')
+
+    ax = axes[1]
+    sns.histplot(x="score_90_by_neuron",
+                 data=neurons_data_by_run_id_df,
+                 ax=ax,
+                 bins=bins)
+    ax.set_xlabel(r'$90^{\circ}$ Grid Score')
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_histogram.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_scores_histograms_by_n_place_fields_per_cell(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
@@ -1210,10 +1239,6 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
-    # trained_neural_predictivity_and_ID_df.groupby(['Architecture', 'Activation']).agg({
-    #     'Trained': 'first',
-    #     'rate_maps_participation_ratio': ['mean', 'sem']
-    # }).reset_index()
 
     g = sns.scatterplot(
         x='rate_maps_participation_ratio',
@@ -1352,6 +1377,11 @@ def plot_participation_ratio_vs_architecture_and_activation(
 def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
         augmented_percent_neurons_score60_above_threshold_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+    """
+    Plot percent of units (aggregating across all runs) with a 60d grid score
+    above a threshold (Y) against place cell RF (X). Each threshold is plotted
+    as a trace in a different hue.
+    """
     plt.close()
     g = sns.lineplot(
         data=augmented_percent_neurons_score60_above_threshold_by_run_id_df,
@@ -1527,6 +1557,34 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
                     dpi=300)
         # plt.show()
         plt.close()
+
+
+def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
+        runs_configs_with_scores_max_df: pd.DataFrame,
+        plot_dir: str):
+    thresholds = np.linspace(0.35, 1.15, 150)
+    percent_runs_above_threshold = np.zeros_like(thresholds)
+    for threshold_idx, threshold in enumerate(thresholds):
+        percent_runs_above_threshold[threshold_idx] = 100 * (
+                runs_configs_with_scores_max_df['score_60_by_neuron_max'] > threshold).mean()
+
+    plot_df = pd.DataFrame.from_dict({
+        'Grid Score Threshold': thresholds,
+        '% Runs with Grid Cells': percent_runs_above_threshold
+    })
+
+    plt.close()
+    sns.lineplot(
+        data=plot_df,
+        x='Grid Score Threshold',
+        y='% Runs with Grid Cells')
+    plt.ylim(0, 100)
+
+    plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_vs_grid_score_threshold.png'),
+                bbox_inches='tight',
+                dpi=300)
+    plt.show()
+    plt.close()
 
 
 def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
@@ -1876,5 +1934,4 @@ def plot_rate_maps_examples(
                     dpi=300)
         # plt.show()
         plt.close()
-
 
