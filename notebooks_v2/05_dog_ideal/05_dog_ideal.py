@@ -39,7 +39,12 @@ runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
-plot_rate_maps_examples(
+plot_rate_maps_examples_hexagons(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
+
+plot_rate_maps_examples_squares(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)

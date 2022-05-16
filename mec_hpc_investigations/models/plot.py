@@ -1993,7 +1993,7 @@ def plot_pos_decoding_err_vs_human_readable_sweep(
     plt.close()
 
 
-def plot_rate_maps_examples(
+def plot_rate_maps_examples_hexagons(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
@@ -2004,7 +2004,8 @@ def plot_rate_maps_examples(
         (0.45, 0.55),
         (0.55, 0.65),
         (0.80, 0.90),
-        (1.15, 10)]
+        (1.15, 10),
+    ]
 
     # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
     n_cols = 4
@@ -2074,7 +2075,97 @@ def plot_rate_maps_examples(
         plt.tight_layout()
 
         plt.savefig(os.path.join(plot_dir,
-                                 f'rate_maps_examples_low={low}_high={high}.png'),
+                                 f'rate_maps_examples_hexagons_low={low}_high={high}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+
+
+def plot_rate_maps_examples_squares(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
+        plot_dir: str,
+        max_num_ratemaps_per_range: int = 12):
+
+    grid_score_ranges = [
+        (1.0, 1.1),
+        (1.1, 1.2),
+        (1.2, 1.3),
+        (1.3, 1.4),
+        (1.4, 1.5),
+        (1.5, 1.0),
+    ]
+
+    # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
+    n_cols = 4
+    n_rows = int(max_num_ratemaps_per_range // n_cols)
+
+    for grid_score_range in grid_score_ranges:
+
+        low, high = grid_score_range
+
+        indices = (neurons_data_by_run_id_df['score_90_by_neuron'] >= low)\
+                  & (neurons_data_by_run_id_df['score_90_by_neuron'] < high)
+
+        neurons_in_range_df = neurons_data_by_run_id_df[indices]
+        neurons_to_plot_df = neurons_in_range_df.sample(
+            n=min(n_cols * n_rows, len(neurons_in_range_df)),
+            replace=False,
+            random_state=0,  # for reproducibility
+        )
+
+        fig, axes = plt.subplots(
+            nrows=n_rows,
+            ncols=n_cols,
+            figsize=(2 * n_rows, 2 * n_cols),
+            sharey=True,
+            sharex=True,
+            gridspec_kw={'width_ratios': [1] * n_cols})
+
+        for ax_idx, (row_idx, row) in enumerate(neurons_to_plot_df.iterrows()):
+            run_id = row['run_id']
+            neuron_idx = row['neuron_idx']
+            score_60 = row['score_60_by_neuron']
+            rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
+
+            row, col = ax_idx // n_cols, ax_idx % n_cols
+            ax = axes[row, col]
+
+            sns.heatmap(
+                data=rate_map,
+                # vmin=np.nanmin(rate_maps[storage_idx]),
+                # vmax=np.nanmax(rate_maps[storage_idx]),
+                ax=ax,
+                cbar=False,
+                cmap='Spectral_r',
+                square=True,
+                yticklabels=False,
+                xticklabels=False)
+
+            ax.set_title(f'{np.round(score_60, 2)}')
+
+            # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
+            ax.invert_yaxis()
+
+        # Replace any empty subplots with empty heatmaps
+        empty_rate_map = np.full_like(rate_map, fill_value=np.nan)
+        for ax_idx in range(ax_idx, n_rows * n_cols):
+            row, col = ax_idx // n_cols, ax_idx % n_cols
+            ax = axes[row, col]
+            sns.heatmap(
+                data=empty_rate_map,
+                ax=ax,
+                cbar=False,
+                cmap='Spectral_r',
+                square=True,
+                yticklabels=False,
+                xticklabels=False)
+
+        plt.tight_layout()
+
+        plt.savefig(os.path.join(plot_dir,
+                                 f'rate_maps_examples_squares_low={low}_high={high}.png'),
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
