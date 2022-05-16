@@ -374,6 +374,38 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
     plt.close()
 
 
+def plot_grid_scores_histograms_by_optimizer(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    bins = np.linspace(-0.6, 1.4, 75)
+    g = sns.histplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        bins=bins,
+        kde=True,
+        hue='optimizer')
+    g.legend_.set_title('Optimizer')
+    # sns.displot(
+    #     data=augmented_neurons_data_by_run_id_df,
+    #     x='score_60_by_neuron',
+    #     bins=bins,
+    #     kde=True,
+    #     hue='n_place_fields_per_cell',
+    #     col='n_place_fields_per_cell'
+    # )
+
+    plt.xlabel('Grid Score')
+    plt.ylabel('Number of Units')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
@@ -1568,22 +1600,23 @@ def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
         percent_runs_above_threshold[threshold_idx] = 100 * (
                 runs_configs_with_scores_max_df['score_60_by_neuron_max'] > threshold).mean()
 
+    y_label = f'% Runs with Grid Cells (N={len(runs_configs_with_scores_max_df)})'
     plot_df = pd.DataFrame.from_dict({
         'Grid Score Threshold': thresholds,
-        '% Runs with Grid Cells': percent_runs_above_threshold
+        y_label: percent_runs_above_threshold
     })
 
     plt.close()
     sns.lineplot(
         data=plot_df,
         x='Grid Score Threshold',
-        y='% Runs with Grid Cells')
+        y=y_label)
     plt.ylim(0, 100)
 
     plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_vs_grid_score_threshold.png'),
                 bbox_inches='tight',
                 dpi=300)
-    plt.show()
+    # plt.show()
     plt.close()
 
 
@@ -1935,3 +1968,35 @@ def plot_rate_maps_examples(
         # plt.show()
         plt.close()
 
+
+def plot_square_scores_histograms_by_optimizer(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    # 97 chosen to match bin width of grid scores
+    bins = np.linspace(-0.6, 1.4, 97)
+    g = sns.histplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_90_by_neuron',
+        bins=bins,
+        kde=True,
+        hue='optimizer')
+    g.legend_.set_title('Optimizer')
+    # sns.displot(
+    #     data=augmented_neurons_data_by_run_id_df,
+    #     x='score_60_by_neuron',
+    #     bins=bins,
+    #     kde=True,
+    #     hue='n_place_fields_per_cell',
+    #     col='n_place_fields_per_cell'
+    # )
+
+    plt.xlabel('Grid Score')
+    plt.ylabel('Number of Units')
+    plt.savefig(os.path.join(plot_dir,
+                             f'square_scores_histograms_by_optimizer.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()

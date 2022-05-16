@@ -52,13 +52,13 @@ runs_configs_with_scores_max_df = runs_configs_df.merge(
     on='run_id',
     how='left')
 
-plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
-    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
-    plot_dir=results_dir)
-
 plot_percent_runs_with_grid_cells_pie(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,)
+
+plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+    plot_dir=results_dir)
 
 plot_grid_scores_histogram(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,

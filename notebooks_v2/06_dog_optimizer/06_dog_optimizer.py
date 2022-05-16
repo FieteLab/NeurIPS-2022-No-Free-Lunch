@@ -15,7 +15,7 @@ grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     'lgaz57h1',  # Adam and RMSProp optimizers
-    'v5gndu30',  # SGD & Adagrad optimizers
+    # 'v5gndu30',  # SGD & Adagrad optimizers
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -32,8 +32,12 @@ overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_percent_runs_with_low_pos_decoding_err_pie(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir)
+
 # Keep only networks that achieved low position decoding error.
-low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
@@ -48,6 +52,10 @@ plot_pos_decoding_err_min_vs_optimizer(
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_grid_scores_histograms_by_run_id(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
     'run_id', 'optimizer']].merge(
     neurons_data_by_run_id_df,
@@ -58,6 +66,14 @@ plot_grid_scores_vs_optimizer(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir,
 )
+
+plot_grid_scores_histograms_by_optimizer(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_square_scores_histograms_by_optimizer(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
