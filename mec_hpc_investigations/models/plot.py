@@ -206,9 +206,9 @@ def plot_grid_periods_mode_vs_place_cell_rf(
                         y='kde_mode',
                         hue='place_cell_rf',
                         palette='Spectral_r')
-        x = np.sort(augmented_neurons_data_by_run_id_df['place_cell_rf'].unique())
-        y = 100 * x / np.sqrt(2 * np.log(2) / 3)
-        plt.plot(x, y)
+        # x = np.sort(augmented_neurons_data_by_run_id_df['place_cell_rf'].unique())
+        # y = 100 * x / np.sqrt(2 * np.log(2) / 3)
+        # plt.plot(x, y)
         # plt.show()
         plt.gca().get_legend().remove()
         plt.gca().figure.colorbar(sm, label=r'$\sigma$')
@@ -1504,31 +1504,29 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
     thresholds = [0.37, 0.8, 1.18]
 
     for threshold in thresholds:
-        # plt.close()
-        #
-        # pos_decoding_err_below_threshold_col = f'pos_decoding_err_below_{threshold}'
-        # runs_configs_with_scores_max_df[pos_decoding_err_below_threshold_col] = \
-        #     runs_configs_with_scores_max_df['pos_decoding_err'] < threshold
-        #
-        # num_runs_per_category = runs_configs_with_scores_max_df.groupby(pos_decoding_err_below_threshold_col)[
-        #     pos_decoding_err_below_threshold_col].count()
-        #
-        # plt.pie(
-        #     x=num_runs_per_category.values,
-        #     labels=num_runs_per_category.index.values,
-        #     colors=['tab:blue' if label == True else 'tab:orange'
-        #             for label in num_runs_per_category.index.values],
-        #     # shadow=True,
-        #     autopct='%.0f%%')
-        # plt.title('Achieves Low Position Decoding Error')
-        #
-        # plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
-        #             bbox_inches='tight',
-        #             dpi=300)
-        # # plt.show()
-        # plt.close()
+        plt.close()
 
-        raise NotImplementedError
+        grid_score_above_threshold_col = f'score_60_by_neuron_max_{threshold}'
+        runs_configs_with_scores_max_df[grid_score_above_threshold_col] = \
+            runs_configs_with_scores_max_df['score_60_by_neuron_max'] >= threshold
+
+        num_runs_per_category = runs_configs_with_scores_max_df.groupby(grid_score_above_threshold_col)[
+            grid_score_above_threshold_col].count()
+
+        plt.pie(
+            x=num_runs_per_category.values,
+            labels=num_runs_per_category.index.values,
+            colors=['tab:blue' if label == True else 'tab:orange'
+                    for label in num_runs_per_category.index.values],
+            # shadow=True,
+            autopct='%.0f%%')
+        plt.title('Has Grid Cells')
+
+        plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
 
 
 def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,

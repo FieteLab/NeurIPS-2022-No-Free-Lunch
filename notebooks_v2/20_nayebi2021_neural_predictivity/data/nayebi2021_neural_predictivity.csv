@@ -1,4 +1,4 @@
-rnn_type,activation,Untrained,Trained,Generalization,Position Loss
+rnn_type,activation,Untrained,Trained,Generalization,Position
 RNN,linear,0.25,0.63,0.14,0.21
 RNN,tanh,0.25,0.71,0.28,0.27
 RNN,sigmoid,0.23,0.32,0.24,0.4

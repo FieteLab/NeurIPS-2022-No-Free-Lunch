@@ -10,6 +10,7 @@ parameters:
         'relu',
         'tanh',
         'sigmoid',
+        'linear',
     ]
   batch_size:
     values: [200]
@@ -65,6 +66,7 @@ parameters:
         'LSTM',
         'UGRNN',
         'GRU',
+        'SRNN',
     ]
   seed:
     values: [ 0, 1]
