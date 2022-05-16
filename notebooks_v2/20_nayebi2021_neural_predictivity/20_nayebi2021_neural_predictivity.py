@@ -84,6 +84,10 @@ plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_ac
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
     plot_dir=results_dir)
 
+plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom(
+    trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
+    plot_dir=results_dir)
+
 plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
     plot_dir=results_dir)

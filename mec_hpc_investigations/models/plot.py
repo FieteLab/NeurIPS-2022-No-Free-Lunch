@@ -14,6 +14,21 @@ plt.rcParams["font.size"] = 20  # was previously 22
 sns.set_style("whitegrid")
 
 
+architecture_color_map = dict(
+    RNN='tab:blue',
+    LSTM='tab:red',
+    GRU='tab:green',
+    UGRNN='tab:orange',
+    # SRNN='tab:cyan',
+)
+
+activation_marker_map = dict(
+    relu='o',
+    linear='P',
+    sigmoid='X',
+    tanh='*',
+)
+
 # def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
 #         runs_histories_df: pd.DataFrame,
 #         plot_dir: str):
@@ -196,7 +211,7 @@ def plot_grid_periods_mode_vs_place_cell_rf(
         plt.gca().figure.colorbar(sm, label=r'$\sigma$')
 
         plt.ylabel('Grid Period Mode')
-        plt.xlabel(r'$\sigma$')
+        plt.xlabel(r'$\sigma$ (m)')
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
         plt.savefig(os.path.join(plot_dir,
                                  f'grid_periods_mode_vs_place_cell_rf_threshold={grid_score_threshold}.png'),
@@ -1214,6 +1229,57 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
                              f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom(
+        trained_neural_predictivity_and_ID_df: pd.DataFrame,
+        plot_dir: str):
+
+    avg_over_seed_df = trained_neural_predictivity_and_ID_df.groupby(['Architecture', 'Activation']).agg({
+        'Trained': 'first',
+        'rate_maps_participation_ratio': ['mean', 'sem']
+    }).reset_index()
+
+    plt.close()
+    # This is such a pain in the ass. We'll do it manually.
+    for row_idx, row in avg_over_seed_df.iterrows():
+        plt.errorbar(
+            x=row['rate_maps_participation_ratio']['mean'],
+            y=row['Trained']['first'],
+            xerr=row['rate_maps_participation_ratio']['sem'],
+            linestyle='',  # Necessary to prevent lines from being connected
+            color=architecture_color_map[row['Architecture'][0]],
+            marker=activation_marker_map[row['Activation'][0]])
+
+    plt.xlabel('Participation Ratio of Rate Maps')
+    plt.ylabel('Neural Predictivity')
+
+    # Add custom legend.
+    # https://stackoverflow.com/a/45141109/4570472
+    f = lambda m, c: plt.plot([], [], marker=m, color=c, ls="none")[0]
+
+    labels = []
+    handles = []
+    for arch, arch_color in architecture_color_map.items():
+        labels.append(arch)
+        handles.append(f("s", arch_color))
+    for activation, activation_marker in activation_marker_map.items():
+        labels.append(activation)
+        handles.append(f(activation_marker, 'k'))
+    plt.legend()
+
+    plt.legend(
+        handles, labels, framealpha=1,
+        bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        loc='center left',  # Legend goes center-left of anchor
+    )
+
+    plt.savefig(os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom.png'),
+                bbox_inches='tight',
+                dpi=300)
     plt.show()
     plt.close()
 
@@ -1295,7 +1361,7 @@ def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
         bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
         loc='center left',  # Legend goes center-left of anchor
     )
-    plt.xlabel(r'$\sigma$')
+    plt.xlabel(r'$\sigma$ (m)')
     plt.ylabel('% Grid Cells')
 
     plt.savefig(os.path.join(plot_dir,
@@ -1318,7 +1384,7 @@ def plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
             vmin=0.,
             vmax=100.,
             linewidths=.5)
-        plt.xlabel(r'$\sigma$')
+        plt.xlabel(r'$\sigma$ (m)')
         plt.ylabel(r'$s$')
         plt.title(f'% Grid Cells (Threshold={threshold})')
 

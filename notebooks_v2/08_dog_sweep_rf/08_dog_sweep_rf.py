@@ -34,10 +34,10 @@ overwrite_runs_configs_df_values_with_joblib_data(
 plot_percent_runs_with_low_pos_decoding_err_pie(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir,
-    low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold)
+    low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold_in_cm)
 
 # Keep only networks that achieved low position decoding error.
-low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
