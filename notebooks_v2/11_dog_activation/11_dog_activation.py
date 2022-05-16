@@ -14,7 +14,7 @@ low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'amk6dohd',
+    'amk6dohd',  #
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -24,8 +24,8 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=True)
 
-# Drop activation == linear
-runs_configs_df = runs_configs_df[runs_configs_df['activation'] != 'linear']
+# Keep only ReLU & Tanh nonlinearities.
+runs_configs_df = runs_configs_df[runs_configs_df['activation'].isin(['relu', 'tanh'])]
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))

@@ -33,7 +33,6 @@ parameters:
     values: [
       1.0,
     ]
-
   Ng:
     values: [4096]
   Np:

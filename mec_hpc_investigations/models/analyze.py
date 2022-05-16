@@ -176,8 +176,10 @@ def download_wandb_project_runs_configs(wandb_project_path: str,
         else:
             runs = []
             for sweep_id in sweep_ids:
-                runs.extend(api.runs(path=wandb_project_path,
-                                     filters={"Sweep": sweep_id}))
+                sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+                runs.extend([run for run in sweep.runs])
+                # runs.extend(api.runs(path=wandb_project_path,
+                #                      filters={"Sweep": sweep_id}))
 
         sweep_results_list = []
         for run in runs:
@@ -251,8 +253,10 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
         else:
             runs = []
             for sweep_id in sweep_ids:
-                runs.extend(api.runs(path=wandb_project_path,
-                                     filters={"Sweep": sweep_id}))
+                sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+                runs.extend([run for run in sweep.runs])
+                # runs.extend(api.runs(path=wandb_project_path,
+                #                      filters={"Sweep": sweep_id}))
 
         runs_histories_list = []
         for run in runs:
