@@ -63,7 +63,7 @@ print(f'Collected runs from sweeps: {sweep_ids}')
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
 # run_ids = ['txayqzm5']
 
-# run_ids = ['q2z2kjdj', 'ayemnx3z', '2xgjmwbh', 'vqkv6ydf', 'ozd5ysjg', 'ux4itzk8', 'vam2ebhd', 'fqqbs71l', 'ae2xaehu', 'jqbr1tqd', 'd9ixjpr6', 'bgxcphb3', 'dhg7l53j', 'hg54oikt', '2p795g4w', 'cdfl21hs', 'jrn4aiav', '6dvl82zs', '8515stcr', 'hvxddwzk', '4v4subgx', 'hawi5a6k']
+run_ids = ['qtvg2zml', 'pyja57n7', '6avfbu04', 'b467nh1m', 'v7ni34lu', 'ixim8mjv', 'mht0qizr', 'rnlvdl1t', '5r09830d', '8c1hoa5p', '9g5p0cnp', 'vecvrqnh', 'nj713b1a', 'wwip0fzg', 'l1lulasg', 'o6fseis0', 'jjo28icx', 'u9ux2th8', 'fvchslbb', 's2zivvse', 'ukygyw96', '0lgi0b81', 'en89o5vk', '4ks9cfkx', 'mv3d1vsh']
 
 
 # random.shuffle functions in-place.

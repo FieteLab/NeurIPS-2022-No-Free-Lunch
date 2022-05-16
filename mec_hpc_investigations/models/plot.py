@@ -340,6 +340,29 @@ def plot_grid_scores_histogram(
     plt.close()
 
 
+def plot_grid_scores_histograms_by_activation(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    bins = np.linspace(-0.6, 1.4, 75)
+    g = sns.histplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        bins=bins,
+        kde=True,
+        hue='Activation')
+    g.legend_.set_title('Activation')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Number of Units')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_scores_histograms_by_n_place_fields_per_cell(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
@@ -465,6 +488,40 @@ def plot_grid_scores_histograms_by_run_id(
                     dpi=300)
         # plt.show()
         plt.close()
+
+
+def plot_grid_scores_vs_activation(augmented_neurons_data_by_run_id_df: pd.DataFrame,
+                                  plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+
+    ax = axes[0]
+    sns.boxenplot(y="score_60_by_neuron",
+                  x='activation',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  # size=2,
+                  )
+    ax.set_ylabel(f'Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.boxenplot(y="score_90_by_neuron",
+                  x='activation',
+                  data=augmented_neurons_data_by_run_id_df,
+                  ax=ax,
+                  # size=2,
+                  )
+    ax.set_ylabel(f'Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_vs_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
 
 
 def plot_grid_scores_vs_architecture(augmented_neurons_data_by_run_id_df: pd.DataFrame,
@@ -666,6 +723,40 @@ def plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
     ax.set_title(r'$90^{\circ}$')
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_score_max_vs_activation(max_grid_scores_by_run_id_df: pd.DataFrame,
+                                     plot_dir: str):
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.stripplot(y="score_60_by_neuron_max",
+                  x='activation',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  # size=2,
+                  )
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$60^{\circ}$')
+
+    ax = axes[1]
+    sns.stripplot(y="score_90_by_neuron_max",
+                  x='activation',
+                  data=max_grid_scores_by_run_id_df,
+                  ax=ax,
+                  # size=2,
+                  )
+    # ax.set_ylabel(None)
+    ax.set_ylabel(f'Max Grid Score')
+    ax.set_xlabel('')
+    ax.set_title(r'$90^{\circ}$')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_score_max_vs_activation.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
@@ -1818,6 +1909,27 @@ def plot_pos_decoding_err_vs_num_grad_steps_by_place_cell_rf(
     plt.close()
 
 
+def plot_pos_decoding_err_min_vs_activation(runs_configs_df: pd.DataFrame,
+                                              plot_dir: str):
+    plt.close()
+    sns.stripplot(y="pos_decoding_err",
+                  x='activation',
+                  data=runs_configs_df,
+                  )
+    plt.axhline(y=100., color='r', linewidth=5)
+    plt.text(x=0, y=55, s='Untrained', color='r')
+    plt.ylim(0.1, 100.)
+    plt.yscale('log')
+    plt.ylabel(f'Pos Decoding Err (cm)')
+    plt.xlabel('')
+    plt.savefig(os.path.join(plot_dir,
+                             f'pos_decoding_err_min_vs_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_pos_decoding_err_min_vs_architecture(runs_configs_df: pd.DataFrame,
                                               plot_dir: str):
     plt.close()
@@ -1969,13 +2081,46 @@ def plot_rate_maps_examples(
         plt.close()
 
 
+def plot_square_scores_histograms_by_activation(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+    # 97 chosen to match bin width of grid scores
+    bins = np.linspace(-0.6, 2.0, 97)
+    g = sns.histplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_90_by_neuron',
+        bins=bins,
+        kde=True,
+        hue='activation')
+    g.legend_.set_title('Activation')
+    # sns.displot(
+    #     data=augmented_neurons_data_by_run_id_df,
+    #     x='score_60_by_neuron',
+    #     bins=bins,
+    #     kde=True,
+    #     hue='n_place_fields_per_cell',
+    #     col='n_place_fields_per_cell'
+    # )
+
+    plt.xlabel('Square Score')
+    plt.ylabel('Number of Units')
+    plt.savefig(os.path.join(plot_dir,
+                             f'square_scores_histograms_by_activation.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_square_scores_histograms_by_optimizer(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
 
     plt.close()
     # 97 chosen to match bin width of grid scores
-    bins = np.linspace(-0.6, 1.4, 97)
+    bins = np.linspace(-0.6, 2.0, 97)
     g = sns.histplot(
         data=augmented_neurons_data_by_run_id_df,
         x='score_90_by_neuron',
@@ -1992,7 +2137,7 @@ def plot_square_scores_histograms_by_optimizer(
     #     col='n_place_fields_per_cell'
     # )
 
-    plt.xlabel('Grid Score')
+    plt.xlabel('Square Score')
     plt.ylabel('Number of Units')
     plt.savefig(os.path.join(plot_dir,
                              f'square_scores_histograms_by_optimizer.png'),
