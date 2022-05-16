@@ -11,7 +11,7 @@ results_dir = os.path.join(notebook_dir, 'results')
 os.makedirs(results_dir, exist_ok=True)
 
 low_pos_decoding_err_threshold_in_cm = 6.
-grid_score_d60_threshold = 0.85
+grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     'yzszqr74',  # DoG sweeping receptive field size
@@ -50,13 +50,18 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
-# plot_grid_scores_vs_place_cell_rf(
-#     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-#     plot_dir=results_dir)
+plot_grid_periods_mode_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir
+)
 
-# plot_grid_scores_boxen_vs_place_cell_rf(
-#     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-#     plot_dir=results_dir)
+plot_grid_scores_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_boxen_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
 
 percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
@@ -78,11 +83,6 @@ plot_grid_periods_kde_facet_by_place_cell_rf(
 plot_grid_periods_histograms_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
-
-plot_grid_periods_mode_vs_place_cell_rf(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir
-)
 
 plot_grid_periods_kde_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

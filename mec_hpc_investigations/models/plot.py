@@ -82,7 +82,7 @@ def plot_grid_periods_histograms_by_place_cell_rf(
         # plt.legend(
         #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
         # )
-        xlabel = r'$60^{\circ}$ Grid Period'
+        xlabel = r'$60^{\circ}$ Grid Period (cm)'
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
@@ -118,7 +118,7 @@ def plot_grid_periods_kde_by_place_cell_rf(
         # https://stackoverflow.com/questions/62884183/trying-to-add-a-colorbar-to-a-seaborn-scatterplot
         plt.gca().get_legend().remove()
         plt.gca().figure.colorbar(sm, label=r'$\sigma$')
-        xlabel = r'$60^{\circ}$ Grid Period'
+        xlabel = r'$60^{\circ}$ Grid Period (cm)'
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
@@ -156,7 +156,7 @@ def plot_grid_periods_kde_facet_by_place_cell_rf(
             # sharey=True,
         )
         g.set_titles(r"$\sigma={col_name}$")  # use this argument literally
-        g.set_xlabels(r'$60^{\circ}$ Grid Period')
+        g.set_xlabels(r'$60^{\circ}$ Grid Period (cm)')
         g.set_ylabels(r'Number of Units')
         plt.savefig(os.path.join(plot_dir,
                                  f'grid_periods_kde_facet_by_place_cell_rf_threshold={grid_score_threshold}.png'),
@@ -206,11 +206,14 @@ def plot_grid_periods_mode_vs_place_cell_rf(
                         y='kde_mode',
                         hue='place_cell_rf',
                         palette='Spectral_r')
-
+        x = np.sort(augmented_neurons_data_by_run_id_df['place_cell_rf'].unique())
+        y = 100 * x / np.sqrt(2 * np.log(2) / 3)
+        plt.plot(x, y)
+        # plt.show()
         plt.gca().get_legend().remove()
         plt.gca().figure.colorbar(sm, label=r'$\sigma$')
 
-        plt.ylabel('Grid Period Mode')
+        plt.ylabel('Grid Period Mode (cm)')
         plt.xlabel(r'$\sigma$ (m)')
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
         plt.savefig(os.path.join(plot_dir,
@@ -243,7 +246,7 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
             # plt.legend(
             #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
             # )
-            plt.xlabel(r'$60^{\circ}$ Grid Period')
+            plt.xlabel(r'$60^{\circ}$ Grid Period (cm)')
             plt.ylabel('Number of Units')
             plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
             plt.savefig(os.path.join(plot_dir,
@@ -276,7 +279,7 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
             # plt.legend(
             #     bbox_to_anchor=(1.2, 0.5),  # 1 on the x axis, 0.5 on the y axis
             # )
-            xlabel = r'$60^{\circ}$ Grid Period'
+            xlabel = r'$60^{\circ}$ Grid Period (cm)'
             plt.xlabel(xlabel)
             plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
             plt.savefig(os.path.join(plot_dir,
@@ -296,7 +299,7 @@ def plot_grid_periods_histograms_by_run_id(
         sns.histplot(x="period_per_cell",
                      data=neurons_data_df,
                      bins=bins)
-        xlabel = r'$60^{\circ}$ Grid Period'
+        xlabel = r'$60^{\circ}$ Grid Period (cm)'
         xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
 

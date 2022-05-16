@@ -13,7 +13,7 @@ results_dir = os.path.join(notebook_dir, 'results')
 os.makedirs(results_dir, exist_ok=True)
 
 low_pos_decoding_err_threshold_in_cm = 6.
-grid_score_d60_threshold = 1.2
+grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     '8rvghgz1',  # Gaussians + Global + CE, sweeping RF from 0.01 to 2.00

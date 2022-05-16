@@ -13,7 +13,7 @@ results_dir = os.path.join(notebook_dir, 'results')
 os.makedirs(results_dir, exist_ok=True)
 
 low_pos_decoding_err_threshold_in_cm = 6.  # centimeters
-grid_score_d60_threshold = 0.85
+grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     'nvf04nxs',  # DoG with heterogeneous RF & SS
