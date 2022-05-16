@@ -32,18 +32,20 @@ options.sequence_length = 50
 model = configure_model(options=options)
 print('Loaded model')
 
+
 # During training, we may have used a particular version of the place cell class.
 # However, for evaluation, Rylan may have changed the position decoder while
 # trying to debug position decoding from multiple fields per place cell. Because
 # the position decoder is part of the PlaceCell class, we instead just copy over
 # the relevant data members.
-training_place_cells = joblib.load(place_cells_path)
-model.place_cells.us = training_place_cells.us
-model.place_cells.place_cell_rf = training_place_cells.place_cell_rf
-model.place_cells.surround_scale = training_place_cells.surround_scale
-model.place_cells.fields_to_delete = training_place_cells.fields_to_delete
-model.place_cells.fields_to_keep = training_place_cells.fields_to_keep
-print('Loaded place cells.')
+if options.place_field_values != 'cartesian':
+    training_place_cells = joblib.load(place_cells_path)
+    model.place_cells.us = training_place_cells.us
+    model.place_cells.place_cell_rf = training_place_cells.place_cell_rf
+    model.place_cells.surround_scale = training_place_cells.surround_scale
+    model.place_cells.fields_to_delete = training_place_cells.fields_to_delete
+    model.place_cells.fields_to_keep = training_place_cells.fields_to_keep
+    print('Loaded place cells.')
 
 # Create the trainer, trajectory generator and grid scorer.
 trainer = Trainer(options=options,

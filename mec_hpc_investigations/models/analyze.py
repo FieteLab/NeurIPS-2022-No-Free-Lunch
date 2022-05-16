@@ -346,25 +346,25 @@ def overwrite_runs_configs_df_values_with_joblib_data(
     # Overwrite runs_configs_df's losses and pos decoding errors with post-evaluation
     # values. We do this because the post-training loss and decoding are computed
     # using newer code and longer trajectories.
-    keys = ['loss', 'pos_decoding_err', 'participation_ratio', 'two_NN', 'method_of_moments_ID']
-    for key in keys:
-        runs_configs_df[key] = runs_configs_df.apply(
-            lambda row: joblib_files_data_by_run_id_dict[row['run_id']][key],
-            axis=1)
+    # keys = ['loss', 'pos_decoding_err', 'participation_ratio', 'two_NN', 'method_of_moments_ID']
+    # for key in keys:
+    #     runs_configs_df[key] = runs_configs_df.apply(
+    #         lambda row: joblib_files_data_by_run_id_dict[row['run_id']][key],
+    #         axis=1)
 
-    # run_ids = []
-    # replacement_pos_decoding_errs = []
-    # for key, value in joblib_files_data_by_run_id_dict.items():
-    #     run_ids.append(key)
-    #     replacement_pos_decoding_errs.append(value['pos_decoding_err'])
-    #
-    # replacement_df = pd.DataFrame.from_dict({
-    #     'run_id': run_ids,
-    #     'replacement_pos_decoding_err': replacement_pos_decoding_errs
-    # })
-    # tmp = runs_configs_df.merge(
-    #     replacement_df,
-    #     on='run_id',
-    #     how='left')
-    #
-    # tmp[tmp['replacement_pos_decoding_err'] > 6.]
+    run_ids = []
+    replacement_pos_decoding_errs = []
+    for key, value in joblib_files_data_by_run_id_dict.items():
+        run_ids.append(key)
+        replacement_pos_decoding_errs.append(value['pos_decoding_err'])
+
+    replacement_df = pd.DataFrame.from_dict({
+        'run_id': run_ids,
+        'replacement_pos_decoding_err': replacement_pos_decoding_errs
+    })
+    tmp = runs_configs_df.merge(
+        replacement_df,
+        on='run_id',
+        how='left')
+
+    tmp[(tmp['replacement_pos_decoding_err'] > 6.) & (tmp['pos_decoding_err'] <= 6.0)]

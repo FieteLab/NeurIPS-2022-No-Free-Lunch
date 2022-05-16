@@ -8,7 +8,7 @@ import wandb
 ### Option 1: Manually specify sweep IDs, then fetch (finished) run IDs.
 
 # MSE
-# sweep_ids = ['26gn9pfh']
+sweep_ids = ['26gn9pfh']
 
 # DoG, sweeping RF.
 # sweep_ids = ['yzszqr74']
@@ -17,7 +17,7 @@ import wandb
 # sweep_ids = ['2yfpvx86']
 
 # DoG, multiple fields.
-# sweep_ids = ['rbrvuf2g']
+sweep_ids = ['rbrvuf2g', 'wnmp7nx0']
 
 # DoG, sweeping architectures.
 # sweep_ids = ['can8n6vd']
@@ -26,15 +26,14 @@ import wandb
 
 
 # # Fetch runs associated with the relevant sweeps.
-# api = wandb.Api(timeout=60)
-# run_ids = []
-# for sweep_id in sweep_ids:
-#     runs = api.runs(path='mec-hpc-investigations', filters={"sweep": sweep_id})
-#     sweep_run_ids = [run.id for run in runs.objects if run.state == 'finished']
-#     print(sweep_run_ids)
-#     # TODO: why do I need to run this manually myself?
-#     run_ids.extend(sweep_run_ids)
+api = wandb.Api(timeout=60)
+run_ids = []
+for sweep_id in sweep_ids:
+    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+    run_ids.extend(sweep_run_ids)
 
+print(f'Collected runs from sweeps: {sweep_ids}')
 
 ### Option 2: Manually specify run IDs.
 
@@ -64,7 +63,7 @@ import wandb
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
 # run_ids = ['txayqzm5']
 
-run_ids = ['q2z2kjdj', 'ayemnx3z', '2xgjmwbh', 'vqkv6ydf', 'ozd5ysjg', 'ux4itzk8', 'vam2ebhd', 'fqqbs71l', 'ae2xaehu', 'jqbr1tqd', 'd9ixjpr6', 'bgxcphb3', 'dhg7l53j', 'hg54oikt', '2p795g4w', 'cdfl21hs', 'jrn4aiav', '6dvl82zs', '8515stcr', 'hvxddwzk', '4v4subgx', 'hawi5a6k']
+# run_ids = ['q2z2kjdj', 'ayemnx3z', '2xgjmwbh', 'vqkv6ydf', 'ozd5ysjg', 'ux4itzk8', 'vam2ebhd', 'fqqbs71l', 'ae2xaehu', 'jqbr1tqd', 'd9ixjpr6', 'bgxcphb3', 'dhg7l53j', 'hg54oikt', '2p795g4w', 'cdfl21hs', 'jrn4aiav', '6dvl82zs', '8515stcr', 'hvxddwzk', '4v4subgx', 'hawi5a6k']
 
 
 # random.shuffle functions in-place.

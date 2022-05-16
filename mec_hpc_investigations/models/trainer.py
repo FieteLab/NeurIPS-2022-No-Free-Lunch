@@ -150,6 +150,7 @@ class Trainer(object):
             n_samples = 512
 
         inputs, pc_outputs, pos = next(gen)
+
         results = self.log_and_plot_all(pos=pos,
                                         inputs=inputs,
                                         epoch_idx=None,
@@ -157,10 +158,10 @@ class Trainer(object):
                                         log_to_wandb=False,
                                         run_dir=run_dir,
                                         refresh=refresh)
-
         loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
         pos_decoding_err *= 100  # Convert position decoding error from meters to cm
         values_to_dump = {'loss': loss, 'pos_decoding_err': pos_decoding_err}
+
         intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
             inputs=inputs)
         values_to_dump.update(intrinsic_dimensionalities)

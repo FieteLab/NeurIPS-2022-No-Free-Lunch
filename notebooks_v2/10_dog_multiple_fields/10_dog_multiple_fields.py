@@ -15,7 +15,7 @@ grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
     'rbrvuf2g',  # Part 1 of sweep
-    # 'wnmp7nx0',  # Part 2 of sweep
+    'wnmp7nx0',  # Part 2 of sweep
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -23,10 +23,10 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=False)
+    refresh=True)
 
 
-# Add 1 to Poissons
+# Add 1 to Poissons because we used 1+Poisson number of fields
 def add_one_to_poissons(row: pd.Series):
     if row['n_place_fields_per_cell'].startswith('Poisson'):
         return '1 + ' + row['n_place_fields_per_cell']
@@ -48,10 +48,10 @@ overwrite_runs_configs_df_values_with_joblib_data(
 plot_percent_runs_with_low_pos_decoding_err_pie(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir,
-    low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold)
+    low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold_in_cm)
 
 # Keep only networks that achieved low position decoding error.
-low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
+low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 print(f'Frac Low Pos Decoding Err Runs: {np.round(low_pos_decoding_indices.mean(), 3)}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
