@@ -151,6 +151,17 @@ class Trainer(object):
 
         inputs, pc_outputs, pos = next(gen)
 
+        loss_pos_and_dims_path = os.path.join(run_dir, 'loss_pos_and_dimensionalities.joblib')
+        if refresh or not os.path.isfile(loss_pos_and_dims_path):
+            loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
+            pos_decoding_err *= 100  # Convert position decoding error from meters to cm
+            values_to_dump = {'loss': loss, 'pos_decoding_err': pos_decoding_err}
+            intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
+                inputs=inputs)
+            values_to_dump.update(intrinsic_dimensionalities)
+            joblib.dump(values_to_dump, loss_pos_and_dims_path)
+            print(values_to_dump)
+
         results = self.log_and_plot_all(pos=pos,
                                         inputs=inputs,
                                         epoch_idx=None,
@@ -158,19 +169,6 @@ class Trainer(object):
                                         log_to_wandb=False,
                                         run_dir=run_dir,
                                         refresh=refresh)
-        loss, pos_decoding_err = self.eval_step(inputs, pc_outputs, pos)
-        pos_decoding_err *= 100  # Convert position decoding error from meters to cm
-        values_to_dump = {'loss': loss, 'pos_decoding_err': pos_decoding_err}
-
-        intrinsic_dimensionalities = self.compute_intrinsic_dimensionalities(
-            inputs=inputs)
-        values_to_dump.update(intrinsic_dimensionalities)
-        print(values_to_dump)
-        joblib.dump(values_to_dump,
-                    os.path.join(run_dir, 'loss_pos_and_dimensionalities.joblib'))
-
-        print(f'Loss: {loss}')
-        print(f'Position Decoding Error (cm): {pos_decoding_err}')
 
         print('Finished eval after training')
 

@@ -1520,7 +1520,7 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
                     for label in num_runs_per_category.index.values],
             # shadow=True,
             autopct='%.0f%%')
-        plt.title('Has Grid Cells')
+        plt.title(f'Runs With Grid Cells\nThreshold={threshold}, N={len(runs_configs_with_scores_max_df)}')
 
         plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
                     bbox_inches='tight',
@@ -1548,7 +1548,7 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
                 for label in num_runs_per_category.index.values],
         # shadow=True,
         autopct='%.0f%%')
-    plt.title('Achieves Low Position Decoding Error')
+    plt.title(f'Achieves Low Position Decoding Error\nN={len(runs_configs_df)}')
 
     plt.savefig(os.path.join(plot_dir, f'percent_low_pos_decoding_err_pie.png'),
                 bbox_inches='tight',
@@ -1853,6 +1853,20 @@ def plot_rate_maps_examples(
 
             # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
             ax.invert_yaxis()
+
+        # Replace any empty subplots with empty heatmaps
+        empty_rate_map = np.full_like(rate_map, fill_value=np.nan)
+        for ax_idx in range(ax_idx, n_rows * n_cols):
+            row, col = ax_idx // n_cols, ax_idx % n_cols
+            ax = axes[row, col]
+            sns.heatmap(
+                data=empty_rate_map,
+                ax=ax,
+                cbar=False,
+                cmap='Spectral_r',
+                square=True,
+                yticklabels=False,
+                xticklabels=False)
 
         plt.tight_layout()
 
