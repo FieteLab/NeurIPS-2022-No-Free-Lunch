@@ -14,7 +14,7 @@ import wandb
 # sweep_ids = ['yzszqr74']
 
 # DoG, sweeping SS.
-sweep_ids = ['acmd4be7']
+# sweep_ids = ['acmd4be7']
 
 # DoG, multiple scales.
 # sweep_ids = ['2yfpvx86']
@@ -28,20 +28,20 @@ sweep_ids = ['acmd4be7']
 # DoG, heterogeneous receptive field and surround scale.
 
 # # Fetch runs associated with the relevant sweeps.
-api = wandb.Api(timeout=60)
-run_ids = []
-for sweep_id in sweep_ids:
-    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
-    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
-    run_ids.extend(sweep_run_ids)
-
-print(f'Collected runs from sweeps: {sweep_ids}')
+# api = wandb.Api(timeout=60)
+# run_ids = []
+# for sweep_id in sweep_ids:
+#     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+#     sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+#     run_ids.extend(sweep_run_ids)
+#
+# print(f'Collected runs from sweeps: {sweep_ids}')
 
 ### Option 2: Manually specify run IDs.
 
 # All runs.
-# results_dir = 'results'
-# run_ids = list(sorted(os.listdir(results_dir)))
+results_dir = 'results'
+run_ids = list(sorted(os.listdir(results_dir)))
 
 # Ideal grid cells
 # run_ids = ['wxt06g20', 'y5qdmmqx', 'ryrmls1x', 'otuv2dhn', 'kfpr44o9', '08jmt76g', '1ez9xulc', '6lgoiwhw', '0svwod2a', 'zg5hbvxx', 'ebb8dp9b', 'd47g0wpn', 'goo0np7q', 'qg3a3h8e', 'p0osju5b', 'ltzh0j9x']

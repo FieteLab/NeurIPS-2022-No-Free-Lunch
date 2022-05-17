@@ -25,8 +25,8 @@ options = joblib.load(options_path)
 print('Loaded options')
 
 # Specify the length of trajectories for evaluation.
-options.sequence_length = 20
-options.batch_size = 30
+options.sequence_length = 50
+# options.batch_size = 30
 
 # Create model.
 model = configure_model(options=options)
