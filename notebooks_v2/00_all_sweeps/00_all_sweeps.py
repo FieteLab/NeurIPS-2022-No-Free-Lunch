@@ -15,14 +15,16 @@ grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 
 sweep_ids = [
-    '26gn9pfh',  # Cartesian + MSE
-    # 'rutsx042',  # G+Global+CE, sweeping non-RF hyperparameters
+    '26gn9pfh',     # Cartesian + MSE
+    # 'rutsx042',   # G+Global+CE, sweeping non-RF hyperparameters
     # # '',  # G+Global+CE, sweeping RF from 0.01m to 2.0m
-    # 'amk6dohd',  # DoG+Global+CE, sweeping non-RF hyperparameters
-    # 'yzszqr74',  # DoG+Global+CE, sweeping only RF hyperparameter
-    # '2yfpvx86',  # DoG+Global+CE, heterogeneous RF & SS
-    # 'rbrvuf2g',  # DoG+Global+CE, multiple fields 1
-    # 'wnmp7nx0',  # DoG+Global+CE, multiple fields 2
+    # 'amk6dohd',   # DoG+Global+CE, sweeping non-RF hyperparameters
+    'yzszqr74',     # DoG+Global+CE, sweeping only RF hyperparameter
+    'acmd4be7',     # DoG+Global+CE, sweeping only SS hyperparameter
+    # '2yfpvx86',     #
+    'nvf04nxs',     # DoG+Global+CE, heterogeneous scales
+    # 'rbrvuf2g',   # DoG+Global+CE, multiple fields 1
+    # 'wnmp7nx0',   # DoG+Global+CE, multiple fields 2
 ]
 
 #
@@ -31,27 +33,30 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 
 # Add human-readable sweep
 def convert_sweep_to_human_readable_sweep(row: pd.Series):
-    if row['Sweep'] == '26gn9pfh':
+    sweep_id = row['Sweep']
+    if sweep_id == '26gn9pfh':
         # 01: Cartesian + MSE
         human_readable_sweep = 'Cartesian\nMSE\nN=144'
-    elif row['Sweep'] == '':
+    elif sweep_id == '':
         # 02: Polar + MSE
         human_readable_sweep = 'Polar\nGeodesic'
         raise NotImplementedError
-    elif row['Sweep'] == 'rutsx042':
-        human_readable_sweep = 'Gaussian\nHyperparams w/o RF, SS)\nN='
-    elif row['Sweep'] == 'amk6dohd':
+    elif sweep_id == 'rutsx042':
+        human_readable_sweep = 'G\nHyperparams w/o RF, SS)\nN='
+    elif sweep_id == 'amk6dohd':
         human_readable_sweep = 'DoG\nHyperparams w/o RF, SS\nN='
-    elif row['Sweep'] == 'yzszqr74':
-        human_readable_sweep = 'DoG\nRF\nN='
-    elif row['Sweep'] == '2yfpvx86':
-        human_readable_sweep = 'DoG\nHetero RF & SS\nN='
-    elif row['Sweep'] in {'rbrvuf2g', 'wnmp7nx0'}:
+    elif sweep_id == 'yzszqr74':
+        human_readable_sweep = 'DoG\nRF\nN=51'
+    elif sweep_id == 'acmd4be7':
+        human_readable_sweep = 'DoG\nSS\nN=24'
+    elif sweep_id == 'nvf04nxs':
+        human_readable_sweep = 'DoG\nHetero RF & SS\nN=56'
+    elif sweep_id in {'rbrvuf2g', 'wnmp7nx0'}:
         human_readable_sweep = 'DoG\nMultiple Fields\nN='
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"

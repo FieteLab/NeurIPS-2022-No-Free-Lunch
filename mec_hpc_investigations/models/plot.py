@@ -1105,7 +1105,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.stripplot(y="max_grid_score_d=60_n=256",
+    sns.stripplot(y="score_60_by_neuron_max",
                   x='human_readable_sweep',
                   data=runs_configs_with_scores_max_df,
                   ax=ax,
@@ -1116,7 +1116,7 @@ def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.stripplot(y="max_grid_score_d=90_n=256",
+    sns.stripplot(y="score_90_by_neuron_max",
                   x='human_readable_sweep',
                   data=runs_configs_with_scores_max_df,
                   ax=ax,
@@ -1138,7 +1138,7 @@ def plot_max_grid_score_vs_activation(runs_configs_with_scores_max_df: pd.DataFr
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.stripplot(y="max_grid_score_d=60_n=256",
+    sns.stripplot(y="score_60_by_neuron_max",
                   x='activation',
                   data=runs_configs_with_scores_max_df,
                   ax=ax,
@@ -1149,7 +1149,7 @@ def plot_max_grid_score_vs_activation(runs_configs_with_scores_max_df: pd.DataFr
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.stripplot(y="max_grid_score_d=90_n=256",
+    sns.stripplot(y="score_90_by_neuron_max",
                   x='activation',
                   data=runs_configs_with_scores_max_df,
                   ax=ax,
@@ -1173,7 +1173,7 @@ def plot_max_grid_score_vs_num_grad_steps(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.lineplot(y="max_grid_score_d=60_n=256",
+    sns.lineplot(y="score_60_by_neuron_max",
                  x='num_grad_steps',
                  data=runs_augmented_histories_df,
                  ax=ax,
@@ -1183,7 +1183,7 @@ def plot_max_grid_score_vs_num_grad_steps(
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.lineplot(y="max_grid_score_d=90_n=256",
+    sns.lineplot(y="score_90_by_neuron_max",
                  x='num_grad_steps',
                  data=runs_augmented_histories_df,
                  ax=ax)
@@ -1208,7 +1208,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.lineplot(y="max_grid_score_d=60_n=256",
+    sns.lineplot(y="score_60_by_neuron_max",
                  x='num_grad_steps',
                  data=runs_augmented_histories_df,
                  ax=ax,
@@ -1224,7 +1224,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
                color='r')
 
     ax = axes[1]
-    sns.lineplot(y="max_grid_score_d=90_n=256",
+    sns.lineplot(y="score_90_by_neuron_max",
                  x='num_grad_steps',
                  data=runs_augmented_histories_df,
                  hue='optimizer',
@@ -1254,7 +1254,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.lineplot(y="max_grid_score_d=60_n=256",
+    sns.lineplot(y="score_60_by_neuron_max",
                  x='num_grad_steps',
                  hue='place_cell_rf',
                  data=runs_augmented_histories_df,
@@ -1266,7 +1266,7 @@ def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.lineplot(y="max_grid_score_d=90_n=256",
+    sns.lineplot(y="score_90_by_neuron_max",
                  x='num_grad_steps',
                  hue='place_cell_rf',
                  data=runs_augmented_histories_df,
@@ -1291,7 +1291,7 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
                              sharey=True, sharex=True)
 
     ax = axes[0]
-    sns.stripplot(y="max_grid_score_d=60_n=256",
+    sns.stripplot(y="score_60_by_neuron_max",
                   x='place_cell_rf',
                   hue='activation',
                   data=runs_performance_df,
@@ -1302,7 +1302,7 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
     ax.set_title(r'$60^{\circ}$')
 
     ax = axes[1]
-    sns.stripplot(y="max_grid_score_d=90_n=256",
+    sns.stripplot(y="score_90_by_neuron_max",
                   x='place_cell_rf',
                   hue='activation',
                   data=runs_performance_df,
@@ -1335,8 +1335,8 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
         ax = axes[ax_idx]
         sns.scatterplot(
             data=runs_performance_df[runs_performance_df['rnn_type'] == unique_rnn_type],
-            x='max_grid_score_d=60_n=256',
-            y='max_grid_score_d=90_n=256',
+            x='score_60_by_neuron_max',
+            y='score_90_by_neuron_max',
             hue='activation',
             ax=ax,
         )
@@ -1584,10 +1584,10 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sw
         runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 
     runs_configs_with_scores_max_df[f'has_grid_d60'] \
-        = runs_configs_with_scores_max_df['max_grid_score_d=60_n=256'] > grid_score_d60_threshold
+        = runs_configs_with_scores_max_df['score_60_by_neuron_max'] > grid_score_d60_threshold
 
     runs_configs_with_scores_max_df[f'has_grid_d90'] \
-        = runs_configs_with_scores_max_df['max_grid_score_d=90_n=256'] > grid_score_d90_threshold
+        = runs_configs_with_scores_max_df['score_90_by_neuron_max'] > grid_score_d90_threshold
 
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
                              sharey=True, sharex=True)
@@ -1633,10 +1633,10 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
         runs_performance_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm].copy()
 
     runs_performance_low_pos_decod_err_df['has_grid_d60'] \
-        = runs_performance_low_pos_decod_err_df['max_grid_score_d=60_n=256'] > grid_score_d60_threshold
+        = runs_performance_low_pos_decod_err_df['score_60_by_neuron_max'] > grid_score_d60_threshold
 
     runs_performance_low_pos_decod_err_df['has_grid_d90'] \
-        = runs_performance_low_pos_decod_err_df['max_grid_score_d=90_n=256'] > grid_score_d90_threshold
+        = runs_performance_low_pos_decod_err_df['score_90_by_neuron_max'] > grid_score_d90_threshold
 
     def compute_lattice_group(row: pd.Series):
         if row['has_grid_d60'] & row['has_grid_d90']:
@@ -1695,13 +1695,13 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
             colors=['tab:blue' if label == True else 'tab:orange'
                     for label in num_runs_per_category.index.values],
             # shadow=True,
-            autopct='%.0f%%')
+            autopct='%.2f%%')
         plt.title(f'Runs With Grid Cells\nThreshold={threshold}, N={len(runs_configs_with_scores_max_df)}')
 
         plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
                     bbox_inches='tight',
                     dpi=300)
-        plt.show()
+        # plt.show()
         plt.close()
 
 
@@ -1754,7 +1754,7 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
         colors=['tab:blue' if label == True else 'tab:orange'
                 for label in num_runs_per_category.index.values],
         # shadow=True,
-        autopct='%.0f%%')
+        autopct='%.2f%%')
     plt.title(f'Runs with Low Pos Error\nThreshold={low_pos_decoding_err_threshold_in_cm} cm, N={len(runs_configs_df)}')
 
     plt.savefig(os.path.join(plot_dir, f'percent_runs_with_low_pos_decoding_err_pie.png'),
@@ -1844,7 +1844,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
     ymax = runs_configs_with_scores_max_df['pos_decoding_err'].max()
     ax = axes[0]
     sns.scatterplot(y="pos_decoding_err",
-                    x='max_grid_score_d=60_n=256',
+                    x='score_60_by_neuron_max',
                     data=runs_configs_with_scores_max_df,
                     hue='human_readable_sweep',
                     ax=ax,
@@ -1856,7 +1856,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
 
     ax = axes[1]
     sns.scatterplot(y="pos_decoding_err",
-                    x='max_grid_score_d=90_n=256',
+                    x='score_90_by_neuron_max',
                     data=runs_configs_with_scores_max_df,
                     hue='human_readable_sweep',
                     ax=ax,
