@@ -8,32 +8,34 @@ import wandb
 ### Option 1: Manually specify sweep IDs, then fetch (finished) run IDs.
 
 # MSE
-sweep_ids = ['26gn9pfh']
+# sweep_ids = ['26gn9pfh']
 
 # DoG, sweeping RF.
 # sweep_ids = ['yzszqr74']
+
+# DoG, sweeping SS.
+sweep_ids = ['acmd4be7']
 
 # DoG, multiple scales.
 # sweep_ids = ['2yfpvx86']
 
 # DoG, multiple fields.
-sweep_ids = ['rbrvuf2g', 'wnmp7nx0']
+# sweep_ids = ['rbrvuf2g', 'wnmp7nx0']
 
 # DoG, sweeping architectures.
 # sweep_ids = ['can8n6vd']
 
 # DoG, heterogeneous receptive field and surround scale.
 
-
 # # Fetch runs associated with the relevant sweeps.
-# api = wandb.Api(timeout=60)
-# run_ids = []
-# for sweep_id in sweep_ids:
-#     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
-#     sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
-#     run_ids.extend(sweep_run_ids)
-#
-# print(f'Collected runs from sweeps: {sweep_ids}')
+api = wandb.Api(timeout=60)
+run_ids = []
+for sweep_id in sweep_ids:
+    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+    run_ids.extend(sweep_run_ids)
+
+print(f'Collected runs from sweeps: {sweep_ids}')
 
 ### Option 2: Manually specify run IDs.
 
@@ -63,7 +65,7 @@ sweep_ids = ['rbrvuf2g', 'wnmp7nx0']
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
 # run_ids = ['txayqzm5']
 
-run_ids = []
+# run_ids = []
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)

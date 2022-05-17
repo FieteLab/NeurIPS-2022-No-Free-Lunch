@@ -84,4 +84,4 @@ plot_grid_score_max_vs_optimizer(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
     plot_dir=results_dir)
 
-print('Finished 06_optimizer/06_optimizer.py!')
+print('Finished 06_dog_optimizer/06_dog_optimizer.py!')

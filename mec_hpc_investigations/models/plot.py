@@ -65,7 +65,7 @@ def plot_grid_periods_histograms_by_place_cell_rf(
     plt.close()
     bins = np.linspace(0, 100, 101)
 
-    for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
+    for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
         # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.histplot(x="period_per_cell",
@@ -105,7 +105,7 @@ def plot_grid_periods_kde_by_place_cell_rf(
     sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
     sm.set_array([])
 
-    for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
+    for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.kdeplot(x="period_per_cell",
                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
@@ -141,7 +141,7 @@ def plot_grid_periods_kde_facet_by_place_cell_rf(
     sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
     sm.set_array([])
 
-    for grid_score_threshold in [0.37, 0.8, 1.0, 1.18]:
+    for grid_score_threshold in [0.3, 0.8, 1.0, 1.18]:
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         plt.close()
         g = sns.displot(
@@ -181,7 +181,7 @@ def plot_grid_periods_mode_vs_place_cell_rf(
     x_assess_values = np.linspace(0, 150, 1000)[:, np.newaxis]
 
     # Construct KDE plot
-    for grid_score_threshold in [0.37, 0.8, 1.18]:
+    for grid_score_threshold in [0.3, 0.8, 1.18]:
 
         plt.close()
 
@@ -232,7 +232,7 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
 
     for group, group_df in augmented_neurons_data_by_run_id_df.groupby(['place_cell_rf', 'surround_scale']):
         rf, ss = group
-        for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
+        for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
             likely_grid_cell_indices = group_df['score_60_by_neuron'] > grid_score_threshold
             sns.histplot(x="period_per_cell",
                          data=group_df[likely_grid_cell_indices],
@@ -266,7 +266,7 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
 
         rf, ss = group
 
-        for grid_score_threshold in [0.37, 0.8, 0.85, 1.0, 1.18]:
+        for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
             likely_grid_cell_indices = group_df['score_60_by_neuron'] > grid_score_threshold
             sns.kdeplot(x="period_per_cell",
                         data=group_df[likely_grid_cell_indices],
@@ -351,7 +351,7 @@ def plot_grid_scores_histograms_by_activation(
         x='score_60_by_neuron',
         bins=bins,
         kde=True,
-        hue='Activation')
+        hue='activation')
     g.legend_.set_title('Activation')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
@@ -1654,7 +1654,7 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
 def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.DataFrame,
                                           plot_dir: str):
 
-    thresholds = [0.37, 0.8, 1.18]
+    thresholds = [0.3, 0.8, 1.18]
 
     for threshold in thresholds:
         plt.close()
@@ -1730,9 +1730,9 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
                 for label in num_runs_per_category.index.values],
         # shadow=True,
         autopct='%.0f%%')
-    plt.title(f'Achieves Low Position Decoding Error\nN={len(runs_configs_df)}')
+    plt.title(f'Runs with Low Position Error\nN={len(runs_configs_df)}')
 
-    plt.savefig(os.path.join(plot_dir, f'percent_low_pos_decoding_err_pie.png'),
+    plt.savefig(os.path.join(plot_dir, f'percent_runs_with_low_pos_decoding_err_pie.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()

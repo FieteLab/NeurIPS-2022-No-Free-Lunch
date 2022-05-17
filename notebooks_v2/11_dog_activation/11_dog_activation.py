@@ -22,7 +22,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 # Keep only ReLU & Tanh nonlinearities.
 runs_configs_df = runs_configs_df[runs_configs_df['activation'].isin(['relu', 'tanh'])]
@@ -40,7 +40,8 @@ plot_percent_runs_with_low_pos_decoding_err_pie(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+frac_low_decoding_runs = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_decoding_runs}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 plot_pos_decoding_err_min_vs_activation(
@@ -78,4 +79,4 @@ plot_grid_score_max_vs_activation(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
     plot_dir=results_dir)
 
-print('Finished 06_optimizer/06_optimizer.py!')
+print('Finished 11_dog_activation/11_dog_activation.py!')
