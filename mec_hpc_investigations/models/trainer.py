@@ -7,6 +7,7 @@ import skdim
 import seaborn as sns
 import tensorflow as tf
 from tqdm import tqdm
+from typing import Dict
 import wandb
 
 from mec_hpc_investigations.models.visualize import save_ratemaps
@@ -53,7 +54,7 @@ class Trainer(object):
         self.loss = []
         self.err = []
 
-        self.scorer = None
+        self.scorers = None
 
         # Set up checkpoints
         self.ckpt = tf.train.Checkpoint(step=tf.Variable(0), optimizer=self.optimizer, net=model)
@@ -61,7 +62,8 @@ class Trainer(object):
         os.makedirs(self.ckpt_dir, exist_ok=True)
         self.ckpt_manager = tf.train.CheckpointManager(self.ckpt, self.ckpt_dir, max_to_keep=500)
         if len(self.ckpt_manager.checkpoints) == 1 and split == 'eval':
-            raise ValueError('We currently only want to evaluate a trained model. 1 checkpoint means the model did not finish training.')
+            raise ValueError(
+                'We currently only want to evaluate a trained model. 1 checkpoint means the model did not finish training.')
         self.ckpt.restore(self.ckpt_manager.latest_checkpoint)
         if self.ckpt_manager.latest_checkpoint:
             print("Restored trained model from {}".format(self.ckpt_manager.latest_checkpoint))
@@ -74,16 +76,20 @@ class Trainer(object):
         starts = [0.2] * 10
         ends = np.linspace(0.4, 1.0, num=10)
 
-        # TODO: Are these height and widths in the correct order?
         # coords_range = ((-1.1, 1.1), (-1.1, 1.1))
         coords_range = (
             (-self.options.box_width_in_m / 2., self.options.box_width_in_m / 2.),
             (-self.options.box_height_in_m / 2., self.options.box_height_in_m / 2.))
-        nbins = int((coords_range[0][1] - coords_range[0][0]) / self.options.bin_side_in_m)
-        masks_parameters = zip(starts, ends.tolist())
-        self.scorer = GridScorer(nbins=nbins,
-                                 mask_parameters=masks_parameters,
-                                 coords_range=coords_range)
+        # Aran uses 20: https://github.com/neuroailab/NormativeMEC/blob/3d2aa83263732c461b298c3edb82ba05b1a1102e/scripts/bordergridscore_rnn_best_layer.py#L53
+        # Ben uses 20: https://github.com/ganguli-lab/grid-pattern-formation/blob/8dcd3907274c5285c7cf756a7f21855f03c198f2/visualize.py#L136
+        # nbins = 20
+        # Aran said to use 5 cm
+        # nbins = int((coords_range[0][1] - coords_range[0][0]) / self.options.bin_side_in_m)
+        # masks_parameters = zip(starts, ends.tolist())
+        self.scorers = [GridScorer(nbins=nbins,
+                                   mask_parameters=zip(starts, ends.tolist()),
+                                   coords_range=coords_range)
+                        for nbins in [44, 20, 32]]
 
     def eval_step(self, inputs, pc_outputs, pos):
         '''
@@ -162,13 +168,13 @@ class Trainer(object):
             joblib.dump(values_to_dump, loss_pos_and_dims_path)
             print(values_to_dump)
 
-        results = self.log_and_plot_all(pos=pos,
-                                        inputs=inputs,
-                                        epoch_idx=None,
-                                        n_samples=n_samples,
-                                        log_to_wandb=False,
-                                        run_dir=run_dir,
-                                        refresh=refresh)
+        self.log_and_plot_all(pos=pos,
+                              inputs=inputs,
+                              epoch_idx=None,
+                              n_samples=n_samples,
+                              log_to_wandb=False,
+                              run_dir=run_dir,
+                              refresh=refresh)
 
         print('Finished eval after training')
 
@@ -303,7 +309,7 @@ class Trainer(object):
             ys = previously_generated_trajectories_and_activations['ys']
             print('Loaded previously generated trajectories and activations from disk.')
 
-        rate_maps, score_60_by_neuron, score_90_by_neuron = self.compute_and_log_rate_maps(
+        rate_maps_and_scores_dict = self.compute_and_log_rate_maps(
             xs=xs,
             ys=ys,
             activations=activations,
@@ -313,34 +319,32 @@ class Trainer(object):
             run_dir=run_dir,
             refresh=refresh)
 
-        period_per_cell, period_err_per_cell, orientations_per_cell = self.compute_and_log_grid_cell_periodicity_and_orientation(
-            rate_maps=rate_maps,
-            score_60_by_neuron=score_60_by_neuron,
-            score_90_by_neuron=score_90_by_neuron,
+        self.compute_and_log_grid_cell_periodicity_and_orientation(
+            rate_maps_and_scores_dict=rate_maps_and_scores_dict,
             epoch_idx=epoch_idx,
             log_to_wandb=log_to_wandb,
             run_dir=run_dir,
             refresh=refresh,
         )
 
-        self.plot_and_log_ratemaps(
-            rate_maps=rate_maps,
-            score_60_by_neuron=score_60_by_neuron,
-            score_90_by_neuron=score_90_by_neuron,
-            epoch_idx=epoch_idx,
-            log_to_wandb=log_to_wandb,
-            run_dir=run_dir)
+        # self.plot_and_log_ratemaps(
+        #     rate_maps=rate_maps,
+        #     score_60_by_neuron=score_60_by_neuron,
+        #     score_90_by_neuron=score_90_by_neuron,
+        #     epoch_idx=epoch_idx,
+        #     log_to_wandb=log_to_wandb,
+        #     run_dir=run_dir)
 
-        results = dict(
-            rate_maps=rate_maps,
-            score_60_by_neuron=score_60_by_neuron,
-            score_90_by_neuron=score_90_by_neuron,
-            period_per_cell=period_per_cell,
-            period_err_per_cell=period_err_per_cell,
-            orientations_per_cell=orientations_per_cell,
-        )
-
-        return results
+        # results = dict(
+        #     rate_maps=rate_maps,
+        #     score_60_by_neuron=score_60_by_neuron,
+        #     score_90_by_neuron=score_90_by_neuron,
+        #     period_per_cell=period_per_cell,
+        #     period_err_per_cell=period_err_per_cell,
+        #     orientations_per_cell=orientations_per_cell,
+        # )
+        #
+        # return results
 
     def compute_intrinsic_dimensionalities(self,
                                            inputs):
@@ -370,9 +374,7 @@ class Trainer(object):
         return intrinsic_dimensionalities
 
     def compute_and_log_grid_cell_periodicity_and_orientation(self,
-                                                              rate_maps: np.ndarray,
-                                                              score_60_by_neuron: np.ndarray,
-                                                              score_90_by_neuron: np.ndarray,
+                                                              rate_maps_and_scores_dict: Dict[str, np.ndarray],
                                                               epoch_idx: int,
                                                               run_dir: str,
                                                               threshold: float = 0.3,
@@ -384,35 +386,46 @@ class Trainer(object):
 
             print('Computing grid cell periodicity and orientation.')
 
-            period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
-            likely_grid_cell_indices = score_60_by_neuron > threshold
-            for rate_map_idx, rate_map in enumerate(rate_maps):
-                if likely_grid_cell_indices[rate_map_idx]:
-                    rate_map_copy = np.copy(rate_map)
-                    # NOTE: This is new as of 2022/04/19.
-                    rate_map_copy[np.isnan(rate_map_copy)] = 0.
-                    period, period_err, orientations = self.scorer.calculate_grid_cell_periodicity_and_orientation(
-                        rate_map=rate_map_copy)
-                    period_per_cell.append(period)
-                    period_err_per_cell.append(period_err)
-                    orientations_per_cell.append(orientations.tolist())
-                else:
-                    period_per_cell.append(np.nan)
-                    period_err_per_cell.append(np.nan)
-                    orientations_per_cell.append(np.nan)
+            values_to_dump = {
+                'threshold': threshold
+            }
 
-            if log_to_wandb:
-                wandb.log({
-                    f'period_per_cell_threshold={threshold}': period_per_cell,
-                    f'period_err_per_cell_threshold={threshold}': period_err_per_cell,
-                    f'orientations_per_cell_threshold={threshold}': orientations_per_cell,
-                }, step=epoch_idx + 1)
+            for scorer in self.scorers:
+                nbins = scorer._nbins
+                rate_maps = rate_maps_and_scores_dict[f'rate_maps_nbins={nbins}']
+                score_60_by_neuron = rate_maps_and_scores_dict[f'score_60_by_neuron_nbins={nbins}']
+
+                period_per_cell, period_err_per_cell, orientations_per_cell = [], [], []
+                likely_grid_cell_indices = score_60_by_neuron > threshold
+                for rate_map_idx, rate_map in enumerate(rate_maps):
+                    if likely_grid_cell_indices[rate_map_idx]:
+                        rate_map_copy = np.copy(rate_map)
+                        # NOTE: This is new as of 2022/04/19.
+                        rate_map_copy[np.isnan(rate_map_copy)] = 0.
+                        period, period_err, orientations = scorer.calculate_grid_cell_periodicity_and_orientation(
+                            rate_map=rate_map_copy)
+                        period_per_cell.append(period)
+                        period_err_per_cell.append(period_err)
+                        orientations_per_cell.append(orientations.tolist())
+                    else:
+                        period_per_cell.append(np.nan)
+                        period_err_per_cell.append(np.nan)
+                        orientations_per_cell.append(np.nan)
+
+                # if log_to_wandb:
+                #     wandb.log({
+                #         f'period_per_cell_threshold={threshold}': period_per_cell,
+                #         f'period_err_per_cell_threshold={threshold}': period_err_per_cell,
+                #         f'orientations_per_cell_threshold={threshold}': orientations_per_cell,
+                #     }, step=epoch_idx + 1)
+
+                values_to_dump.update({
+                    f'period_per_cell_nbins={nbins}': period_per_cell,
+                    f'period_err_per_cell_nbins={nbins}': period_err_per_cell,
+                    f'orientations_per_cell_nbins={nbins}': orientations_per_cell})
 
             joblib.dump(
-                {'period_per_cell': period_per_cell,
-                 'period_err_per_cell': period_err_per_cell,
-                 'orientations_per_cell': orientations_per_cell,
-                 'threshold': threshold},
+                values_to_dump,
                 filename=period_results_joblib_path
             )
 
@@ -421,13 +434,14 @@ class Trainer(object):
             previously_generated_results = joblib.load(period_results_joblib_path)
             previous_threshold = previously_generated_results['threshold']
             if previous_threshold != threshold:
-                raise ValueError(f'Previous threshold ({previous_threshold}) does not equal desired threshold ({threshold}).')
+                raise ValueError(
+                    f'Previous threshold ({previous_threshold}) does not equal desired threshold ({threshold}).')
             period_per_cell = previously_generated_results['period_per_cell']
             period_err_per_cell = previously_generated_results['period_err_per_cell']
             orientations_per_cell = previously_generated_results['orientations_per_cell']
             print('Loaded previously computed grid cell periodicity and orientation from disk.')
 
-        return period_per_cell, period_err_per_cell, orientations_per_cell
+        # return period_per_cell, period_err_per_cell, orientations_per_cell
 
     def compute_and_log_rate_maps(self,
                                   xs,
@@ -443,88 +457,96 @@ class Trainer(object):
         if refresh or not os.path.isfile(rate_maps_and_scores_joblib_path):
             print('Creating rate maps and grid scores.')
 
-            # Create scores and ratemaps, then save to dis.
-            score_60_by_neuron = np.zeros(n_samples)
-            score_90_by_neuron = np.zeros(n_samples)
+            rate_maps_and_scores_dict = {}
 
-            best_score_60 = -np.inf
-            best_rate_map_60 = None
-            best_score_90 = -np.inf
-            best_rate_map_90 = None
+            for scorer in self.scorers:
 
-            neuron_indices = np.random.choice(self.options.Ng, replace=False,
-                                              size=n_samples)
+                # Create scores and ratemaps, then save to dis.
+                score_60_by_neuron = np.zeros(n_samples)
+                score_90_by_neuron = np.zeros(n_samples)
 
-            rate_maps = np.zeros(shape=(n_samples, self.scorer._nbins, self.scorer._nbins))
+                best_score_60 = -np.inf
+                best_rate_map_60 = None
+                best_score_90 = -np.inf
+                best_rate_map_90 = None
 
-            for storage_idx, neuron_idx in enumerate(neuron_indices):
+                neuron_indices = np.random.choice(self.options.Ng, replace=False,
+                                                  size=n_samples)
 
-                print(f'Generating rate map for neuron: {neuron_idx}')
+                rate_maps = np.zeros(shape=(n_samples, scorer._nbins, scorer._nbins))
 
-                # Would recommend switching to visualize.py's `compute_and_log_rate_maps`
-                # Then util.py's `get_model_activations`
-                # then utils.py's get_model_gridscores
-                #    model_resp is the rate map for a single layer
-                rate_map = self.scorer.calculate_ratemap(
-                    xs=xs,
-                    ys=ys,
-                    activations=activations[:, neuron_idx],
-                )
+                for storage_idx, neuron_idx in enumerate(neuron_indices):
 
-                print(f'Generated rate map for neuron: {neuron_idx}')
+                    print(f'Generating rate map for neuron: {neuron_idx}')
 
-                scores = self.scorer.get_scores(rate_map=rate_map)
-                score_60 = scores[0]
-                if score_60 > best_score_60:
-                    best_score_60 = score_60
-                    best_rate_map_60 = rate_map
+                    # Would recommend switching to visualize.py's `compute_and_log_rate_maps`
+                    # Then util.py's `get_model_activations`
+                    # then utils.py's get_model_gridscores
+                    #    model_resp is the rate map for a single layer
+                    rate_map = scorer.calculate_ratemap(
+                        xs=xs,
+                        ys=ys,
+                        activations=activations[:, neuron_idx],
+                    )
 
-                score_90 = scores[1]
-                if score_90 > best_score_90:
-                    best_score_90 = score_90
-                    best_rate_map_90 = rate_map
+                    print(f'Generated rate map for neuron: {neuron_idx}')
 
-                score_60_by_neuron[storage_idx] = score_60
-                score_90_by_neuron[storage_idx] = score_90
-                rate_maps[storage_idx] = rate_map
+                    scores = scorer.get_scores(rate_map=rate_map)
+                    score_60 = scores[0]
+                    if score_60 > best_score_60:
+                        best_score_60 = score_60
+                        best_rate_map_60 = rate_map
 
-                print(f'Neuron: {storage_idx}\tScore60: {np.round(score_60, 3)}\tScore90: {np.round(score_90, 3)}')
+                    score_90 = scores[1]
+                    if score_90 > best_score_90:
+                        best_score_90 = score_90
+                        best_rate_map_90 = rate_map
+
+                    score_60_by_neuron[storage_idx] = score_60
+                    score_90_by_neuron[storage_idx] = score_90
+                    rate_maps[storage_idx] = rate_map
+
+                    print(f'Neuron: {storage_idx}\tScore60: {np.round(score_60, 3)}\tScore90: {np.round(score_90, 3)}')
+
+                nbins = scorer._nbins
+
+                rate_maps_and_scores_dict.update({
+                    f'rate_maps_nbins={nbins}': rate_maps,
+                    f'score_60_by_neuron_nbins={nbins}': score_60_by_neuron,
+                    f'score_90_by_neuron_nbins={nbins}': score_90_by_neuron})
 
             joblib.dump(
-                {'rate_maps': rate_maps,
-                 'score_60_by_neuron': score_60_by_neuron,
-                 'score_90_by_neuron': score_90_by_neuron},
+                rate_maps_and_scores_dict,
                 filename=rate_maps_and_scores_joblib_path
             )
 
-            # W&B recommends saving
-            if log_to_wandb:
-
-                # These NaNs need to be zeroed out if logging as heatmaps to W&B,
-                # otherwise W&B throws an error.
-                best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
-                best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
-
-                wandb.log({
-                    f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
-                    f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(score_60_by_neuron[~np.isnan(score_60_by_neuron)]),
-                    f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
-                    f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
-                    f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(score_90_by_neuron[~np.isnan(score_90_by_neuron)]),
-                    f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
-                }, step=epoch_idx + 1)
+            # # W&B recommends saving
+            # if log_to_wandb:
+            #     # These NaNs need to be zeroed out if logging as heatmaps to W&B,
+            #     # otherwise W&B throws an error.
+            #     best_rate_map_60[np.isnan(best_rate_map_60)] = 0.
+            #     best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
+            #
+            #     wandb.log({
+            #         f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
+            #         f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(
+            #             score_60_by_neuron[~np.isnan(score_60_by_neuron)]),
+            #         f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
+            #         f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
+            #         f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(
+            #             score_90_by_neuron[~np.isnan(score_90_by_neuron)]),
+            #         f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
+            #     }, step=epoch_idx + 1)
 
         else:
-            previously_generated_results = joblib.load(rate_maps_and_scores_joblib_path)
-            rate_maps = previously_generated_results['rate_maps']
-            score_60_by_neuron = previously_generated_results['score_60_by_neuron']
-            score_90_by_neuron = previously_generated_results['score_90_by_neuron']
-            print(f'Loaded previously generated rate maps and scores from disk (N={len(score_60_by_neuron)}).')
+            rate_maps_and_scores_dict = joblib.load(rate_maps_and_scores_joblib_path)
 
-        assert len(rate_maps) == len(score_60_by_neuron)
-        assert len(rate_maps) == len(score_90_by_neuron)
+        assert len(rate_maps_and_scores_dict['rate_maps_nbins=20']) == len(
+            rate_maps_and_scores_dict['score_60_by_neuron_nbins=20'])
+        assert len(rate_maps_and_scores_dict['rate_maps_nbins=20']) == len(
+            rate_maps_and_scores_dict['score_90_by_neuron_nbins=20'])
 
-        return rate_maps, score_60_by_neuron, score_90_by_neuron
+        return rate_maps_and_scores_dict
 
     def plot_and_log_ratemaps(self,
                               rate_maps,

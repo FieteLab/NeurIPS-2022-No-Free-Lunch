@@ -38,24 +38,35 @@ plot_percent_runs_with_low_pos_decoding_err_pie(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir)
 
+plot_pos_decoding_err_min_vs_activation(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir)
+
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 frac_low_decoding_runs = low_pos_decoding_indices.mean()
 print(f'Frac Low Pos Decoding Err Runs: {frac_low_decoding_runs}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
-plot_pos_decoding_err_min_vs_activation(
-    runs_configs_df=runs_configs_df,
-    plot_dir=results_dir)
-
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'activation']].merge(
+    'run_id', 'activation', 'rnn_type']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
+
+tmp = augmented_neurons_data_by_run_id_df.copy()
+
+plt.close()
+sns.histplot(
+    data=tmp[tmp['rnn_type'] == 'RNN'],
+    x='score_60_by_neuron',
+    bins=np.linspace(-0.6, 1.4, 75),
+    kde=True,
+    hue='activation')
+plt.show()
 
 plot_grid_scores_vs_activation(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

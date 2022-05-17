@@ -59,6 +59,7 @@ class GridScorer(object):
                    Note: Butler, Hardcastle et al. 2019 do the differences of the means, so min_max=False if you want to do that.
         """
         self._nbins = nbins
+        self._mask_parameters = mask_parameters
         self._min_max = min_max
         self._coords_range = coords_range
         self._corr_angles = [30, 45, 60, 90, 120, 135, 150]
@@ -66,6 +67,9 @@ class GridScorer(object):
         self._masks = [(self._get_ring_mask(mask_min, mask_max), (mask_min,
                                                                   mask_max))
                        for mask_min, mask_max in mask_parameters]
+        # assert len(self._masks) > 0
+        print(self._nbins)
+        print(self._masks)
         # Mask for hiding the parts of the SAC that are never used
         self._plotting_sac_mask = circle_mask(
             [self._nbins * 2 - 1, self._nbins * 2 - 1],
