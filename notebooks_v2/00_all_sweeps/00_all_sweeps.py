@@ -51,7 +51,7 @@ def convert_sweep_to_human_readable_sweep(row: pd.Series):
         human_readable_sweep = 'DoG\nRF\nN='
     elif row['Sweep'] == '2yfpvx86':
         human_readable_sweep = 'DoG\nHetero RF & SS\nN='
-    elif row['Sweep'] == 'rbrvuf2g' or row['Sweep'] == 'wnmp7nx0':
+    elif row['Sweep'] in {'rbrvuf2g', 'wnmp7nx0'}:
         human_readable_sweep = 'DoG\nMultiple Fields\nN='
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"

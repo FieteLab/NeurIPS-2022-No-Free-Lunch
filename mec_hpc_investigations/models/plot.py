@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import pandas as pd
+import scipy.ndimage
 import seaborn as sns
 from sklearn.neighbors import KernelDensity
 from typing import Dict, List
@@ -1686,7 +1687,9 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
         num_runs_per_category = runs_configs_with_scores_max_df.groupby(grid_score_above_threshold_col)[
             grid_score_above_threshold_col].count()
 
-        plt.pie(
+        fig, ax = plt.subplots(figsize=(4, 3))
+
+        ax.pie(
             x=num_runs_per_category.values,
             labels=num_runs_per_category.index.values,
             colors=['tab:blue' if label == True else 'tab:orange'
@@ -1698,7 +1701,7 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
         plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
                     bbox_inches='tight',
                     dpi=300)
-        # plt.show()
+        plt.show()
         plt.close()
 
 
@@ -1743,14 +1746,16 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
     num_runs_per_category = runs_configs_df.groupby(pos_decoding_err_below_threshold_col)[
         pos_decoding_err_below_threshold_col].count()
 
-    plt.pie(
+    fig, ax = plt.subplots(figsize=(4, 3))
+
+    ax.pie(
         x=num_runs_per_category.values,
         labels=num_runs_per_category.index.values,
         colors=['tab:blue' if label == True else 'tab:orange'
                 for label in num_runs_per_category.index.values],
         # shadow=True,
         autopct='%.0f%%')
-    plt.title(f'Runs with Low Position Error\nN={len(runs_configs_df)}')
+    plt.title(f'Runs with Low Pos Error\nThreshold={low_pos_decoding_err_threshold_in_cm} cm, N={len(runs_configs_df)}')
 
     plt.savefig(os.path.join(plot_dir, f'percent_runs_with_low_pos_decoding_err_pie.png'),
                 bbox_inches='tight',
@@ -2017,7 +2022,8 @@ def plot_rate_maps_examples_hexagons(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
-        max_num_ratemaps_per_range: int = 12):
+        max_num_ratemaps_per_range: int = 12,
+        smooth: bool = True):
 
     grid_score_ranges = [
         (0.35, 0.45),
@@ -2058,6 +2064,11 @@ def plot_rate_maps_examples_hexagons(
             neuron_idx = row['neuron_idx']
             score_60 = row['score_60_by_neuron']
             rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
+
+            if smooth:
+                rate_map = np.copy(rate_map)
+                rate_map[np.isnan(rate_map)] = 0.
+                rate_map = scipy.ndimage.gaussian_filter(rate_map, sigma=2.)
 
             row, col = ax_idx // n_cols, ax_idx % n_cols
             ax = axes[row, col]
@@ -2106,15 +2117,16 @@ def plot_rate_maps_examples_squares(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
-        max_num_ratemaps_per_range: int = 12):
+        max_num_ratemaps_per_range: int = 20,
+        smooth: bool = True):
 
     grid_score_ranges = [
-        (1.0, 1.1),
         (1.1, 1.2),
         (1.2, 1.3),
         (1.3, 1.4),
         (1.4, 1.5),
-        (1.5, 1.0),
+        (1.5, 1.6),
+        (1.6, 10),
     ]
 
     # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
@@ -2146,9 +2158,12 @@ def plot_rate_maps_examples_squares(
         for ax_idx, (row_idx, row) in enumerate(neurons_to_plot_df.iterrows()):
             run_id = row['run_id']
             neuron_idx = row['neuron_idx']
-            score_60 = row['score_60_by_neuron']
+            score_90 = row['score_90_by_neuron']
             rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
-
+            if smooth:
+                rate_map = np.copy(rate_map)
+                rate_map[np.isnan(rate_map)] = 0.
+                rate_map = scipy.ndimage.gaussian_filter(rate_map, sigma=2.)
             row, col = ax_idx // n_cols, ax_idx % n_cols
             ax = axes[row, col]
 
@@ -2163,7 +2178,7 @@ def plot_rate_maps_examples_squares(
                 yticklabels=False,
                 xticklabels=False)
 
-            ax.set_title(f'{np.round(score_60, 2)}')
+            ax.set_title(f'{np.round(score_90, 2)}')
 
             # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
             ax.invert_yaxis()

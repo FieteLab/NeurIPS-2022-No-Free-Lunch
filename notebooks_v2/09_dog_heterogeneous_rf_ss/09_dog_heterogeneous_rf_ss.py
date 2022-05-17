@@ -55,6 +55,10 @@ runs_configs_with_scores_max_df = runs_configs_df.merge(
     on='run_id',
     how='left')
 
+plot_percent_runs_with_grid_cells_pie(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+    plot_dir=results_dir,)
+
 # plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
 #     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
 #     plot_dir=results_dir)

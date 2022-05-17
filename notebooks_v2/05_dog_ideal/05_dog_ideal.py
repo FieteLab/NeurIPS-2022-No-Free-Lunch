@@ -31,6 +31,10 @@ overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_percent_runs_with_low_pos_decoding_err_pie(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir)
+
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 frac_low_pos_decoding_err = low_pos_decoding_indices.mean()
@@ -68,6 +72,15 @@ max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
     score_90_by_neuron_max=('score_90_by_neuron', 'max'),
     place_cell_rf=('place_cell_rf', 'first')).reset_index()
+
+runs_configs_with_scores_max_df = runs_configs_df.merge(
+    max_grid_scores_by_run_id_df,
+    on='run_id',
+    how='left')
+
+plot_percent_runs_with_grid_cells_pie(
+    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+    plot_dir=results_dir,)
 
 plot_grid_score_max_as_dots_vs_place_cell_rf(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
