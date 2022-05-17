@@ -73,7 +73,7 @@ plot_square_scores_histograms_by_activation(
 max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
     score_90_by_neuron_max=('score_90_by_neuron', 'max'),
-    activation=('activation', 'activation')).reset_index()
+    activation=('activation', 'first')).reset_index()
 
 plot_grid_score_max_vs_activation(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
