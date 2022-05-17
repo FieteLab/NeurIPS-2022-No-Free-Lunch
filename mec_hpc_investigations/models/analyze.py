@@ -324,12 +324,12 @@ def load_runs_joblib_files(run_ids: List[str],
                 'participation_ratio': loss_pos_and_dimensionalities_results['participation_ratio'],
                 'method_of_moments_ID': loss_pos_and_dimensionalities_results['method_of_moments_ID'],
                 'two_NN': loss_pos_and_dimensionalities_results['two_NN'],
-                'rate_maps': rate_maps_and_scores_results['rate_maps'],
-                'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron'],
-                'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron'],
-                'period_per_cell': period_and_orientation_results['period_per_cell'],
-                'period_err_per_cell': period_and_orientation_results['period_err_per_cell'],
-                'orientations_per_cell': period_and_orientation_results['orientations_per_cell'],
+                'rate_maps': rate_maps_and_scores_results['rate_maps_nbins=20'],
+                'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron_nbins=20'],
+                'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron_nbins=20'],
+                'period_per_cell': period_and_orientation_results['period_per_cell_nbins=20'],
+                'period_err_per_cell': period_and_orientation_results['period_err_per_cell_nbins=20'],
+                'orientations_per_cell': period_and_orientation_results['orientations_per_cell_nbins=20'],
             }
 
         except FileNotFoundError:
