@@ -225,6 +225,63 @@ def plot_grid_periods_mode_vs_place_cell_rf(
         plt.close()
 
 
+def plot_grid_periods_mode_ratios_vs_place_cell_rf(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+
+    norm = plt.Normalize(
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].min(),
+        augmented_neurons_data_by_run_id_df['place_cell_rf'].max())
+    sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
+    sm.set_array([])
+
+    # bins = np.linspace(0, 100, 50)
+    x_assess_values = np.linspace(0, 150, 1000)[:, np.newaxis]
+
+    # Construct KDE plot
+    for grid_score_threshold in [0.3, 0.8, 1.18]:
+
+        plt.close()
+
+        place_cell_rfs, grid_period_modes = [], []
+        for rf in sorted(augmented_neurons_data_by_run_id_df['place_cell_rf'].unique()):
+            # Construct KDE, then extract lines to get mode.
+            indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == rf) \
+                      & (augmented_neurons_data_by_run_id_df['score_60_by_neuron'].values > grid_score_threshold) \
+                      & (~pd.isna(augmented_neurons_data_by_run_id_df['period_per_cell']))
+            if indices.sum() == 0:
+                continue
+            kde = KernelDensity(kernel='gaussian').fit(
+                augmented_neurons_data_by_run_id_df['period_per_cell'].values[indices][:, np.newaxis])
+            log_density_values = kde.score_samples(x_assess_values)
+            mode = x_assess_values[np.argmax(log_density_values), 0]
+            place_cell_rfs.append(rf)
+            grid_period_modes.append(mode)
+
+        grid_period_modes = np.array(grid_period_modes)
+        ratios = np.divide(grid_period_modes[1:], grid_period_modes[:-1])
+
+        sns.scatterplot(data=pd.DataFrame.from_dict({'i': 1 + np.arange(len(ratios)),
+                                                     'ratios': ratios}),
+                        x='i',
+                        y='ratios',
+                        # hue='place_cell_rf',
+                        palette='Spectral_r')
+        # plt.gca().get_legend().remove()
+        # plt.gca().figure.colorbar(sm, label=r'$\sigma$')
+
+        plt.ylabel('Grid Period Mode Ratios')
+        plt.xlabel(r'Index')
+        plt.title(f'Grid Score Threshold: {grid_score_threshold}')
+        plt.savefig(os.path.join(plot_dir,
+                                 f'grid_periods_mode_ratios_vs_place_cell_rf_threshold={grid_score_threshold}.png'),
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+
+
 def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
@@ -1695,7 +1752,7 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
             colors=['tab:blue' if label == True else 'tab:orange'
                     for label in num_runs_per_category.index.values],
             # shadow=True,
-            autopct='%.2f%%')
+            autopct='%.1f%%')
         plt.title(f'Runs With Grid Cells\nThreshold={threshold}, N={len(runs_configs_with_scores_max_df)}')
 
         plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
@@ -1754,8 +1811,8 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
         colors=['tab:blue' if label == True else 'tab:orange'
                 for label in num_runs_per_category.index.values],
         # shadow=True,
-        autopct='%.2f%%')
-    plt.title(f'Runs with Low Pos Error\nThreshold={low_pos_decoding_err_threshold_in_cm} cm, N={len(runs_configs_df)}')
+        autopct='%.1f%%')
+    plt.title(f'Runs with Low Position Error\nThreshold={low_pos_decoding_err_threshold_in_cm} cm, N={len(runs_configs_df)}')
 
     plt.savefig(os.path.join(plot_dir, f'percent_runs_with_low_pos_decoding_err_pie.png'),
                 bbox_inches='tight',

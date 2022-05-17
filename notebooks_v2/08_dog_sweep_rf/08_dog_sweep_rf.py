@@ -50,10 +50,13 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     on='run_id',
     how='left')
 
+plot_grid_periods_mode_ratios_vs_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 plot_grid_periods_mode_vs_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir
-)
+    plot_dir=results_dir)
 
 plot_grid_scores_vs_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
