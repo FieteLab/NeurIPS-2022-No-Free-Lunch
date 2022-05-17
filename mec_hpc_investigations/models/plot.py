@@ -66,7 +66,7 @@ def plot_grid_periods_histograms_by_place_cell_rf(
     plt.close()
     bins = np.linspace(0, 100, 101)
 
-    for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
+    for grid_score_threshold in [0.3, 0.8, 1.15]:
         # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.histplot(x="period_per_cell",
@@ -106,7 +106,7 @@ def plot_grid_periods_kde_by_place_cell_rf(
     sm = plt.cm.ScalarMappable(cmap="Spectral_r", norm=norm)
     sm.set_array([])
 
-    for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
+    for grid_score_threshold in [0.3, 0.8, 1.15]:
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         sns.kdeplot(x="period_per_cell",
                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
@@ -225,7 +225,7 @@ def plot_grid_periods_mode_vs_place_cell_rf(
         plt.close()
 
 
-def plot_grid_periods_mode_ratios_vs_place_cell_rf(
+def plot_grid_periods_mode_ratios_vs_index(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
@@ -275,7 +275,7 @@ def plot_grid_periods_mode_ratios_vs_place_cell_rf(
         plt.xlabel(r'Index')
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
         plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_mode_ratios_vs_place_cell_rf_threshold={grid_score_threshold}.png'),
+                                 f'grid_periods_mode_ratios_vs_index_threshold={grid_score_threshold}.png'),
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
@@ -290,7 +290,7 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
 
     for group, group_df in augmented_neurons_data_by_run_id_df.groupby(['place_cell_rf', 'surround_scale']):
         rf, ss = group
-        for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
+        for grid_score_threshold in [0.3, 0.8, 1.15]:
             likely_grid_cell_indices = group_df['score_60_by_neuron'] > grid_score_threshold
             sns.histplot(x="period_per_cell",
                          data=group_df[likely_grid_cell_indices],
@@ -324,7 +324,7 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
 
         rf, ss = group
 
-        for grid_score_threshold in [0.3, 0.8, 0.85, 1.0, 1.18]:
+        for grid_score_threshold in [0.3, 0.8, 1.15]:
             likely_grid_cell_indices = group_df['score_60_by_neuron'] > grid_score_threshold
             sns.kdeplot(x="period_per_cell",
                         data=group_df[likely_grid_cell_indices],
