@@ -366,27 +366,21 @@ def plot_grid_scores_histograms_by_activation(
 def plot_grid_scores_histograms_by_n_place_fields_per_cell(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
 
     indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
                       | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
+    plt.close()
     g = sns.histplot(
         data=augmented_neurons_data_by_run_id_df[indices_to_keep],
+        # data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
         bins=bins,
-        kde=True,
+        # kde=True,
         hue='n_place_fields_per_cell')
     g.legend_.set_title('Num Fields Per Place Cell')
-    # sns.displot(
-    #     data=augmented_neurons_data_by_run_id_df,
-    #     x='score_60_by_neuron',
-    #     bins=bins,
-    #     kde=True,
-    #     hue='n_place_fields_per_cell',
-    #     col='n_place_fields_per_cell'
-    # )
-
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
     plt.savefig(os.path.join(plot_dir,
@@ -488,6 +482,32 @@ def plot_grid_scores_histograms_by_run_id(
                     dpi=300)
         # plt.show()
         plt.close()
+
+
+def plot_grid_scores_kdes_by_n_place_fields_per_cell(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+
+    # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
+    #                   | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
+    plt.close()
+    g = sns.kdeplot(
+        # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        # kde=True,
+        hue='n_place_fields_per_cell')
+    g.legend_.set_title('Num Fields Per Place Cell')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Density')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_kdes_by_n_place_fields_per_cell.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
 
 
 def plot_grid_scores_vs_activation(augmented_neurons_data_by_run_id_df: pd.DataFrame,

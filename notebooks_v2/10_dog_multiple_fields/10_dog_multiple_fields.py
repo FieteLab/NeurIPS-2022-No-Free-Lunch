@@ -28,10 +28,10 @@ runs_configs_df = download_wandb_project_runs_configs(
 
 # Add 1 to Poissons because we used 1+Poisson number of fields
 def add_one_to_poissons(row: pd.Series):
-    if row['n_place_fields_per_cell'].startswith('Poisson'):
+    if isinstance(row['n_place_fields_per_cell'], str) and row['n_place_fields_per_cell'].startswith('Poisson'):
         return '1 + ' + row['n_place_fields_per_cell']
     else:
-        return row['n_place_fields_per_cell']
+        return str(row['n_place_fields_per_cell'])
 
 
 runs_configs_df['n_place_fields_per_cell'] = runs_configs_df.apply(
@@ -52,7 +52,8 @@ plot_percent_runs_with_low_pos_decoding_err_pie(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-print(f'Frac Low Pos Decoding Err Runs: {np.round(low_pos_decoding_indices.mean(), 3)}')
+frac_low_pos_decoding_err = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_pos_decoding_err}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
@@ -68,9 +69,14 @@ plot_grid_scores_histograms_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
+plot_grid_scores_kdes_by_n_place_fields_per_cell(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 plot_grid_periods_histograms_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
+
 
 plot_grid_periods_kde_by_place_cell_rf(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

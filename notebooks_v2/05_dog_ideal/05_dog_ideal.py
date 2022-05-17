@@ -33,7 +33,8 @@ overwrite_runs_configs_df_values_with_joblib_data(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+frac_low_pos_decoding_err = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_pos_decoding_err}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
@@ -75,5 +76,25 @@ plot_grid_score_max_as_dots_vs_place_cell_rf(
 plot_grid_score_max_as_lines_vs_place_cell_rf(
     max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
     plot_dir=results_dir)
+
+# Plot each run's histogram of grid score by number of bins.
+import seaborn as sns
+import matplotlib.pyplot as plt
+bins = np.linspace(-1.0, 2.0, 50)
+for run_id, run_data in joblib_files_data_by_run_id_dict.items():
+    plt.close()
+    plt.hist(run_data['score_60_by_neuron_nbins=20'], bins=bins, label='20', alpha=0.4)
+    plt.hist(run_data['score_60_by_neuron_nbins=32'], bins=bins, label='32', alpha=0.4)
+    plt.hist(run_data['score_60_by_neuron_nbins=44'], bins=bins, label='44', alpha=0.4)
+    plt.title(f'Run ID: {run_id}')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Number of Units')
+    plt.legend()
+    # plt.show()
+    plt.savefig(os.path.join(results_dir,
+                             f'grid_scores_histogram_by_nbins_runid={run_id}.png'),
+                bbox_inches='tight',
+                dpi=300)
+    plt.close()
 
 print('Finished 08_dog_receptive_field/08_dog_receptive_field.py!')

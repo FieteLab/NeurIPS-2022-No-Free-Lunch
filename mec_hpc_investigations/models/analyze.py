@@ -127,12 +127,12 @@ def convert_joblib_files_data_to_neurons_data_df(
     neurons_data_df_list = []
     for run_id, joblib_files_data in joblib_files_data_by_run_id_dict.items():
         neurons_data_df = pd.DataFrame({
-            'neuron_idx': np.arange(len(joblib_files_data['score_60_by_neuron'])),
-            'score_60_by_neuron': joblib_files_data['score_60_by_neuron'],
-            'score_90_by_neuron': joblib_files_data['score_90_by_neuron'],
-            'period_per_cell': joblib_files_data['period_per_cell'],
-            'period_err_per_cell': joblib_files_data['period_err_per_cell'],
-            'orientations_per_cell': joblib_files_data['orientations_per_cell'],
+            'neuron_idx': np.arange(len(joblib_files_data['score_60_by_neuron_nbins=44'])),
+            'score_60_by_neuron': joblib_files_data['score_60_by_neuron_nbins=44'],
+            'score_90_by_neuron': joblib_files_data['score_90_by_neuron_nbins=44'],
+            'period_per_cell': joblib_files_data['period_per_cell_nbins=44'],
+            'period_err_per_cell': joblib_files_data['period_err_per_cell_nbins=44'],
+            'orientations_per_cell': joblib_files_data['orientations_per_cell_nbins=44'],
         })
         neurons_data_df['run_id'] = run_id
         neurons_data_df_list.append(neurons_data_df)
@@ -325,11 +325,21 @@ def load_runs_joblib_files(run_ids: List[str],
                 'method_of_moments_ID': loss_pos_and_dimensionalities_results['method_of_moments_ID'],
                 'two_NN': loss_pos_and_dimensionalities_results['two_NN'],
                 'rate_maps': rate_maps_and_scores_results['rate_maps_nbins=20'],
-                'score_60_by_neuron': rate_maps_and_scores_results['score_60_by_neuron_nbins=20'],
-                'score_90_by_neuron': rate_maps_and_scores_results['score_90_by_neuron_nbins=20'],
-                'period_per_cell': period_and_orientation_results['period_per_cell_nbins=20'],
-                'period_err_per_cell': period_and_orientation_results['period_err_per_cell_nbins=20'],
-                'orientations_per_cell': period_and_orientation_results['orientations_per_cell_nbins=20'],
+                'score_60_by_neuron_nbins=20': rate_maps_and_scores_results['score_60_by_neuron_nbins=20'],
+                'score_90_by_neuron_nbins=20': rate_maps_and_scores_results['score_90_by_neuron_nbins=20'],
+                'period_per_cell_nbins=20': period_and_orientation_results['period_per_cell_nbins=20'],
+                'period_err_per_cell_nbins=20': period_and_orientation_results['period_err_per_cell_nbins=20'],
+                'orientations_per_cell_nbins=20': period_and_orientation_results['orientations_per_cell_nbins=20'],
+                'score_60_by_neuron_nbins=32': rate_maps_and_scores_results['score_60_by_neuron_nbins=32'],
+                'score_90_by_neuron_nbins=32': rate_maps_and_scores_results['score_90_by_neuron_nbins=32'],
+                'period_per_cell_nbins=32': period_and_orientation_results['period_per_cell_nbins=32'],
+                'period_err_per_cell_nbins=32': period_and_orientation_results['period_err_per_cell_nbins=32'],
+                'orientations_per_cell_nbins=32': period_and_orientation_results['orientations_per_cell_nbins=32'],
+                'score_60_by_neuron_nbins=44': rate_maps_and_scores_results['score_60_by_neuron_nbins=44'],
+                'score_90_by_neuron_nbins=44': rate_maps_and_scores_results['score_90_by_neuron_nbins=44'],
+                'period_per_cell_nbins=44': period_and_orientation_results['period_per_cell_nbins=44'],
+                'period_err_per_cell_nbins=44': period_and_orientation_results['period_err_per_cell_nbins=44'],
+                'orientations_per_cell_nbins=44': period_and_orientation_results['orientations_per_cell_nbins=44'],
             }
 
         except FileNotFoundError:
