@@ -180,11 +180,11 @@ class RNN(Model):
         # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
 
-        # Compute decoding error
-        pred_pos = self.place_cells.get_nearest_cell_pos(preds)
-        err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
+        # # Compute decoding error
+        # pred_pos = self.place_cells.get_nearest_cell_pos(preds)
+        # err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
-        return loss, err
+        return loss, preds
 
     def log_weight_norms(self, epoch_idx: int):
         wandb_vals_to_log = {
@@ -218,6 +218,7 @@ class LSTM(Model):
         self.Ng = options.Ng
         self.Np = options.Np
         assert options.place_field_loss in {'mse',
+                                            'polarmse',
                                             'binarycrossentropy',
                                             'crossentropy'}
         self.place_field_loss = options.place_field_loss
@@ -378,10 +379,10 @@ class LSTMPCDense(LSTM):
 
         # Compute decoding error
         # note: pred_pos and preds are the same since place cell identity is True
-        pred_pos = self.place_cells.get_nearest_cell_pos(preds)
-        err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
+        # pred_pos = self.place_cells.get_nearest_cell_pos(preds)
+        # err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
-        return loss, err
+        return loss, preds
 
 
 class LSTMPCRNN(LSTMPCDense):
@@ -472,11 +473,7 @@ class ThreeLayerRNNBase(Model):
         # # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
 
-        # Compute decoding error
-        pred_pos = tf.stop_gradient(self.place_cells.get_nearest_cell_pos(preds))
-        err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
-
-        return loss, err
+        return loss, preds
 
     def log_weight_norms(self, epoch_idx: int):
         wandb_vals_to_log = {

@@ -104,7 +104,11 @@ class Trainer(object):
             pos_decoding_err: Avg. decoded position error in cm.
         '''
 
-        loss, pos_decoding_err = self.model.compute_loss(inputs, pc_outputs, pos)
+        loss, preds = self.model.compute_loss(inputs, pc_outputs, pos)
+
+        # Compute decoding error
+        pred_pos = tf.stop_gradient(self.model.place_cells.get_nearest_cell_pos(preds))
+        pos_decoding_err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
         return loss.numpy(), pos_decoding_err.numpy()
 
@@ -190,14 +194,16 @@ class Trainer(object):
             loss: Avg. loss for this training batch.
             pos_decoding_err: Avg. decoded position error in cm.
         '''
+        # By default, the resources held by a GradientTape are released
+        # as soon as GradientTape.gradient() method is called.
         with tf.GradientTape() as tape:
-            loss, pos_decoding_err = self.model.compute_loss(inputs, pc_outputs, pos)
+            loss, preds = self.model.compute_loss(inputs, pc_outputs, pos)
 
         grads = tape.gradient(loss, self.model.trainable_variables)
 
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))
 
-        return loss, pos_decoding_err
+        return loss, preds
 
     def train(self,
               save: bool = True,
@@ -233,9 +239,8 @@ class Trainer(object):
             # t = tqdm(range(self.options.n_grad_steps_per_epoch), leave=False)
             for _ in range(self.options.n_grad_steps_per_epoch):
                 inputs, pc_outputs, pos = next(gen)
-                loss, pos_decoding_err = self.train_step(inputs, pc_outputs, pos)
+                loss, _ = self.train_step(inputs, pc_outputs, pos)
                 self.loss.append(loss)
-                self.err.append(pos_decoding_err)
 
                 # Log error rate
                 # t.set_description(f"Error = {100 * pos_decoding_err} cm")

@@ -22,7 +22,10 @@ class PlaceCells(object):
         assert place_field_values in {
             'cartesian',
             'gaussian',
-            'difference_of_gaussians'}
+            'difference_of_gaussians',
+            'true_difference_of_gaussians',
+            'softmax_of_differences',
+        }
         if place_field_values == 'cartesian':
             assert Np == 2
         self.place_field_values = place_field_values

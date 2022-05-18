@@ -135,4 +135,8 @@ plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
     grid_score_d60_threshold=grid_score_d60_threshold,
     grid_score_d90_threshold=grid_score_d90_threshold)
 
+plot_grid_scores_histograms_by_place_field_values(
+    augmented
+)
+
 print('Finished!')

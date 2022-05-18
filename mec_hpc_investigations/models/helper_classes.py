@@ -96,7 +96,10 @@ class PlaceCells(object):
             'cartesian',
             'polar',
             'gaussian',
-            'difference_of_gaussians'}
+            'difference_of_gaussians',
+            'true_difference_of_gaussians',
+            'softmax_of_differences',
+        }
         self.place_field_values = options.place_field_values
 
         if self.place_field_values == 'cartesian':
@@ -312,6 +315,45 @@ class PlaceCells(object):
         if self.place_field_values == 'gaussian':
             # Shape: (batch size, sequence length, num place cells,)
             outputs = normalized_dist_squared
+
+        elif self.place_field_values == 'true_difference_of_gaussians':
+            # Shape: (batch size, sequence length, num place cells, num fields per cell)
+            other_divided_dist_squared = tf.divide(
+                dist_squared,
+                2. * tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
+            )
+            # Shape: (batch size, sequence length, num place cells)
+            min_other_divided_dist_squared = tf.gather(
+                other_divided_dist_squared,
+                min_indices,
+                batch_dims=3)
+
+            outputs = tf.math.exp(-min_divided_dist_squared) - tf.math.exp(-min_other_divided_dist_squared)
+
+            # Shift and scale outputs so that they lie in [0,1].
+            outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
+            outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
+
+            #
+            # # option 3: Difference of Softmax(-distances)
+            # if self.method == 'Difference Of Softmaxes':
+            #     outputs = tf.nn.softmax(-min_divided_dist_squared, axis=2) - tf.nn.softmax(
+            #         -min_other_divided_dist_squared, axis=2)
+
+        elif self.place_field_values == 'softmax_of_differences':
+
+            # Shape: (batch size, sequence length, num place cells, num fields per cell)
+            other_divided_dist_squared = tf.divide(
+                dist_squared,
+                2. * tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
+            )
+            # Shape: (batch size, sequence length, num place cells)
+            min_other_divided_dist_squared = tf.gather(
+                other_divided_dist_squared,
+                min_indices,
+                batch_dims=3)
+
+            outputs = tf.nn.softmax(-min_divided_dist_squared + min_other_divided_dist_squared, axis=2)
 
         elif self.place_field_values == 'difference_of_gaussians':
 
