@@ -14,6 +14,7 @@ low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
+    ''
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -59,7 +60,7 @@ plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir)
 
-plot_rate_maps_examples_hexagons(
+plot_rate_maps_examples_hexagons_by_score_range(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)

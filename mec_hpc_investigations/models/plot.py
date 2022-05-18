@@ -14,7 +14,6 @@ plt.rcParams["font.family"] = ["Times New Roman"]
 plt.rcParams["font.size"] = 20  # was previously 22
 sns.set_style("whitegrid")
 
-
 architecture_color_map = dict(
     RNN='tab:blue',
     LSTM='tab:red',
@@ -29,6 +28,7 @@ activation_marker_map = dict(
     sigmoid='X',
     tanh='*',
 )
+
 
 # def plot_pos_decoding_err_over_min_pos_decoding_err_vs_epoch_by_run_id(
 #         runs_histories_df: pd.DataFrame,
@@ -372,7 +372,6 @@ def plot_grid_periods_histograms_by_run_id(
 def plot_grid_scores_histogram(
         neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     bins = np.linspace(-1., 1.8, 50)
     fig, axes = plt.subplots(nrows=1, ncols=2, sharey=True, sharex=True)
 
@@ -390,18 +389,18 @@ def plot_grid_scores_histogram(
                  bins=bins)
     ax.set_xlabel(r'$90^{\circ}$ Grid Score')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_score_histogram.png'),
+    plot_path = os.path.join(plot_dir, f'grid_score_histogram.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histograms_by_activation(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
     g = sns.histplot(
@@ -424,7 +423,6 @@ def plot_grid_scores_histograms_by_activation(
 def plot_grid_scores_histograms_by_n_place_fields_per_cell(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
 
@@ -452,7 +450,6 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
 def plot_grid_scores_histograms_by_optimizer(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
     g = sns.histplot(
@@ -484,7 +481,6 @@ def plot_grid_scores_histograms_by_optimizer(
 def plot_grid_scores_histograms_by_place_field_values(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
     g = sns.histplot(
@@ -568,26 +564,24 @@ def plot_grid_scores_histograms_by_run_id(
 def plot_grid_scores_kdes(
         neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
-    g = sns.kdeplot(
-        data=augmented_neurons_data_by_run_id_df,
-        x='score_60_by_neuron',)
+    sns.kdeplot(
+        data=neurons_data_by_run_id_df,
+        x='score_60_by_neuron', )
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_kdes.png'),
+    plot_path = os.path.join(plot_dir, f'grid_scores_kdes.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
-
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_kdes_by_n_place_fields_per_cell(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
 
     # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
@@ -612,7 +606,6 @@ def plot_grid_scores_kdes_by_n_place_fields_per_cell(
 def plot_grid_scores_kdes_by_place_field_values(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
 
     # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
@@ -635,7 +628,7 @@ def plot_grid_scores_kdes_by_place_field_values(
 
 
 def plot_grid_scores_vs_activation(augmented_neurons_data_by_run_id_df: pd.DataFrame,
-                                  plot_dir: str):
+                                   plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
 
@@ -874,7 +867,7 @@ def plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
 
 
 def plot_grid_score_max_vs_activation(max_grid_scores_by_run_id_df: pd.DataFrame,
-                                     plot_dir: str):
+                                      plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
                              sharey=True, sharex=True)
     ax = axes[0]
@@ -1506,7 +1499,6 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
-
     g = sns.scatterplot(
         x='rate_maps_participation_ratio',
         y='Trained',
@@ -1531,7 +1523,6 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
-
     avg_over_seed_df = trained_neural_predictivity_and_ID_df.groupby(['Architecture', 'Activation']).agg({
         'Trained': 'first',
         'rate_maps_participation_ratio': ['mean', 'sem']
@@ -1797,7 +1788,6 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
 
 def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.DataFrame,
                                           plot_dir: str):
-
     thresholds = [0.3, 0.8, 1.18]
 
     for threshold in thresholds:
@@ -1821,11 +1811,14 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
             autopct='%.1f%%')
         plt.title(f'Runs With Grid Cells\nThreshold={threshold}, N={len(runs_configs_with_scores_max_df)}')
 
-        plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png'),
+        plot_path = os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+
+        print(f'Plotted {plot_path}')
 
 
 def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
@@ -1850,11 +1843,13 @@ def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
         y=y_label)
     plt.ylim(0, 100)
 
-    plt.savefig(os.path.join(plot_dir, f'percent_runs_with_grid_cells_vs_grid_score_threshold.png'),
+    plot_path = os.path.join(plot_dir, f'percent_runs_with_grid_cells_vs_grid_score_threshold.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
@@ -1878,13 +1873,16 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
                 for label in num_runs_per_category.index.values],
         # shadow=True,
         autopct='%.1f%%')
-    plt.title(f'Runs with Low Position Error\nThreshold={low_pos_decoding_err_threshold_in_cm} cm, N={len(runs_configs_df)}')
+    plt.title(
+        f'Runs with Low Position Error\nThreshold={low_pos_decoding_err_threshold_in_cm} cm, N={len(runs_configs_df)}')
 
-    plt.savefig(os.path.join(plot_dir, f'percent_runs_with_low_pos_decoding_err_pie.png'),
+    plot_path = os.path.join(plot_dir, f'percent_runs_with_low_pos_decoding_err_pie.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_pos_decoding_err_vs_max_grid_score_kde(runs_configs_with_scores_max_df: pd.DataFrame,
@@ -2049,16 +2047,18 @@ def plot_pos_decoding_err_vs_num_grad_steps_by_place_cell_rf(
     plt.yscale('log')
     plt.xlabel('Num Grad Steps')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_error_vs_num_grad_steps_by_place_cell_rf.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'pos_decoding_error_vs_num_grad_steps_by_place_cell_rf.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_pos_decoding_err_min_vs_activation(runs_configs_df: pd.DataFrame,
-                                              plot_dir: str):
+                                            plot_dir: str):
     plt.close()
     sns.stripplot(y="pos_decoding_err",
                   x='activation',
@@ -2070,12 +2070,14 @@ def plot_pos_decoding_err_min_vs_activation(runs_configs_df: pd.DataFrame,
     plt.yscale('log')
     plt.ylabel(f'Pos Decoding Err (cm)')
     plt.xlabel('')
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_min_vs_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                 f'pos_decoding_err_min_vs_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_pos_decoding_err_min_vs_architecture(runs_configs_df: pd.DataFrame,
@@ -2091,12 +2093,14 @@ def plot_pos_decoding_err_min_vs_architecture(runs_configs_df: pd.DataFrame,
     plt.yscale('log')
     plt.ylabel(f'Pos Decoding Err (cm)')
     plt.xlabel('')
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_min_vs_architecture.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'pos_decoding_err_min_vs_architecture.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_pos_decoding_err_min_vs_optimizer(runs_configs_df: pd.DataFrame,
@@ -2112,12 +2116,14 @@ def plot_pos_decoding_err_min_vs_optimizer(runs_configs_df: pd.DataFrame,
     plt.yscale('log')
     plt.ylabel(f'Pos Decoding Err (cm)')
     plt.xlabel('')
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_min_vs_optimizer.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'pos_decoding_err_min_vs_optimizer.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_pos_decoding_err_vs_human_readable_sweep(
@@ -2133,25 +2139,27 @@ def plot_pos_decoding_err_vs_human_readable_sweep(
     ax.set_ylim(1., 100.)
     ax.set_ylabel('Pos Decoding Err (cm)')
     ax.set_xlabel('')
-    plt.savefig(os.path.join(plot_dir,
-                             f'pos_decoding_err_vs_human_readable_sweep.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'pos_decoding_err_vs_human_readable_sweep.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
-def plot_rate_maps_examples_hexagons(
+def plot_rate_maps_examples_hexagons_by_score_range(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
         max_num_ratemaps_per_range: int = 12,
         smooth: bool = True):
-
     grid_score_ranges = [
+        (0.25, 0.35),
         (0.35, 0.45),
-        (0.45, 0.55),
-        (0.55, 0.65),
+        (0.45, 0.65),
+        (0.65, 0.80),
         (0.80, 0.90),
         (1.15, 10),
     ]
@@ -2164,7 +2172,7 @@ def plot_rate_maps_examples_hexagons(
 
         low, high = grid_score_range
 
-        indices = (neurons_data_by_run_id_df['score_60_by_neuron'] >= low)\
+        indices = (neurons_data_by_run_id_df['score_60_by_neuron'] >= low) \
                   & (neurons_data_by_run_id_df['score_60_by_neuron'] < high)
 
         neurons_in_range_df = neurons_data_by_run_id_df[indices]
@@ -2228,21 +2236,100 @@ def plot_rate_maps_examples_hexagons(
 
         plt.tight_layout()
 
-        plt.savefig(os.path.join(plot_dir,
-                                 f'rate_maps_examples_hexagons_low={low}_high={high}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'rate_maps_examples_hexagons_by_score_range_low={low}_high={high}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
-def plot_rate_maps_examples_squares(
+def plot_rate_maps_examples_hexagons_by_score_sorted(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
+        plot_dir: str,
+        max_num_ratemaps_per_range: int = 12,
+        smooth: bool = True):
+
+    # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
+    n_cols = 4
+    n_rows = int(max_num_ratemaps_per_range // n_cols)
+
+    fig, axes = plt.subplots(
+        nrows=n_rows,
+        ncols=n_cols,
+        figsize=(2 * n_rows, 2 * n_cols),
+        sharey=True,
+        sharex=True,
+        gridspec_kw={'width_ratios': [1] * n_cols})
+    #
+    # neurons_data = neurons_data_by_run_id_df[['run_id']]
+
+    # for ax_idx, (row_idx, row) in enumerate(neurons_data_by_run_id_df.iterrows()):
+    #     run_id = row['run_id']
+    #     neuron_idx = row['neuron_idx']
+    #     score_60 = row['score_60_by_neuron']
+    #     rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
+    #
+    #     if smooth:
+    #         rate_map = np.copy(rate_map)
+    #         rate_map[np.isnan(rate_map)] = 0.
+    #         rate_map = scipy.ndimage.gaussian_filter(rate_map, sigma=2.)
+    #
+    #     row, col = ax_idx // n_cols, ax_idx % n_cols
+    #     ax = axes[row, col]
+    #
+    #     sns.heatmap(
+    #         data=rate_map,
+    #         # vmin=np.nanmin(rate_maps[storage_idx]),
+    #         # vmax=np.nanmax(rate_maps[storage_idx]),
+    #         ax=ax,
+    #         cbar=False,
+    #         cmap='Spectral_r',
+    #         square=True,
+    #         yticklabels=False,
+    #         xticklabels=False)
+    #
+    #     ax.set_title(f'{np.round(score_60, 2)}')
+    #
+    #     # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
+    #     ax.invert_yaxis()
+    #
+    # # Replace any empty subplots with empty heatmaps
+    # empty_rate_map = np.full_like(rate_map, fill_value=np.nan)
+    # for ax_idx in range(ax_idx, n_rows * n_cols):
+    #     row, col = ax_idx // n_cols, ax_idx % n_cols
+    #     ax = axes[row, col]
+    #     sns.heatmap(
+    #         data=empty_rate_map,
+    #         ax=ax,
+    #         cbar=False,
+    #         cmap='Spectral_r',
+    #         square=True,
+    #         yticklabels=False,
+    #         xticklabels=False)
+    #
+    # plt.tight_layout()
+    #
+    # plot_path = os.path.join(plot_dir,
+    #                          f'rate_maps_examples_hexagons_by_score_sorted.png')
+    # plt.savefig(plot_path,
+    #             bbox_inches='tight',
+    #             dpi=300)
+    plt.show()
+    plt.close()
+    # print(f'Plotted {plot_path}')
+    raise NotImplementedError
+
+
+def plot_rate_maps_examples_squares_by_score_range(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
         max_num_ratemaps_per_range: int = 20,
         smooth: bool = True):
-
     grid_score_ranges = [
         (1.1, 1.2),
         (1.2, 1.3),
@@ -2260,7 +2347,7 @@ def plot_rate_maps_examples_squares(
 
         low, high = grid_score_range
 
-        indices = (neurons_data_by_run_id_df['score_90_by_neuron'] >= low)\
+        indices = (neurons_data_by_run_id_df['score_90_by_neuron'] >= low) \
                   & (neurons_data_by_run_id_df['score_90_by_neuron'] < high)
 
         neurons_in_range_df = neurons_data_by_run_id_df[indices]
@@ -2322,18 +2409,19 @@ def plot_rate_maps_examples_squares(
 
         plt.tight_layout()
 
-        plt.savefig(os.path.join(plot_dir,
-                                 f'rate_maps_examples_squares_low={low}_high={high}.png'),
+        plot_path = os.path.join(plot_dir,
+                     f'rate_maps_examples_squares_by_score_range_low={low}_high={high}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_square_scores_histograms_by_activation(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     # 97 chosen to match bin width of grid scores
     bins = np.linspace(-0.6, 2.0, 97)
@@ -2355,18 +2443,19 @@ def plot_square_scores_histograms_by_activation(
 
     plt.xlabel('Square Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'square_scores_histograms_by_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'square_scores_histograms_by_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_square_scores_histograms_by_optimizer(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
     # 97 chosen to match bin width of grid scores
     bins = np.linspace(-0.6, 2.0, 97)
@@ -2388,9 +2477,11 @@ def plot_square_scores_histograms_by_optimizer(
 
     plt.xlabel('Square Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'square_scores_histograms_by_optimizer.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'square_scores_histograms_by_optimizer.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')

@@ -61,22 +61,27 @@ plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir)
 
-plot_rate_maps_examples_hexagons(
+plot_rate_maps_examples_hexagons_by_score_range(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-plot_rate_maps_examples_squares(
+plot_rate_maps_examples_hexagons_by_score_sorted(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-plot_grid_scores_histogram(
+plot_rate_maps_examples_squares_by_score_range(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
 plot_grid_scores_kdes(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir,)
+
+plot_grid_scores_histogram(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
 
 print('Finished 01_mse/01_mse.py!')
