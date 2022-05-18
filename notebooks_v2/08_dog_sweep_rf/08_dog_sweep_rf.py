@@ -8,6 +8,8 @@ notebook_dir = 'notebooks_v2/08_dog_sweep_rf'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
+if os.path.exists(results_dir) and os.path.isdir(results_dir):
+    shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
 
 low_pos_decoding_err_threshold_in_cm = 6.

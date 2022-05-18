@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import shutil
 
 from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
@@ -9,6 +10,8 @@ notebook_dir = 'notebooks_v2/20_nayebi2021_neural_predictivity'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
+if os.path.exists(results_dir) and os.path.isdir(results_dir):
+    shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
 
 neural_predictivity_df = pd.read_csv(
