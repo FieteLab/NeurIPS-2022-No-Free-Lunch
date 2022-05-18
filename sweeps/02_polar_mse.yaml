@@ -45,7 +45,7 @@ parameters:
     ]
   place_field_loss:
     values: [
-      'polar_mse',
+      'polarmse',
     ]
   place_field_values:
     values: [
@@ -61,6 +61,8 @@ parameters:
     ]
   readout_dropout:
     values: [0.]
+  recurrent_dropout:
+    values: [ 0. ]
   rnn_type:
     values: [
         'RNN',
