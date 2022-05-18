@@ -18,10 +18,10 @@ def create_loss_fn(place_field_loss: str,
     elif place_field_loss == 'crossentropy':
         if place_field_normalization == 'global':
             loss_fn = tf.nn.softmax_cross_entropy_with_logits
-        elif place_field_normalization == 'local':
-            loss_fn = tf.nn.sigmoid_cross_entropy_with_logits
         else:
             raise ValueError(f'Impermissible normalization str: {place_field_normalization}')
+    elif place_field_loss == 'binarycrossentropy':
+        loss_fn = tf.nn.softmax_cross_entropy_with_logits
     else:
         raise ValueError(f'Impermissible place field loss str: {place_field_loss}')
     return loss_fn
@@ -204,7 +204,8 @@ class LSTM(Model):
         self.Ng = options.Ng
         self.Np = options.Np
         assert options.place_field_loss in {'mse',
-                                            'crossentropy',}
+                                            'binarycrossentropy',
+                                            'crossentropy'}
         self.place_field_loss = options.place_field_loss
         self.place_field_normalization = options.place_field_normalization
         self.sequence_length = options.sequence_length

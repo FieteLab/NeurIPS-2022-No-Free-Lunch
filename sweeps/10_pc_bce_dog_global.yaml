@@ -7,6 +7,7 @@ metric:
 parameters:
   activation:
     values: [
+        'tanh',
         'relu',
     ]
   batch_size:
@@ -26,51 +27,51 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [20]
+    values: [10]
   n_grad_steps_per_epoch:
     values: [10000]
   n_place_fields_per_cell:
-    values: [1]
+    values: [ 1 ]
   Ng:
     values: [4096]
   Np:
     values: [512]
   optimizer:
     values: [
-        'adam',
-        'adagrad',
         'rmsprop',
-        'sgd',
     ]
   place_field_loss:
     values: [
-      'crossentropy',
+      'mse',
+      'binarycrossentropy',
     ]
   place_field_values:
     values: [
+      'gaussian',
       'difference_of_gaussians',
     ]
   place_field_normalization:
     values: [
+      'none',
       'global',
     ]
   place_cell_rf:
     values: [
       0.12,
+      0.20,
     ]
   readout_dropout:
     values: [0.]
   rnn_type:
     values: [
       'RNN',
+      'SRNN',
     ]
   seed:
-    values: [ 0, 1, 2, 3]
+    values: [ 0, 1 ]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [
-      2.,
-    ]
+    values: [1.]
   weight_decay:
-      values: [ 0.0001 ]
+      values: [ 0. ]

@@ -87,11 +87,13 @@ class PlaceCells(object):
 
         assert options.place_field_loss in {
             'mse',
-            'crossentropy'}
+            'crossentropy',
+            'binarycrossentropy'}
         self.place_field_loss = options.place_field_loss
 
         assert options.place_field_values in {
             'cartesian',
+            'polar',
             'gaussian',
             'difference_of_gaussians'}
         self.place_field_values = options.place_field_values
@@ -289,7 +291,8 @@ class PlaceCells(object):
         # Shape: (batch size, trajectory length, num place cells)
         min_divided_dist_squared = tf.gather(divided_dist_squared, min_indices, batch_dims=3)
 
-        if self.place_field_normalization == 'local':
+        # TODO: implement local normalization
+        if self.place_field_normalization == 'none':
             normalized_dist_squared = tf.exp(-min_divided_dist_squared)
         elif self.place_field_normalization == 'global':
             normalized_dist_squared = tf.nn.softmax(-min_divided_dist_squared, axis=2)
@@ -313,7 +316,8 @@ class PlaceCells(object):
                 min_indices,
                 batch_dims=3)
 
-            if self.place_field_normalization == 'local':
+            # TODO: implement local normalization
+            if self.place_field_normalization == 'none':
                 other_normalized_dist_squared = tf.exp(-min_other_divided_dist_squared)
             elif self.place_field_normalization == 'global':
                 other_normalized_dist_squared = tf.nn.softmax(-min_other_divided_dist_squared, axis=2)

@@ -8,6 +8,7 @@ parameters:
   activation:
     values: [
         'tanh',
+        'relu',
     ]
   batch_size:
     values: [200]
@@ -31,6 +32,8 @@ parameters:
     values: [20]
   n_grad_steps_per_epoch:
     values: [10000]
+  n_place_fields_per_cell:
+    values: [ 1 ]
   Ng:
     values: [4096]
   Np:
@@ -65,9 +68,6 @@ parameters:
   rnn_type:
     values: [
       'RNN',
-      'LSTM',
-      'UGRNN',
-      'GRU',
     ]
   seed:
     values: [ 0, 1]
