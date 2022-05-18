@@ -19,10 +19,7 @@ set -x
 #nbname=01_mse
 #nbname=02_polar
 #nbname=03_g
-nbname=05_dog_ideal
+#nbname=05_dog_ideal
 
-# Remove old results.
-rm -rf notebooks_v2/${nbname}/results/
-
-# Generate new results.
+# Run notebook.
 python -u notebooks_v2/${nbname}/${nbname}.py
