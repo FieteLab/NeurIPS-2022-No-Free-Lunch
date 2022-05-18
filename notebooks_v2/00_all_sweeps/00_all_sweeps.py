@@ -135,8 +135,20 @@ plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
     grid_score_d60_threshold=grid_score_d60_threshold,
     grid_score_d90_threshold=grid_score_d90_threshold)
 
+augmented_neurons_data_by_run_id_df = runs_configs_df[[
+    'run_id', 'place_field_values',]].merge(
+    neurons_data_by_run_id_df,
+    on='run_id',
+    how='left')
+
+
 plot_grid_scores_histograms_by_place_field_values(
-    augmented
+    augmented_neurons_data_by_run_id_df=
+)
+
+
+plot_grid_scores_kdes_by_place_field_values(
+    augmented_neurons_data_by_run_id_df=
 )
 
 print('Finished!')

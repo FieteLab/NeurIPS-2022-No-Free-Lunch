@@ -68,8 +68,8 @@ class GridScorer(object):
                                                                   mask_max))
                        for mask_min, mask_max in mask_parameters]
         # assert len(self._masks) > 0
-        print(self._nbins)
-        print(self._masks)
+        # print(self._nbins)
+        # print(self._masks)
         # Mask for hiding the parts of the SAC that are never used
         self._plotting_sac_mask = circle_mask(
             [self._nbins * 2 - 1, self._nbins * 2 - 1],

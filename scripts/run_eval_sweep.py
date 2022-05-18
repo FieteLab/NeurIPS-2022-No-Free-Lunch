@@ -65,7 +65,7 @@ run_ids = list(sorted(os.listdir(results_dir)))
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
 # run_ids = ['txayqzm5']
 
-# run_ids = []
+run_ids = ['33mbrt17', '4b36kxqk']
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)

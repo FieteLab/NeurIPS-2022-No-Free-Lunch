@@ -14,7 +14,7 @@ low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    ''
+    '7li410k6',  # Gaussian Arch & Activation
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -22,7 +22,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
@@ -37,7 +37,8 @@ plot_percent_runs_with_low_pos_decoding_err_pie(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+frac_low_position_decoding_err = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_position_decoding_err}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
@@ -65,4 +66,12 @@ plot_rate_maps_examples_hexagons_by_score_range(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-print('Finished 01_mse/01_mse.py!')
+plot_grid_scores_kdes(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir,)
+
+plot_grid_scores_histogram(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+print('Finished 03_g/03_g.py!')

@@ -283,10 +283,10 @@ class LSTM(Model):
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)
 
         # Compute decoding error
-        pred_pos = self.place_cells.get_nearest_cell_pos(preds)
-        err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
+        # pred_pos = self.place_cells.get_nearest_cell_pos(preds)
+        # err = tf.reduce_mean(tf.sqrt(tf.reduce_sum((tf.cast(pos, dtype=pred_pos.dtype) - pred_pos) ** 2, axis=-1)))
 
-        return loss, err
+        return loss, preds
 
     def log_weight_norms(self, epoch_idx: int):
         wandb_vals_to_log = {
