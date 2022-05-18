@@ -138,6 +138,8 @@ def convert_joblib_files_data_to_neurons_data_df(
         neurons_data_df_list.append(neurons_data_df)
 
     neurons_data_by_run_id_df = pd.concat(neurons_data_df_list)
+    # Reset indices.
+    neurons_data_by_run_id_df.reset_index(drop=True, inplace=True)
     return neurons_data_by_run_id_df
 
 

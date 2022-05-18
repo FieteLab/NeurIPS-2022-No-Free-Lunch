@@ -307,12 +307,14 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
             plt.xlabel(r'$60^{\circ}$ Grid Period (cm)')
             plt.ylabel('Number of Units')
             plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
-            plt.savefig(os.path.join(plot_dir,
-                                     f'grid_periods_histograms_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png'),
+            plot_path = os.path.join(plot_dir,
+                                     f'grid_periods_histograms_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png')
+            plt.savefig(plot_path,
                         bbox_inches='tight',
                         dpi=300)
             # plt.show()
             plt.close()
+            print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
@@ -340,12 +342,14 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
             xlabel = r'$60^{\circ}$ Grid Period (cm)'
             plt.xlabel(xlabel)
             plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
-            plt.savefig(os.path.join(plot_dir,
-                                     f'grid_periods_kde_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png'),
+            plot_path = os.path.join(plot_dir,
+                                     f'grid_periods_kde_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png')
+            plt.savefig(plot_path,
                         bbox_inches='tight',
                         dpi=300)
             # plt.show()
             plt.close()
+            print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_histograms_by_run_id(
@@ -361,12 +365,14 @@ def plot_grid_periods_histograms_by_run_id(
         xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
 
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_histograms_run={run_id}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_histograms_run={run_id}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histogram(
@@ -412,12 +418,14 @@ def plot_grid_scores_histograms_by_activation(
     g.legend_.set_title('Activation')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_histograms_by_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histograms_by_n_place_fields_per_cell(
@@ -439,12 +447,14 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
     g.legend_.set_title('Num Fields Per Place Cell')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_histograms_by_n_place_fields_per_cell.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_n_place_fields_per_cell.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histograms_by_optimizer(
@@ -470,12 +480,14 @@ def plot_grid_scores_histograms_by_optimizer(
 
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_histograms_by_optimizer.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_optimizer.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histograms_by_place_field_values(
@@ -492,12 +504,14 @@ def plot_grid_scores_histograms_by_place_field_values(
     g.legend_.set_title('Target')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_histograms_by_place_field_values.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_place_field_values.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
@@ -524,12 +538,14 @@ def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
     )
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_histograms_by_run_id(
@@ -553,12 +569,14 @@ def plot_grid_scores_histograms_by_run_id(
                      bins=bins)
         ax.set_xlabel(r'$90^{\circ}$ Grid Score')
 
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_score_histograms_run={run_id}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_score_histograms_run={run_id}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_kdes(
@@ -567,7 +585,7 @@ def plot_grid_scores_kdes(
     plt.close()
     sns.kdeplot(
         data=neurons_data_by_run_id_df,
-        x='score_60_by_neuron', )
+        x='score_60_by_neuron')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
     plot_path = os.path.join(plot_dir, f'grid_scores_kdes.png')
@@ -1306,12 +1324,14 @@ def plot_max_grid_score_vs_num_grad_steps(
     ax.set_ylabel(None)  # Use ylabel from left plot
     ax.set_xlabel('Num Grad Steps')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_vs_num_grad_steps.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'max_grid_score_vs_num_grad_steps.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
@@ -1354,12 +1374,14 @@ def plot_max_grid_score_vs_num_grad_steps_by_optimizer(
     ax.axhline(y=grid_score_d90_threshold,
                label='Likely Square Lattices',
                color='r')
-    plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_vs_num_grad_steps_by_optimizer.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'max_grid_score_vs_num_grad_steps_by_optimizer.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
@@ -1391,12 +1413,14 @@ def plot_max_grid_score_vs_num_grad_steps_by_place_cell_rf(
     ax.set_ylabel(None)  # Use ylabel from left plot
     ax.set_xlabel('Num Grad Steps')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_vs_num_grad_steps_by_place_cell_rf.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'max_grid_score_vs_num_grad_steps_by_place_cell_rf.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_max_grid_score_vs_place_cell_rf_by_activation(
@@ -1427,12 +1451,14 @@ def plot_max_grid_score_vs_place_cell_rf_by_activation(
     ax.set_ylabel(None)  # Use ylabel from left plot
     ax.set_xlabel('Gaussian ' + r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_vs_place_cell_rf_by_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'max_grid_score_vs_place_cell_rf_by_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
@@ -1464,12 +1490,14 @@ def plot_max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type(
         ax.set_xlabel(r'Max $60^{\circ}$ Score')
         ax.set_title(unique_rnn_type)
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'max_grid_score_90_vs_max_grid_score_60_by_activation_and_rnn_type.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation(
@@ -1488,12 +1516,14 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
     plt.xlabel('Activity Participation Ratio')
     plt.ylabel('Neural Predictivity')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
@@ -1512,12 +1542,14 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
     plt.xlabel('Rate Maps Participation Ratio')
     plt.ylabel('Neural Predictivity')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom(
@@ -1562,12 +1594,14 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
         loc='center left',  # Legend goes center-left of anchor
     )
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
-    plt.show()
+    # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
@@ -1586,12 +1620,14 @@ def plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
     plt.xlabel('Rate Maps Rank')
     plt.ylabel('Neural Predictivity')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_participation_ratio_by_num_grad_steps(
@@ -1604,12 +1640,14 @@ def plot_participation_ratio_by_num_grad_steps(
     plt.ylabel(f'Participation Ratio')
     plt.xlabel('Num Grad Steps')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'participation_ratio_by_num_grad_steps.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'participation_ratio_by_num_grad_steps.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_participation_ratio_vs_architecture_and_activation(
@@ -1624,12 +1662,14 @@ def plot_participation_ratio_vs_architecture_and_activation(
 
     plt.xlabel('Architecture')
     plt.ylabel('Participation Ratio')
-    plt.savefig(os.path.join(plot_dir,
-                             f'participation_ratio_vs_architecture_and_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'participation_ratio_vs_architecture_and_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
@@ -1655,12 +1695,14 @@ def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
     plt.xlabel(r'$\sigma$ (m)')
     plt.ylabel('% Grid Cells')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'percent_grid_cells_vs_place_cell_rf_by_threshold.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'percent_grid_cells_vs_place_cell_rf_by_threshold.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
@@ -1679,12 +1721,14 @@ def plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
         plt.ylabel(r'$s$')
         plt.title(f'% Grid Cells (Threshold={threshold})')
 
-        plt.savefig(os.path.join(plot_dir,
-                                 f'percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold={threshold}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold={threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
@@ -1728,12 +1772,14 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sw
         f'Frac Runs : Max Grid Score > {grid_score_d90_threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm}')
     ax.set_xlabel('')
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep.png'),
+    os.path.join(plot_dir,
+                 f'percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
@@ -1778,12 +1824,14 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
     plt.xlabel(f'(Probable) Lattices (N={len(runs_performance_low_pos_decod_err_df)})')
     plt.ylim(0., 1.)
 
-    plt.savefig(os.path.join(plot_dir,
-                             f'percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.DataFrame,
@@ -1817,7 +1865,6 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
                     dpi=300)
         # plt.show()
         plt.close()
-
         print(f'Plotted {plot_path}')
 
 
@@ -2071,7 +2118,7 @@ def plot_pos_decoding_err_min_vs_activation(runs_configs_df: pd.DataFrame,
     plt.ylabel(f'Pos Decoding Err (cm)')
     plt.xlabel('')
     plot_path = os.path.join(plot_dir,
-                 f'pos_decoding_err_min_vs_activation.png')
+                             f'pos_decoding_err_min_vs_activation.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
@@ -2252,7 +2299,6 @@ def plot_rate_maps_examples_hexagons_by_score_sorted(
         plot_dir: str,
         max_num_ratemaps_per_range: int = 12,
         smooth: bool = True):
-
     # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
     n_cols = 4
     n_rows = int(max_num_ratemaps_per_range // n_cols)
@@ -2410,7 +2456,7 @@ def plot_rate_maps_examples_squares_by_score_range(
         plt.tight_layout()
 
         plot_path = os.path.join(plot_dir,
-                     f'rate_maps_examples_squares_by_score_range_low={low}_high={high}.png')
+                                 f'rate_maps_examples_squares_by_score_range_low={low}_high={high}.png')
         plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
