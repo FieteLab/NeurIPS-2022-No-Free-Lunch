@@ -843,7 +843,7 @@ def configure_options(run_ID: str,
     options.Ng = Ng  # number of recurrent units
     options.Np = Np
     options.optimizer = optimizer
-    if options.place_field_values == 'cartesian':
+    if options.place_field_values == 'cartesian' or options.place_field_values == 'polar':
         assert options.Np == 2
     options.place_cell_rf = place_cell_rf  # width of place cell center tuning curve (m)
     options.rnn_type = rnn_type  # RNN or LSTM

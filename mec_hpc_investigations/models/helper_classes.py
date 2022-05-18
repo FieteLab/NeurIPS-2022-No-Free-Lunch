@@ -87,6 +87,7 @@ class PlaceCells(object):
 
         assert options.place_field_loss in {
             'mse',
+            'polarmse',
             'crossentropy',
             'binarycrossentropy'}
         self.place_field_loss = options.place_field_loss
@@ -259,6 +260,15 @@ class PlaceCells(object):
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
 
+        if self.place_field_values == 'polar':
+            # Shape: (batch size, seq len, 1)
+            r = tf.math.sqrt(tf.reduce_sum(tf.math.square(pos), axis=2, keepdims=True))
+            # Shape: (batch size, seq len, 1)
+            theta = tf.math.atan(pos[..., 1, tf.newaxis] / pos[..., 0, tf.newaxis])
+            # Shape: (batch size, seq len, 2)
+            outputs = tf.concat([r, theta], axis=2)
+            return outputs
+
         # Shape: (batch size, sequence length, num place cells, max num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
 
@@ -354,6 +364,14 @@ class PlaceCells(object):
 
         if self.place_field_values == 'cartesian':
             pred_pos = tf.cast(tf.identity(activation), dtype=tf.float32)
+        elif self.place_field_values == 'polar':
+            # 0 is radius, 1 is theta
+            # Shape: (batch size, seq len)
+            pred_x = activation[:, :, 0] * tf.math.cos(activation[:, :, 1])
+            # Shape: (batch size, seq len)
+            pred_y = activation[:, :, 0] * tf.math.sin(activation[:, :, 1])
+            # Shape: (batch size, seq len, 2)
+            pred_pos = tf.stack([pred_x, pred_y], axis=2)
         else:
             # # Original:
             # _, idxs = tf.math.top_k(activation, k=k)

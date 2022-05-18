@@ -34,6 +34,8 @@ parameters:
     values: [20]
   n_grad_steps_per_epoch:
     values: [10000]
+  n_place_fields_per_cell:
+    values: [ 1 ]
   Ng:
     values: [4096]
   Np:

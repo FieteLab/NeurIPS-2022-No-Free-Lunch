@@ -15,13 +15,15 @@ def create_loss_fn(place_field_loss: str,
 
     if place_field_loss == 'mse':
         loss_fn = pos_loss
+    elif place_field_loss == 'polarmse':
+        loss_fn = polar_mse_loss
     elif place_field_loss == 'crossentropy':
         if place_field_normalization == 'global':
             loss_fn = tf.nn.softmax_cross_entropy_with_logits
         else:
             raise ValueError(f'Impermissible normalization str: {place_field_normalization}')
     elif place_field_loss == 'binarycrossentropy':
-        loss_fn = tf.nn.softmax_cross_entropy_with_logits
+        loss_fn = tf.nn.sigmoid_cross_entropy_with_logits
     else:
         raise ValueError(f'Impermissible place field loss str: {place_field_loss}')
     return loss_fn
@@ -39,6 +41,18 @@ def mask_func(inp, mask_mult=None, mask_add=None):
 
 def pos_loss(x, y):
     return (x - y) ** 2
+
+
+def polar_mse_loss(x, y):
+    # x and y have shape (batch size, seq len, 2)
+    # Compute: r_1^2 + r_2^2 - 2 r_1 r_2 cos(\theta_1 - \theta_2)
+    # Dimension 0 is r, Dimension 1 is theta
+
+    # All have shape: (batch size, seq len, 1)
+    term1 = tf.math.square(x[..., 0, tf.newaxis])
+    term2 = tf.math.square(y[..., 0, tf.newaxis])
+    term3 = - 2. * tf.multiply(x[..., 0, tf.newaxis], y[..., 0, tf.newaxis]) * tf.math.cos(x[..., 1, tf.newaxis] - y[..., 1, tf.newaxis])
+    return term1 + term2 + term3
 
 
 class UGRNNCell(Layer):

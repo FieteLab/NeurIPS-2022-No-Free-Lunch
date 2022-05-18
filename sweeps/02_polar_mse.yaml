@@ -32,8 +32,9 @@ parameters:
   n_epochs:
     values: [10]
   n_grad_steps_per_epoch:
-    values: [2500]
-
+    values: [10000]
+  n_place_fields_per_cell:
+    values: [ 1 ]
   Ng:
     values: [4096]
   Np:
@@ -44,7 +45,7 @@ parameters:
     ]
   place_field_loss:
     values: [
-      'mse',
+      'polar_mse',
     ]
   place_field_values:
     values: [
