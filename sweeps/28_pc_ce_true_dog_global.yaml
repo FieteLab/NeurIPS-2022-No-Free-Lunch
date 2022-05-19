@@ -8,6 +8,7 @@ parameters:
   activation:
     values: [
         'relu',
+        'tanh',
     ]
   batch_size:
     values: [200]
@@ -32,7 +33,7 @@ parameters:
   n_place_fields_per_cell:
     values: [ 1 ]
   Ng:
-    values: [512]
+    values: [4096]
   Np:
     values: [512]
   optimizer:
@@ -65,7 +66,7 @@ parameters:
       'RNN',
     ]
   seed:
-    values: [ 0 ]
+    values: [ 0, 1, 2 ]
   sequence_length:
     values: [20]
   surround_scale:
