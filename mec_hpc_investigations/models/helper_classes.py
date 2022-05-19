@@ -330,9 +330,14 @@ class PlaceCells(object):
 
             outputs = tf.math.exp(-min_divided_dist_squared) - tf.math.exp(-min_other_divided_dist_squared)
 
+            # Original
+            # Shift and scale outputs so that they lie in [0,1].
+            # outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
+            # outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
+
             # Shift and scale outputs so that they lie in [0,1].
             outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
-            outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
+            outputs /= tf.math.reduce_euclidean_norm(outputs, axis=-1, keepdims=True)
 
             #
             # # option 3: Difference of Softmax(-distances)

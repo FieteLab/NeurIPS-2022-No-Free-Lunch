@@ -362,13 +362,22 @@ class Trainer(object):
         # TODO: add ID measures to rate maps (spatial vs neuron)
 
         # In this function, ID stands for Intrinsic Dimensionality.
-        two_NN_ID = skdim.id.TwoNN().fit_transform(X=activations)
+        try:
+            two_NN_ID = skdim.id.TwoNN().fit_transform(X=activations)
+        except ValueError:
+            two_NN_ID = np.nan
 
-        method_of_moments_ID = skdim.id.MOM().fit_transform(X=activations)
+        try:
+            method_of_moments_ID = skdim.id.MOM().fit_transform(X=activations)
+        except ValueError:
+            method_of_moments_ID = np.nan
 
         # Use skdim implementation for trustworthiness.
-        participation_ratio_ID = skdim.id.lPCA(ver='participation_ratio').fit_transform(
-            X=activations)
+        try:
+            participation_ratio_ID = skdim.id.lPCA(ver='participation_ratio').fit_transform(
+                X=activations)
+        except ValueError:
+            participation_ratio_ID = np.nan
 
         intrinsic_dimensionalities = dict(
             participation_ratio=participation_ratio_ID,
