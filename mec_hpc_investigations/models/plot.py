@@ -618,6 +618,7 @@ def plot_grid_scores_histograms_by_place_field_values(
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
     plt.yscale('log')
+    plt.gca().set_ylim(bottom=1, top=None)
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_place_field_values.png')
     plt.savefig(plot_path,
@@ -811,7 +812,7 @@ def plot_grid_scores_kdes_by_place_field_values(
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
         # kde=True,
-        hue='grid_scores_kdes_by_place_field_values')
+        hue='place_field_values')
     g.legend_.set_title('Target')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
@@ -2452,6 +2453,7 @@ def plot_rate_maps_examples_hexagons_by_score_range(
         max_num_ratemaps_per_range: int = 12,
         smooth: bool = True):
     grid_score_ranges = [
+        (0., 0.25),
         (0.25, 0.35),
         (0.35, 0.45),
         (0.45, 0.65),
