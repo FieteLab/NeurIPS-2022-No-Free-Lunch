@@ -59,6 +59,43 @@ activation_marker_map = dict(
 #     # plt.show()
 #     plt.close()
 
+def plot_grid_periods_histograms_by_n_place_fields_per_cell(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    bins = np.linspace(0, 100, 101)
+
+    for grid_score_threshold in [0.3, 0.8, 1.15]:
+        # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
+        likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
+        g = sns.histplot(x="period_per_cell",
+                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                     hue='n_place_fields_per_cell',
+                     bins=bins,
+                     palette='Spectral_r',
+                     # legend='full',
+                     # legend='False',
+                     # kde=True,
+                     )
+        g.legend_.set_title('Num Fields / Place Cell')
+        # https://stackoverflow.com/questions/30490740/move-legend-outside-figure-in-seaborn-tsplot
+        # Move the legend off to the right.
+        # plt.legend(
+        #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        # )
+        xlabel = r'$60^{\circ}$ Grid Period (cm)'
+        # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
+        plt.xlabel(xlabel)
+        plt.title(f'Grid Score Threshold: {grid_score_threshold}')
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_histograms_by_n_place_fields_per_cell_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+        print(f'Plotted {plot_path}')
+
 
 def plot_grid_periods_histograms_by_place_cell_rf(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
@@ -89,6 +126,37 @@ def plot_grid_periods_histograms_by_place_cell_rf(
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
         plot_path = os.path.join(plot_dir,
                                  f'grid_periods_histograms_by_place_cell_rf_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+        print(f'Plotted {plot_path}')
+
+
+def plot_grid_periods_kde_by_n_place_fields_per_cell(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+
+    for grid_score_threshold in [0.3, 0.8, 1.15]:
+        likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
+        g = sns.kdeplot(x="period_per_cell",
+                        data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                        hue='n_place_fields_per_cell',
+                        # palette='Spectral_r',
+                        fill=True,
+                        # legend='full',
+                        )
+        # Remove the legend and replace with a color bar.
+        # https://stackoverflow.com/questions/62884183/trying-to-add-a-colorbar-to-a-seaborn-scatterplot
+        g.legend_.set_title('Num Fields / Place Cell')
+        xlabel = r'$60^{\circ}$ Grid Period (cm)'
+        # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
+        plt.xlabel(xlabel)
+        plt.title(f'Grid Score Threshold: {grid_score_threshold}')
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_kde_by_n_place_fields_per_cell_threshold={grid_score_threshold}.png')
         plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
@@ -479,20 +547,18 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
     plt.close()
     bins = np.linspace(-0.6, 1.4, 75)
 
-    indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
-                      | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
     plt.close()
     g = sns.histplot(
-        data=augmented_neurons_data_by_run_id_df[indices_to_keep],
-        # data=augmented_neurons_data_by_run_id_df,
+        data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
         bins=bins,
-        # kde=True,
+        kde=True,
         hue='n_place_fields_per_cell')
-    g.legend_.set_title('Num Fields Per Place Cell')
+    g.legend_.set_title('Num Fields / Place Cell')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
     plt.yscale('log')
+    plt.gca().set_ylim(bottom=1, top=None)
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_n_place_fields_per_cell.png')
     plt.savefig(plot_path,
@@ -651,7 +717,6 @@ def plot_grid_scores_kdes(
 def plot_grid_scores_kdes_by_human_readable_sweep(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
-
     plt.close()
 
     # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
@@ -717,9 +782,13 @@ def plot_grid_scores_kdes_by_n_place_fields_per_cell(
         # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
-        # kde=True,
         hue='n_place_fields_per_cell')
-    g.legend_.set_title('Num Fields Per Place Cell')
+    # g.legend(
+    #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+    #     loc='center left',  # Legend goes center-left of anchor
+    #     title='Num Fields / Place Cell',
+    # )
+    g.legend_.set_title('Num Fields / Place Cell')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
     plt.savefig(os.path.join(plot_dir,
@@ -910,7 +979,7 @@ def plot_grid_scores_boxen_vs_place_cell_rf(augmented_neurons_data_by_run_id_df:
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
     plot_path = os.path.join(plot_dir,
-                 f'grid_scores_boxen_vs_place_cell_rf.png')
+                             f'grid_scores_boxen_vs_place_cell_rf.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
@@ -2318,7 +2387,6 @@ def plot_rate_maps_by_run_id(
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
         smooth: bool = True):
-
     for run_id, run_id_neurons_df in neurons_data_by_run_id_df.groupby(['run_id']):
 
         n_rows = n_cols = int(np.ceil(np.sqrt(512)))
@@ -2383,7 +2451,6 @@ def plot_rate_maps_examples_hexagons_by_score_range(
         plot_dir: str,
         max_num_ratemaps_per_range: int = 12,
         smooth: bool = True):
-
     grid_score_ranges = [
         (0.25, 0.35),
         (0.35, 0.45),

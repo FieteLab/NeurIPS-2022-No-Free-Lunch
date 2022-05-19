@@ -19,6 +19,8 @@ grid_score_d90_threshold = 1.5
 sweep_ids = [
     'rbrvuf2g',  # Part 1 of sweep
     'wnmp7nx0',  # Part 2 of sweep
+    '56legweh',  # Part 3 of sweep
+    'lwalddwy',  # Part 4 of sweep
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -32,7 +34,7 @@ runs_configs_df = download_wandb_project_runs_configs(
 # Add 1 to Poissons because we used 1+Poisson number of fields
 def add_one_to_poissons(row: pd.Series):
     if isinstance(row['n_place_fields_per_cell'], str) and row['n_place_fields_per_cell'].startswith('Poisson'):
-        return '1 + ' + row['n_place_fields_per_cell']
+        return '1 + ' + row['n_place_fields_per_cell'].replace(' ', '')
     else:
         return str(row['n_place_fields_per_cell'])
 
@@ -76,26 +78,24 @@ plot_grid_scores_kdes_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-plot_grid_periods_histograms_by_place_cell_rf(
+plot_grid_periods_histograms_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-
-plot_grid_periods_kde_by_place_cell_rf(
+plot_grid_periods_kde_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
-    percent_neurons_score60_above_threshold_by_run_id_df=augmented_neurons_data_by_run_id_df,
+plot_rate_maps_examples_hexagons_by_score_range(
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[
+        augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson(1.0)'],
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
-    score_60_by_neuron_max=('score_60_by_neuron', 'max'),
-    score_90_by_neuron_max=('score_90_by_neuron', 'max'),
-    n_place_fields_per_cell=('n_place_fields_per_cell', 'first')).reset_index()
 
-plot_grid_score_max_as_dots_vs_place_cell_rf(
-    max_grid_scores_by_run_id_df=max_grid_scores_by_run_id_df,
-    plot_dir=results_dir, )
+# max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
+#     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
+#     score_90_by_neuron_max=('score_90_by_neuron', 'max'),
+#     n_place_fields_per_cell=('n_place_fields_per_cell', 'first')).reset_index()
 
-print('Finished 08_dog_receptive_field/08_dog_receptive_field.py!')
+print('Finished 10_dog_multiple_fields/10_dog_multiple_fields.py!')
