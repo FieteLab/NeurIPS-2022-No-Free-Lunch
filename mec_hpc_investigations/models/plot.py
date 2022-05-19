@@ -2264,7 +2264,7 @@ def plot_rate_maps_examples_hexagons_by_score_range(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
-        max_num_ratemaps_per_range: int = 32,
+        max_num_ratemaps_per_range: int = 12,
         smooth: bool = True):
 
     grid_score_ranges = [
