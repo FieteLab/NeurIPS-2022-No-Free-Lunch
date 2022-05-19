@@ -36,8 +36,6 @@ heterogeneous_indices = (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.
 indices_to_keep = homogeneous_indices | heterogeneous_indices
 runs_configs_df = runs_configs_df[indices_to_keep]
 
-
-
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
@@ -45,10 +43,9 @@ overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
-# plot_percent_runs_with_low_pos_decoding_err_pie(
-#     runs_configs_df=runs_configs_df,
-#     plot_dir=results_dir,
-#     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
+plot_percent_runs_with_low_pos_decoding_err_pie(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir)
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
@@ -58,16 +55,6 @@ runs_configs_low_pos_decoding_err_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
-
-plot_rate_maps_examples_hexagons_by_score_range(
-    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
-    plot_dir=results_dir)
-
-plot_rate_maps_examples_squares_by_score_range(
-    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
-    plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
@@ -109,10 +96,6 @@ augmented_percent_neurons_score60_above_threshold_by_run_id_df = runs_configs_df
     on='run_id',
     how='left')
 
-plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
-    augmented_percent_neurons_score60_above_threshold_by_run_id_df=augmented_percent_neurons_score60_above_threshold_by_run_id_df,
-    plot_dir=results_dir)
-
 plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
@@ -129,5 +112,17 @@ plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
+heterogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                        & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+
+plot_rate_maps_examples_hexagons_by_score_range(
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[heterogeneous_indices],
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
+
+plot_rate_maps_examples_squares_by_score_range(
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[heterogeneous_indices],
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
 
 print('Finished 09_heterogeneous_receptive_field/09_heterogeneous_receptive_field.py!')
