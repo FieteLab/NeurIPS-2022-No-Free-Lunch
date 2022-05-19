@@ -182,6 +182,7 @@ class Trainer(object):
 
         print('Finished eval after training')
 
+    @tf.function
     def train_step(self, inputs, pc_outputs, pos):
         '''
         Train on one batch of trajectories.
@@ -199,6 +200,7 @@ class Trainer(object):
         with tf.GradientTape() as tape:
             loss, preds = self.model.compute_loss(inputs, pc_outputs, pos)
 
+        tf.debugging.assert_all_finite(loss, 'Loss is not finite')
         grads = tape.gradient(loss, self.model.trainable_variables)
 
         self.optimizer.apply_gradients(zip(grads, self.model.trainable_variables))

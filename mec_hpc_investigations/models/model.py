@@ -175,7 +175,9 @@ class RNN(Model):
             err: Avg. decoded position error in cm.
         '''
         preds = self.call(inputs, g_mask=g_mask, g_mask_add=g_mask_add)
+        tf.debugging.assert_all_finite(preds, 'Preds are not finite')
         loss = tf.reduce_mean(self.loss_fn(pc_outputs, preds))
+        # print(f"Loss: {loss.numpy()}\tSummed Preds: {tf.reduce_sum(preds)}")
 
         # Weight regularization
         loss += self.weight_decay * tf.reduce_sum(self.RNN.weights[1] ** 2)

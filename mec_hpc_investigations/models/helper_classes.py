@@ -332,18 +332,8 @@ class PlaceCells(object):
 
             # Original
             # Shift and scale outputs so that they lie in [0,1].
-            # outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
-            # outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
-
-            # Shift and scale outputs so that they lie in [0,1].
             outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
-            outputs /= tf.math.reduce_euclidean_norm(outputs, axis=-1, keepdims=True)
-
-            #
-            # # option 3: Difference of Softmax(-distances)
-            # if self.method == 'Difference Of Softmaxes':
-            #     outputs = tf.nn.softmax(-min_divided_dist_squared, axis=2) - tf.nn.softmax(
-            #         -min_other_divided_dist_squared, axis=2)
+            outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
 
         elif self.place_field_values == 'softmax_of_differences':
 

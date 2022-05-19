@@ -10,8 +10,8 @@
 # source mec_hpc_venv/bin/activate
 # wandb sweep sweeps/sweep_position.yaml
 
-for i in {1..8}
+for i in {1..3}
 do
-  sbatch scripts/run_train_one.sh 3owbkvs0
+  sbatch scripts/run_train_one.sh 9mc0x8cn
   sleep 2
 done
