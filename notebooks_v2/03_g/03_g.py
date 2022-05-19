@@ -82,4 +82,8 @@ plot_grid_scores_histogram(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
+plot_grid_scores_histograms_by_run_id(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 print('Finished 03_g/03_g.py!')

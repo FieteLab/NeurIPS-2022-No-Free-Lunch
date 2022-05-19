@@ -19,15 +19,18 @@ grid_score_d90_threshold = 1.5
 
 sweep_ids = [
     '26gn9pfh',     # Cartesian + MSE
-    # 'rutsx042',   # G+Global+CE, sweeping non-RF hyperparameters
+    '7li410k6',   # G+Global+CE, sweeping non-RF hyperparameters
     # # '',  # G+Global+CE, sweeping RF from 0.01m to 2.0m
     # 'amk6dohd',   # DoG+Global+CE, sweeping non-RF hyperparameters
     'yzszqr74',     # DoG+Global+CE, sweeping only RF hyperparameter
     'acmd4be7',     # DoG+Global+CE, sweeping only SS hyperparameter
     # '2yfpvx86',     #
     'nvf04nxs',     # DoG+Global+CE, heterogeneous scales
-    # 'rbrvuf2g',   # DoG+Global+CE, multiple fields 1
-    # 'wnmp7nx0',   # DoG+Global+CE, multiple fields 2
+    'rbrvuf2g',     # DoG+Global+CE, multiple fields 1
+    'wnmp7nx0',     # DoG+Global+CE, multiple fields 2
+    '56legweh',     # DoG+Global+CE, multiple fields 3
+    'lwalddwy',     # DoG+Global+CE, multiple fields 4
+    'pou4d9s0',     # Softmax(Diff of Squared distances
 ]
 
 #
@@ -36,7 +39,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=False)
+    refresh=True)
 
 
 # Add human-readable sweep
@@ -51,7 +54,7 @@ def convert_sweep_to_human_readable_sweep(row: pd.Series):
         raise NotImplementedError
     elif sweep_id == 'rutsx042':
         human_readable_sweep = 'G\nHyperparams w/o RF, SS)\nN='
-    elif sweep_id == 'amk6dohd':
+    elif sweep_id in {'amk6dohd', '822u9q9v'}:
         human_readable_sweep = 'DoG\nHyperparams w/o RF, SS\nN='
     elif sweep_id == 'yzszqr74':
         human_readable_sweep = 'DoG\nRF\nN=51'
@@ -59,8 +62,10 @@ def convert_sweep_to_human_readable_sweep(row: pd.Series):
         human_readable_sweep = 'DoG\nSS\nN=24'
     elif sweep_id == 'nvf04nxs':
         human_readable_sweep = 'DoG\nHetero RF & SS\nN=56'
-    elif sweep_id in {'rbrvuf2g', 'wnmp7nx0'}:
+    elif sweep_id in {'rbrvuf2g', 'wnmp7nx0', '56legweh'}:
         human_readable_sweep = 'DoG\nMultiple Fields\nN='
+    elif sweep_id == 'pou4d9s0':
+        human_readable_sweep = 'Softmax Of Diff\nN='
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError

@@ -31,10 +31,7 @@ parameters:
     values: [10000]
   n_place_fields_per_cell:
     values: [
-      1.0,
-      'Poisson( 0.25 )',
-      'Poisson( 0.5 )',
-      'Poisson( 0.75 )',
+      1,
       'Poisson( 1.0 )',
       'Poisson( 2.0 )',
       'Poisson( 3.0 )',

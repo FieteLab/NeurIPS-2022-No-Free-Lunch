@@ -387,6 +387,7 @@ def plot_grid_scores_histogram(
                  ax=ax,
                  bins=bins)
     ax.set_xlabel('$60^{\circ}$ Grid Score')
+    ax.set_yscale('log')
 
     ax = axes[1]
     sns.histplot(x="score_90_by_neuron",
@@ -394,8 +395,9 @@ def plot_grid_scores_histogram(
                  ax=ax,
                  bins=bins)
     ax.set_xlabel(r'$90^{\circ}$ Grid Score')
+    ax.set_yscale('log')
 
-    plot_path = os.path.join(plot_dir, f'grid_score_histogram.png')
+    plot_path = os.path.join(plot_dir, f'grid_scores_histogram.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
@@ -415,6 +417,7 @@ def plot_grid_scores_histograms_by_activation(
         bins=bins,
         kde=True,
         hue='activation')
+    plt.yscale('log')
     g.legend_.set_title('Activation')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
@@ -447,6 +450,7 @@ def plot_grid_scores_histograms_by_n_place_fields_per_cell(
     g.legend_.set_title('Num Fields Per Place Cell')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
+    plt.yscale('log')
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_n_place_fields_per_cell.png')
     plt.savefig(plot_path,
@@ -480,6 +484,7 @@ def plot_grid_scores_histograms_by_optimizer(
 
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
+    plt.yscale('log')
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_optimizer.png')
     plt.savefig(plot_path,
@@ -504,6 +509,7 @@ def plot_grid_scores_histograms_by_place_field_values(
     g.legend_.set_title('Target')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
+    plt.yscale('log')
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_place_field_values.png')
     plt.savefig(plot_path,
@@ -538,6 +544,7 @@ def plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
     )
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
+    plt.yscale('log')
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero.png')
     plt.savefig(plot_path,
@@ -561,6 +568,7 @@ def plot_grid_scores_histograms_by_run_id(
                      ax=ax,
                      bins=bins)
         ax.set_xlabel('$60^{\circ}$ Grid Score')
+        ax.set_yscale('log')
 
         ax = axes[1]
         sns.histplot(x="score_90_by_neuron",
@@ -568,6 +576,7 @@ def plot_grid_scores_histograms_by_run_id(
                      ax=ax,
                      bins=bins)
         ax.set_xlabel(r'$90^{\circ}$ Grid Score')
+        ax.set_yscale('log')
 
         plot_path = os.path.join(plot_dir,
                                  f'grid_score_histograms_run={run_id}.png')
