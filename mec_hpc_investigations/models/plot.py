@@ -2118,27 +2118,6 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
     print(f'Plotted {plot_path}')
 
 
-def plot_pos_decoding_err_vs_max_grid_score_kde(runs_configs_with_scores_max_df: pd.DataFrame,
-                                                plot_dir: str):
-    plt.close()
-
-    sns.kdeplot(
-        x='score_60_by_neuron_max',
-        y='score_90_by_neuron_max',
-        # cmap=cmap,
-        fill=True,
-        clip=(-5, 5),
-        levels=15,
-        data=runs_configs_with_scores_max_df,
-    )
-
-    plt.savefig(os.path.join(plot_dir, f'pos_decoding_err_vs_max_grid_score_kde.png'),
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
-    plt.close()
-
-
 def plot_percent_low_decoding_err_vs_human_readable_sweep(
         runs_configs_df: pd.DataFrame,
         plot_dir: str,
@@ -2157,6 +2136,27 @@ def plot_percent_low_decoding_err_vs_human_readable_sweep(
     ax.set_ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
                              f'percent_low_decoding_err_vs_human_readable_sweep.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_pos_decoding_err_vs_max_grid_score_kde(runs_configs_with_scores_max_df: pd.DataFrame,
+                                                plot_dir: str):
+    plt.close()
+
+    sns.kdeplot(
+        x='score_60_by_neuron_max',
+        y='score_90_by_neuron_max',
+        # cmap=cmap,
+        fill=True,
+        clip=(-5, 5),
+        levels=15,
+        data=runs_configs_with_scores_max_df,
+    )
+
+    plt.savefig(os.path.join(plot_dir, f'pos_decoding_err_vs_max_grid_score_kde.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
