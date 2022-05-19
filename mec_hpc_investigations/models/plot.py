@@ -681,7 +681,7 @@ def plot_grid_scores_kdes_by_place_cell_rf_and_ss_homo_vs_hetero(
     g = sns.kdeplot(
         data=subset_df,
         x='score_60_by_neuron',
-        hue='human_readable_sweep')
+        hue='DoG Params')
     g.legend_.set_title('')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')

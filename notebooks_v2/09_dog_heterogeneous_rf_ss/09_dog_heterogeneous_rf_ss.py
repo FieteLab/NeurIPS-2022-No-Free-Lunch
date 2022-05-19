@@ -29,6 +29,15 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
+homogeneous_indices = (runs_configs_df['place_cell_rf'] == '0.12') \
+                      & (runs_configs_df['surround_scale'] == '2')
+heterogeneous_indices = (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                        & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+indices_to_keep = homogeneous_indices | heterogeneous_indices
+runs_configs_df = runs_configs_df[indices_to_keep]
+
+
+
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()))
 
