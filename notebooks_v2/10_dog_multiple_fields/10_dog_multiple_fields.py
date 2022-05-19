@@ -1,6 +1,8 @@
 import os
 import shutil
 
+import matplotlib.pyplot as plt
+
 from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
@@ -69,6 +71,35 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
+
+percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
+
+# Plot fraction of runs with grid cell
+percent = 1.
+percent_neurons_score60_above_threshold_by_run_id_df['has_grid_cells'] = \
+    percent_neurons_score60_above_threshold_by_run_id_df['Percent'] > percent
+
+tmp = percent_neurons_score60_above_threshold_by_run_id_df.merge(
+    runs_configs_df[['run_id', 'n_place_fields_per_cell']],
+    on='run_id',
+    how='left'
+)
+
+# plt.close()
+# threshold = 0.75
+# sns.barplot(
+#     data=tmp[tmp['Grid Score Threshold'] == threshold],
+#     x='n_place_fields_per_cell',
+#     y='has_grid_cells',
+#     estimator=np.sum,
+#     ci=None)
+# plt.xlabel('')
+# plt.ylabel(f'# Runs with Grid Cells\n{percent}% Units > {threshold}')
+# ax = plt.gca()
+# ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+# plt.tight_layout()
+# plt.show()
 
 plot_grid_scores_histograms_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

@@ -19,18 +19,20 @@ grid_score_d90_threshold = 1.5
 
 sweep_ids = [
     '26gn9pfh',     # Cartesian + MSE
+    'vndf9snd',     # Polar
     '7li410k6',     # G+Global+CE, sweeping non-RF hyperparameters
     # # '',  # G+Global+CE, sweeping RF from 0.01m to 2.0m
-    # 'amk6dohd',   # DoG+Global+CE, sweeping non-RF hyperparameters
+    'amk6dohd',     # DoG+Global+CE, sweeping non-RF hyperparameters Part 1
+    '822u9q9v',     # DoG+Global+CE, sweeping non-RF hyperparameters Part 2
     'yzszqr74',     # DoG+Global+CE, sweeping only RF hyperparameter
     'acmd4be7',     # DoG+Global+CE, sweeping only SS hyperparameter
-    # '2yfpvx86',     #
     'nvf04nxs',     # DoG+Global+CE, heterogeneous scales
-    'rbrvuf2g',     # DoG+Global+CE, multiple fields 1
-    'wnmp7nx0',     # DoG+Global+CE, multiple fields 2
-    '56legweh',     # DoG+Global+CE, multiple fields 3
-    'lwalddwy',     # DoG+Global+CE, multiple fields 4
-    'pou4d9s0',     # Softmax(Diff of Squared distances
+    'rbrvuf2g',     # DoG+Global+CE, multiple fields Part 1
+    'wnmp7nx0',     # DoG+Global+CE, multiple fields Part 2
+    '56legweh',     # DoG+Global+CE, multiple fields Part 3
+    'lwalddwy',     # DoG+Global+CE, multiple fields Part 4
+    'pou4d9s0',     # Softmax(Diff of Squared distances)
+    '8aik21gt',     # True DoG
 ]
 
 #
@@ -45,27 +47,26 @@ runs_configs_df = download_wandb_project_runs_configs(
 # Add human-readable sweep
 def convert_sweep_to_human_readable_sweep(row: pd.Series):
     sweep_id = row['Sweep']
-    if sweep_id == '26gn9pfh':
-        # 01: Cartesian + MSE
+    if sweep_id in {'26gn9pfh'}:
         human_readable_sweep = 'Cartesian\nMSE\nN=144'
-    elif sweep_id == '':
-        # 02: Polar + MSE
+    elif sweep_id in {'vndf9snd'}:
         human_readable_sweep = 'Polar\nGeodesic'
-        raise NotImplementedError
     elif sweep_id in {'7li410k6'}:
         human_readable_sweep = 'G\nHyperparams w/o RF, SS)\nN='
     elif sweep_id in {'amk6dohd', '822u9q9v'}:
         human_readable_sweep = 'DoG\nHyperparams w/o RF, SS\nN='
-    elif sweep_id == 'yzszqr74':
+    elif sweep_id in {'yzszqr74'}:
         human_readable_sweep = 'DoG\nRF\nN=51'
-    elif sweep_id == 'acmd4be7':
+    elif sweep_id in {'acmd4be7'}:
         human_readable_sweep = 'DoG\nSS\nN=24'
-    elif sweep_id == 'nvf04nxs':
+    elif sweep_id in {'nvf04nxs'}:
         human_readable_sweep = 'DoG\nHetero RF & SS\nN=56'
-    elif sweep_id in {'rbrvuf2g', 'wnmp7nx0', '56legweh'}:
+    elif sweep_id in {'rbrvuf2g', 'wnmp7nx0', '56legweh', 'lwalddwy'}:
         human_readable_sweep = 'DoG\nMultiple Fields\nN='
-    elif sweep_id == 'pou4d9s0':
+    elif sweep_id in {'pou4d9s0'}:
         human_readable_sweep = 'Softmax Of Diff\nN='
+    elif sweep_id in {'8aik21gt'}:
+        human_readable_sweep = 'True DoG\nN='
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError

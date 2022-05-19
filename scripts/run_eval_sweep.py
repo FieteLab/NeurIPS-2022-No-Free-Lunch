@@ -40,8 +40,8 @@ import wandb
 ### Option 2: Manually specify run IDs.
 
 # All runs.
-results_dir = 'results'
-run_ids = list(sorted(os.listdir(results_dir)))
+# results_dir = 'results'
+# run_ids = list(sorted(os.listdir(results_dir)))
 
 # Ideal grid cells
 # run_ids = ['wxt06g20', 'y5qdmmqx', 'ryrmls1x', 'otuv2dhn', 'kfpr44o9', '08jmt76g', '1ez9xulc', '6lgoiwhw', '0svwod2a', 'zg5hbvxx', 'ebb8dp9b', 'd47g0wpn', 'goo0np7q', 'qg3a3h8e', 'p0osju5b', 'ltzh0j9x']
@@ -65,7 +65,7 @@ run_ids = list(sorted(os.listdir(results_dir)))
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
 # run_ids = ['txayqzm5']
 
-run_ids = ['zykgk537', 'd5uop31z', 'suktaq46', 'ftceyyhr', 'hkyuuqpy', 'h6msrq65']
+run_ids = ['r7g1dz4h', 'synxgpfy', '33nfqark', 'k8jmym5g', 'ocx0qmu4', '0z94cje2', 'us2xhe8g', 'xavg8w3k', 'sg08dmwx', 'bagn8lnb', 'rcmio0ou', 'q8kbs2xl', 'l7h5gqgz', '5jlt3cte', 'mr1m9tss', '8babnf1v', 'yjqc7mmz', 'psmqjov9']
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)

@@ -15,6 +15,7 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
     percent_neurons_score60_above_threshold_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby(
         'run_id').agg(
         frac_neurons_with_score_60_above_0p3=('score_60_by_neuron', lambda x: 100*x.gt(0.3).mean()),
+        frac_neurons_with_score_60_above_0p75=('score_60_by_neuron', lambda x: 100*x.gt(0.75).mean()),
         frac_neurons_with_score_60_above_0p8=('score_60_by_neuron', lambda x: 100*x.gt(0.8).mean()),
         frac_neurons_with_score_60_above_1p15=('score_60_by_neuron', lambda x: 100*x.gt(1.15).mean())
     ).reset_index()
@@ -22,6 +23,7 @@ def compute_percent_neurons_score60_above_threshold_by_run_id_df(
     percent_neurons_score60_above_threshold_by_run_id_df.rename(
         columns={
             'frac_neurons_with_score_60_above_0p3': '0.3',
+            'frac_neurons_with_score_60_above_0p75': '0.75',
             'frac_neurons_with_score_60_above_0p8': '0.8',
             'frac_neurons_with_score_60_above_1p15': '1.15',
         },
