@@ -19,7 +19,7 @@ grid_score_d90_threshold = 1.5
 
 sweep_ids = [
     '26gn9pfh',     # Cartesian + MSE
-    '7li410k6',   # G+Global+CE, sweeping non-RF hyperparameters
+    '7li410k6',     # G+Global+CE, sweeping non-RF hyperparameters
     # # '',  # G+Global+CE, sweeping RF from 0.01m to 2.0m
     # 'amk6dohd',   # DoG+Global+CE, sweeping non-RF hyperparameters
     'yzszqr74',     # DoG+Global+CE, sweeping only RF hyperparameter
@@ -39,7 +39,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 
 # Add human-readable sweep
@@ -52,7 +52,7 @@ def convert_sweep_to_human_readable_sweep(row: pd.Series):
         # 02: Polar + MSE
         human_readable_sweep = 'Polar\nGeodesic'
         raise NotImplementedError
-    elif sweep_id == 'rutsx042':
+    elif sweep_id in {'7li410k6'}:
         human_readable_sweep = 'G\nHyperparams w/o RF, SS)\nN='
     elif sweep_id in {'amk6dohd', '822u9q9v'}:
         human_readable_sweep = 'DoG\nHyperparams w/o RF, SS\nN='
@@ -99,7 +99,8 @@ plot_percent_low_decoding_err_vs_human_readable_sweep(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+frac_low_position_decoding_err = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_position_decoding_err}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
@@ -132,9 +133,9 @@ plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
     plot_dir=results_dir,
     low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold_in_cm)
 
-plot_max_grid_score_vs_activation(
-    runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
-    plot_dir=results_dir)
+# plot_max_grid_score_vs_activation(
+#     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
+#     plot_dir=results_dir)
 
 plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
@@ -144,19 +145,26 @@ plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
     grid_score_d90_threshold=grid_score_d90_threshold)
 
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'place_field_values',]].merge(
+    'run_id', 'human_readable_sweep',]].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
 
+plot_grid_scores_kdes_by_human_readable_sweep(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
 
-plot_grid_scores_histograms_by_place_field_values(
-    augmented_neurons_data_by_run_id_df=
-)
+plot_grid_scores_histograms_by_human_readable_sweep(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
 
-
-plot_grid_scores_kdes_by_place_field_values(
-    augmented_neurons_data_by_run_id_df=
-)
+# plot_grid_scores_histograms_by_place_field_values(
+#     augmented_neurons_data_by_run_id_df=
+# )
+#
+#
+# plot_grid_scores_kdes_by_place_field_values(
+#     augmented_neurons_data_by_run_id_df=
+# )
 
 print('Finished!')

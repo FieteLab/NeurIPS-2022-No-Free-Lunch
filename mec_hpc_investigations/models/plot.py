@@ -307,8 +307,10 @@ def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
             plt.xlabel(r'$60^{\circ}$ Grid Period (cm)')
             plt.ylabel('Number of Units')
             plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
-            plot_path = os.path.join(plot_dir,
-                                     f'grid_periods_histograms_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png')
+            plot_path = os.path.join(
+                plot_dir,
+                f"grid_periods_histograms_by_rf={rf.replace(' ', '')}"
+                f"_ss={ss.replace(' ', '')}_threshold={grid_score_threshold}.png")
             plt.savefig(plot_path,
                         bbox_inches='tight',
                         dpi=300)
@@ -342,8 +344,11 @@ def plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
             xlabel = r'$60^{\circ}$ Grid Period (cm)'
             plt.xlabel(xlabel)
             plt.title(r'$\sigma=$' + f'{rf}\n' + r'$s=$' + f'{ss}\nGrid Score Threshold: {grid_score_threshold}')
-            plot_path = os.path.join(plot_dir,
-                                     f'grid_periods_kde_by_rf={rf}_ss={ss}_threshold={grid_score_threshold}.png')
+            plot_path = os.path.join(
+                plot_dir,
+                f"grid_periods_kde_by_rf={rf.replace(' ', '')}"
+                f"_ss={ss.replace(' ', '')}"
+                f"_threshold={grid_score_threshold}.png")
             plt.savefig(plot_path,
                         bbox_inches='tight',
                         dpi=300)
@@ -423,6 +428,33 @@ def plot_grid_scores_histograms_by_activation(
     plt.ylabel('Number of Units')
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_activation.png')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+    print(f'Plotted {plot_path}')
+
+
+def plot_grid_scores_histograms_by_human_readable_sweep(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    bins = np.linspace(-0.6, 1.4, 75)
+
+    plt.close()
+    g = sns.histplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        bins=bins,
+        # kde=True,
+        hue='human_readable_sweep')
+    g.legend_.set_title('Sweep')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Number of Units')
+    plt.yscale('log')
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_histograms_by_human_readable_sweep.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
@@ -598,6 +630,64 @@ def plot_grid_scores_kdes(
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
     plot_path = os.path.join(plot_dir, f'grid_scores_kdes.png')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+    print(f'Plotted {plot_path}')
+
+
+def plot_grid_scores_kdes_by_human_readable_sweep(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+
+    # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
+    #                   | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
+    g = sns.kdeplot(
+        # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        # kde=True,
+        hue='human_readable_sweep')
+    g.legend_.set_title('Sweep')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Density')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_kdes_by_human_readable_sweep.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_scores_kdes_by_place_cell_rf_and_ss_homo_vs_hetero(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+
+    homogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == '0.12') \
+                          & (augmented_neurons_data_by_run_id_df['surround_scale'] == '2')
+    heterogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                            & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+    indices_to_keep = homogeneous_indices | heterogeneous_indices
+    subset_df = augmented_neurons_data_by_run_id_df[indices_to_keep]
+    subset_df['DoG Params'] = ''
+    subset_df['DoG Params'][homogeneous_indices] = r'$\sigma=0.12$' + '\n' + r'$s=2.0$'
+    subset_df['DoG Params'][
+        heterogeneous_indices] = r'$\sigma \sim$ Unif(0.06, 0.18)' + '\n' + r'$s \sim$ Unif(1.5, 2.5)'
+    g = sns.kdeplot(
+        data=subset_df,
+        x='score_60_by_neuron',
+        hue='human_readable_sweep')
+    g.legend_.set_title('')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Density')
+
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_kdes_by_place_cell_rf_and_ss_homo_vs_hetero.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)

@@ -42,12 +42,23 @@ overwrite_runs_configs_df_values_with_joblib_data(
 #     low_pos_decoding_err_threshold=low_pos_decoding_err_threshold)
 
 # Keep only networks that achieved low position decoding error.
-low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
+frac_low_pos_decoding_err = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_pos_decoding_err}')
 runs_configs_low_pos_decoding_err_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+
+plot_rate_maps_examples_hexagons_by_score_range(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
+
+plot_rate_maps_examples_squares_by_score_range(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
@@ -73,6 +84,10 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     how='left')
 
 plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_kdes_by_place_cell_rf_and_ss_homo_vs_hetero(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
