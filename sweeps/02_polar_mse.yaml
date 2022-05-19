@@ -9,7 +9,6 @@ parameters:
     values: [
         'relu',
         'tanh',
-        'sigmoid',
     ]
   batch_size:
     values: [200]
@@ -66,12 +65,9 @@ parameters:
   rnn_type:
     values: [
         'RNN',
-        'LSTM',
-        'UGRNN',
-        'GRU',
     ]
   seed:
-    values: [ 0, 1]
+    values: [ 0, 1, 2 ]
   sequence_length:
     values: [20]
   surround_scale:

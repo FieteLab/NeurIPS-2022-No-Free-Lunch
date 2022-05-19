@@ -28,7 +28,7 @@ parameters:
   n_epochs:
     values: [20]
   n_grad_steps_per_epoch:
-    values: [1000]
+    values: [10000]
   n_place_fields_per_cell:
     values: [ 1 ]
   Ng:
@@ -53,6 +53,7 @@ parameters:
     ]
   place_cell_rf:
     values: [
+      0.10,
       0.12,
       0.20,
       0.30,
@@ -69,7 +70,9 @@ parameters:
     values: [20]
   surround_scale:
     values: [
+      1.5,
       2.,
+      2.5,
     ]
   weight_decay:
       values: [ 0.0001 ]

@@ -419,7 +419,10 @@ class PlaceCells(object):
 
             # top_k applies to the last dimension.
             # Shape: (batch size, sequence length, k)
-            _, top_k_indices = tf.math.top_k(activation, k=k)
+            if self.place_field_values == 'true_difference_of_gaussians':
+                _, top_k_indices = tf.math.top_k(-activation, k=k)
+            else:
+                _, top_k_indices = tf.math.top_k(activation, k=k)
             # Shape: (batch size, seq length, k, max fields per cell, 2 i.e. XY).
             # Ensure we can only gather the fields that we want to keep.
             voting_locations = tf.gather(self.us, top_k_indices)

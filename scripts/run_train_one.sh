@@ -3,7 +3,7 @@
 #SBATCH -n 1                    # two cores
 #SBATCH --mem=12G               # RAM
 #SBATCH --gres=gpu:1
-#SBATCH --time=99:99:99         # total run time limit (HH:MM:SS)
+#SBATCH --time=23:99:99         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
 
 module load openmind/cuda/11.2
