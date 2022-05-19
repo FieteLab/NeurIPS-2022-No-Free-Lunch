@@ -79,7 +79,7 @@ plot_rate_maps_examples_squares_by_score_range(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-plot_grid_scores_kdes(
+plot_grid_scores_kde(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir,)
 

@@ -696,7 +696,7 @@ def plot_grid_scores_histograms_by_run_id(
         print(f'Plotted {plot_path}')
 
 
-def plot_grid_scores_kdes(
+def plot_grid_scores_kde(
         neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
@@ -705,7 +705,7 @@ def plot_grid_scores_kdes(
         x='score_60_by_neuron')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
-    plot_path = os.path.join(plot_dir, f'grid_scores_kdes.png')
+    plot_path = os.path.join(plot_dir, f'grid_scores_kde.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
