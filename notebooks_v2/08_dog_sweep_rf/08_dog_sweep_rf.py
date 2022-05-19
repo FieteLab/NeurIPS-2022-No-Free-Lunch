@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
@@ -40,7 +41,8 @@ plot_percent_runs_with_low_pos_decoding_err_pie(
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
-print(f'Frac Low Pos Decoding Err Runs: {low_pos_decoding_indices.mean()}')
+frac_low_pos_decoding_err = low_pos_decoding_indices.mean()
+print(f'Frac Low Pos Decoding Err Runs: {frac_low_pos_decoding_err}')
 runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(

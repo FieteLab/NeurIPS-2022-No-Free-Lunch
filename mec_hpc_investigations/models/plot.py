@@ -87,12 +87,14 @@ def plot_grid_periods_histograms_by_place_cell_rf(
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_histograms_by_place_cell_rf_threshold={grid_score_threshold}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_histograms_by_place_cell_rf_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_kde_by_place_cell_rf(
@@ -123,12 +125,14 @@ def plot_grid_periods_kde_by_place_cell_rf(
         # xlabel += f' (N={(non_nan_period_indices.sum())} out of {len(non_nan_period_indices)})'
         plt.xlabel(xlabel)
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_kde_by_place_cell_rf_threshold={grid_score_threshold}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_kde_by_place_cell_rf_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_kde_facet_by_place_cell_rf(
@@ -159,12 +163,14 @@ def plot_grid_periods_kde_facet_by_place_cell_rf(
         g.set_titles(r"$\sigma={col_name}$")  # use this argument literally
         g.set_xlabels(r'$60^{\circ}$ Grid Period (cm)')
         g.set_ylabels(r'Number of Units')
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_kde_facet_by_place_cell_rf_threshold={grid_score_threshold}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_kde_facet_by_place_cell_rf_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_mode_vs_place_cell_rf(
@@ -217,12 +223,14 @@ def plot_grid_periods_mode_vs_place_cell_rf(
         plt.ylabel('Grid Period Mode (cm)')
         plt.xlabel(r'$\sigma$ (m)')
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_mode_vs_place_cell_rf_threshold={grid_score_threshold}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_mode_vs_place_cell_rf_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_mode_ratios_vs_index(
@@ -274,12 +282,14 @@ def plot_grid_periods_mode_ratios_vs_index(
         plt.ylabel('Grid Period Mode Ratios')
         plt.xlabel(r'Index')
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
-        plt.savefig(os.path.join(plot_dir,
-                                 f'grid_periods_mode_ratios_vs_index_threshold={grid_score_threshold}.png'),
+        plot_path = os.path.join(plot_dir,
+                                 f'grid_periods_mode_ratios_vs_index_threshold={grid_score_threshold}.png')
+        plt.savefig(plot_path,
                     bbox_inches='tight',
                     dpi=300)
         # plt.show()
         plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
@@ -866,12 +876,14 @@ def plot_grid_scores_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.Da
     ax.set_ylabel(f'Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_vs_place_cell_rf.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_scores_vs_place_cell_rf.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_boxen_vs_place_cell_rf(augmented_neurons_data_by_run_id_df: pd.DataFrame,
@@ -897,12 +909,14 @@ def plot_grid_scores_boxen_vs_place_cell_rf(augmented_neurons_data_by_run_id_df:
     ax.set_ylabel(f'Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_scores_boxen_vs_place_cell_rf.png'),
+    plot_path = os.path.join(plot_dir,
+                 f'grid_scores_boxen_vs_place_cell_rf.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_scores_vs_place_cell_rf_by_place_cell_ss(
@@ -1105,12 +1119,14 @@ def plot_grid_score_max_as_dots_vs_place_cell_rf(max_grid_scores_by_run_id_df: p
     ax.set_ylabel(f'Max Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_score_max_as_dots_vs_place_cell_rf.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_score_max_as_dots_vs_place_cell_rf.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_score_max_as_lines_vs_place_cell_rf(max_grid_scores_by_run_id_df: pd.DataFrame,
@@ -1136,12 +1152,14 @@ def plot_grid_score_max_as_lines_vs_place_cell_rf(max_grid_scores_by_run_id_df: 
     ax.set_ylabel(f'Max Grid Score')
     ax.set_xlabel(r'$\sigma$')
     ax.set_title(r'$90^{\circ}$')
-    plt.savefig(os.path.join(plot_dir,
-                             f'grid_score_max_as_lines_vs_place_cell_rf.png'),
+    plot_path = os.path.join(plot_dir,
+                             f'grid_score_max_as_lines_vs_place_cell_rf.png')
+    plt.savefig(plot_path,
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()
     plt.close()
+    print(f'Plotted {plot_path}')
 
 
 def plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
