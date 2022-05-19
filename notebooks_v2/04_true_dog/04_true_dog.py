@@ -9,8 +9,8 @@ notebook_dir = 'notebooks_v2/04_true_dog'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
-# if os.path.exists(results_dir) and os.path.isdir(results_dir):
-#     shutil.rmtree(results_dir)
+if os.path.exists(results_dir) and os.path.isdir(results_dir):
+    shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
 
 low_pos_decoding_err_threshold_in_cm = 20.  # TODO: check that this is correct noise floor
@@ -89,7 +89,7 @@ def convert_place_field_values_to_human_readable_place_field_values(row: pd.Seri
     if place_field_values == 'difference_of_gaussians':
         replacement_place_field_values = '"DoG" (DoS)'
     elif place_field_values == 'true_difference_of_gaussians':
-        replacement_place_field_values = 'DoG'
+        replacement_place_field_values = 'True DoG'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
