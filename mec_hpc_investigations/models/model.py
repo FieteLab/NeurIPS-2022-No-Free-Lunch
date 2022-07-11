@@ -12,7 +12,6 @@ from mec_hpc_investigations.models.helper_classes import Options, PlaceCells
 
 def create_loss_fn(place_field_loss: str,
                    place_field_normalization: str):
-
     if place_field_loss == 'mse':
         loss_fn = pos_loss
     elif place_field_loss == 'polarmse':
@@ -51,7 +50,8 @@ def polar_mse_loss(x, y):
     # All have shape: (batch size, seq len, 1)
     term1 = tf.math.square(x[..., 0, tf.newaxis])
     term2 = tf.math.square(y[..., 0, tf.newaxis])
-    term3 = - 2. * tf.multiply(x[..., 0, tf.newaxis], y[..., 0, tf.newaxis]) * tf.math.cos(x[..., 1, tf.newaxis] - y[..., 1, tf.newaxis])
+    term3 = - 2. * tf.multiply(x[..., 0, tf.newaxis], y[..., 0, tf.newaxis]) * tf.math.cos(
+        x[..., 1, tf.newaxis] - y[..., 1, tf.newaxis])
     return term1 + term2 + term3
 
 
@@ -114,6 +114,8 @@ class RNN(Model):
                              return_sequences=True,
                              activation=tf.keras.layers.Activation(options.activation),
                              recurrent_initializer=options.initializer,
+                             dropout=options.readout_dropout,
+                             recurrent_dropout=options.recurrent_dropout,
                              name='RNN',
                              use_bias=False)
         # Linear read-out weights
@@ -194,7 +196,7 @@ class RNN(Model):
             'recurrent_matrix_norm': tf.reduce_sum(self.RNN.weights[1] ** 2).numpy(),
         }
 
-        wandb.log(wandb_vals_to_log, step=epoch_idx+1)
+        wandb.log(wandb_vals_to_log, step=epoch_idx + 1)
 
 
 class RewardRNN(RNN):
@@ -232,9 +234,13 @@ class LSTM(Model):
         self.encoder1 = Dense(self.Ng, name='encoder1')
         self.encoder2 = Dense(self.Ng, name='encoder2')
         self.M = Dense(self.Ng, name='M')
-        self.RNN = tf.keras.layers.LSTM(self.Ng, return_sequences=True,
-                                        activation=options.activation,
-                                        recurrent_initializer=options.initializer)
+        self.RNN = tf.keras.layers.LSTM(
+            self.Ng,
+            return_sequences=True,
+            activation=options.activation,
+            dropout=options.readout_dropout,
+            recurrent_dropout=options.recurrent_dropout,
+            recurrent_initializer=options.initializer)
         self.dense = Dense(self.Ng, name='dense', activation=options.activation)
         self.decoder = Dense(self.Np, name='decoder')
 
@@ -297,7 +303,7 @@ class LSTM(Model):
             'bias_norm': tf.reduce_sum(self.RNN.weights[2] ** 2).numpy(),
         }
 
-        wandb.log(wandb_vals_to_log, step=epoch_idx+1)
+        wandb.log(wandb_vals_to_log, step=epoch_idx + 1)
 
 
 class RewardLSTM(LSTM):
@@ -509,6 +515,8 @@ class VanillaRNN(ThreeLayerRNNBase):
                              return_sequences=True,
                              activation=tf.keras.layers.Activation(options.activation),
                              recurrent_initializer=options.initializer,
+                             dropout=options.readout_dropout,
+                             recurrent_dropout=options.recurrent_dropout,
                              name='RNN',
                              use_bias=False)
 
@@ -516,9 +524,13 @@ class VanillaRNN(ThreeLayerRNNBase):
 class GRU(ThreeLayerRNNBase):
     def __init__(self, options, place_cells):
         super(GRU, self).__init__(options=options, place_cells=place_cells)
-        self.RNN = tf.keras.layers.GRU(self.Ng, return_sequences=True,
-                                       activation=options.activation,
-                                       recurrent_initializer=options.initializer)
+        self.RNN = tf.keras.layers.GRU(
+            self.Ng,
+            return_sequences=True,
+            dropout=options.readout_dropout,
+            recurrent_dropout=options.recurrent_dropout,
+            activation=options.activation,
+            recurrent_initializer=options.initializer)
 
 
 class RewardThreeLayerRNNBase(ThreeLayerRNNBase):

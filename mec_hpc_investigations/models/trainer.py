@@ -74,6 +74,7 @@ class Trainer(object):
         # TODO: these values might need to be recalculated
         # 0.2 is fractional amount away from wall
         starts = [0.2] * 10
+        # starts = [0.3] * 10
         ends = np.linspace(0.4, 1.0, num=10)
 
         # coords_range = ((-1.1, 1.1), (-1.1, 1.1))

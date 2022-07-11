@@ -17,9 +17,8 @@ low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    # 'zqrq9ri3',  # DoG+Global+CE, RNN, LSTM, GRU
-    # 'f06nu0ul',  # DoG+Global+CE, UGRNN
     'amk6dohd',  # DoG+Global+CE, RNN, LSTM, GRU, UGRNN
+    '822u9q9v',
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(

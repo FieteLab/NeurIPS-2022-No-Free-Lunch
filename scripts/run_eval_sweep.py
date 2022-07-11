@@ -10,6 +10,9 @@ import wandb
 # MSE
 # sweep_ids = ['26gn9pfh']
 
+# Gaussian
+# sweep_ids = ['7li410k6']
+
 # DoG, sweeping RF.
 # sweep_ids = ['yzszqr74']
 
@@ -20,7 +23,7 @@ import wandb
 # sweep_ids = ['2yfpvx86']
 
 # DoG, multiple fields.
-# sweep_ids = ['rbrvuf2g', 'wnmp7nx0']
+# sweep_ids = ['rbrvuf2g', 'wnmp7nx0', '56legweh', 'lwalddwy']
 
 # DoG, sweeping architectures.
 # sweep_ids = ['can8n6vd']
@@ -40,8 +43,8 @@ import wandb
 ### Option 2: Manually specify run IDs.
 
 # All runs.
-# results_dir = 'results'
-# run_ids = list(sorted(os.listdir(results_dir)))
+results_dir = 'results'
+run_ids = list(sorted(os.listdir(results_dir)))
 
 # Ideal grid cells
 # run_ids = ['wxt06g20', 'y5qdmmqx', 'ryrmls1x', 'otuv2dhn', 'kfpr44o9', '08jmt76g', '1ez9xulc', '6lgoiwhw', '0svwod2a', 'zg5hbvxx', 'ebb8dp9b', 'd47g0wpn', 'goo0np7q', 'qg3a3h8e', 'p0osju5b', 'ltzh0j9x']
@@ -65,7 +68,7 @@ import wandb
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
 # run_ids = ['txayqzm5']
 
-run_ids = ['8babnf1v', 'yjqc7mmz', 'psmqjov9']
+# run_ids = ['jpm8ao6i']
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)

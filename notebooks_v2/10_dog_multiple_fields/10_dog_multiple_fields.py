@@ -66,11 +66,27 @@ runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+
+plot_percent_runs_with_grid_cells_pie(
+    runs_configs_with_scores_max_df,
+                                          plot_dir: str)
+
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
     'run_id', 'n_place_fields_per_cell']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
+
+# plot_rate_maps_examples_hexagons_by_score_range(
+#     neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[
+#         augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson(3.0)'],
+#     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+#     plot_dir=results_dir)
+
+# plot_rate_maps_by_run_id(
+#     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+#     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+#     plot_dir=results_dir)
 
 percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
@@ -86,20 +102,20 @@ tmp = percent_neurons_score60_above_threshold_by_run_id_df.merge(
     how='left'
 )
 
-# plt.close()
-# threshold = 0.75
-# sns.barplot(
-#     data=tmp[tmp['Grid Score Threshold'] == threshold],
-#     x='n_place_fields_per_cell',
-#     y='has_grid_cells',
-#     estimator=np.sum,
-#     ci=None)
-# plt.xlabel('')
-# plt.ylabel(f'# Runs with Grid Cells\n{percent}% Units > {threshold}')
-# ax = plt.gca()
-# ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
-# plt.tight_layout()
-# plt.show()
+plt.close()
+threshold = 1.0
+sns.barplot(
+    data=tmp[tmp['Grid Score Threshold'] == threshold],
+    x='n_place_fields_per_cell',
+    y='has_grid_cells',
+    estimator=np.sum,
+    ci=None)
+plt.xlabel('')
+plt.ylabel(f'# Runs with Grid Cells\n{percent}% Units > {threshold}')
+ax = plt.gca()
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', rotation_mode='anchor')
+plt.tight_layout()
+plt.show()
 
 plot_grid_scores_histograms_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
@@ -115,12 +131,6 @@ plot_grid_periods_histograms_by_n_place_fields_per_cell(
 
 plot_grid_periods_kde_by_n_place_fields_per_cell(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_rate_maps_examples_hexagons_by_score_range(
-    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[
-        augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson(1.0)'],
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
 

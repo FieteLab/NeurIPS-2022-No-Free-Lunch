@@ -69,14 +69,14 @@ def plot_grid_periods_histograms_by_n_place_fields_per_cell(
         # non_nan_period_indices = ~augmented_neurons_data_by_run_id_df['period_per_cell'].isna()
         likely_grid_cell_indices = augmented_neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold
         g = sns.histplot(x="period_per_cell",
-                     data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
-                     hue='n_place_fields_per_cell',
-                     bins=bins,
-                     palette='Spectral_r',
-                     # legend='full',
-                     # legend='False',
-                     # kde=True,
-                     )
+                         data=augmented_neurons_data_by_run_id_df[likely_grid_cell_indices],
+                         hue='n_place_fields_per_cell',
+                         bins=bins,
+                         palette='Spectral_r',
+                         # legend='full',
+                         # legend='False',
+                         # kde=True,
+                         )
         g.legend_.set_title('Num Fields / Place Cell')
         # https://stackoverflow.com/questions/30490740/move-legend-outside-figure-in-seaborn-tsplot
         # Move the legend off to the right.
@@ -279,6 +279,7 @@ def plot_grid_periods_mode_vs_place_cell_rf(
                                                      'place_cell_rf': place_cell_rfs}),
                         x='place_cell_rf',
                         y='kde_mode',
+                        s=150,
                         hue='place_cell_rf',
                         palette='Spectral_r')
         # x = np.sort(augmented_neurons_data_by_run_id_df['place_cell_rf'].unique())
@@ -317,9 +318,7 @@ def plot_grid_periods_mode_ratios_vs_index(
 
     # Construct KDE plot
     for grid_score_threshold in [0.3, 0.8, 1.15]:
-
         plt.close()
-
         place_cell_rfs, grid_period_modes = [], []
         for rf in sorted(augmented_neurons_data_by_run_id_df['place_cell_rf'].unique()):
             # Construct KDE, then extract lines to get mode.
@@ -334,19 +333,18 @@ def plot_grid_periods_mode_ratios_vs_index(
             mode = x_assess_values[np.argmax(log_density_values), 0]
             place_cell_rfs.append(rf)
             grid_period_modes.append(mode)
-
         grid_period_modes = np.array(grid_period_modes)
         ratios = np.divide(grid_period_modes[1:], grid_period_modes[:-1])
-
-        sns.scatterplot(data=pd.DataFrame.from_dict({'i': 1 + np.arange(len(ratios)),
-                                                     'ratios': ratios}),
-                        x='i',
-                        y='ratios',
-                        # hue='place_cell_rf',
-                        palette='Spectral_r')
+        g = sns.scatterplot(data=pd.DataFrame.from_dict({'i': 1 + np.arange(len(ratios)),
+                                                         'ratios': ratios}),
+                            x='i',
+                            y='ratios',
+                            s=150,
+                            # hue='place_cell_rf',
+                            palette='Spectral_r')
+        g.set(xticks=1 + np.arange(len(ratios)))
         # plt.gca().get_legend().remove()
         # plt.gca().figure.colorbar(sm, label=r'$\sigma$')
-
         plt.ylabel('Grid Period Mode Ratios')
         plt.xlabel(r'Index')
         plt.title(f'Grid Score Threshold: {grid_score_threshold}')
@@ -617,8 +615,8 @@ def plot_grid_scores_histograms_by_place_field_values(
     g.legend_.set_title('Target')
     plt.xlabel('Grid Score')
     plt.ylabel('Number of Units')
+    plt.gca().set_ylim(bottom=1, top=1000)
     plt.yscale('log')
-    plt.gca().set_ylim(bottom=1, top=None)
     plot_path = os.path.join(plot_dir,
                              f'grid_scores_histograms_by_place_field_values.png')
     plt.savefig(plot_path,
@@ -1730,6 +1728,12 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
     plt.ylabel('Neural Predictivity')
 
     plot_path = os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.pdf')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
+
+    plot_path = os.path.join(plot_dir,
                              f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.png')
     plt.savefig(plot_path,
                 bbox_inches='tight',
@@ -1780,6 +1784,12 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
         bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
         loc='center left',  # Legend goes center-left of anchor
     )
+
+    plot_path = os.path.join(plot_dir,
+                             f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom.pdf')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
 
     plot_path = os.path.join(plot_dir,
                              f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation_custom.png')
@@ -1921,52 +1931,52 @@ def plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
 def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
         runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str,
-        low_pos_decoding_err_threshold_in_cm: float = 6.,
-        grid_score_d60_threshold: float = 1.2,
-        grid_score_d90_threshold: float = 1.4):
-    plt.close()
-    runs_configs_with_scores_max_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'] = \
-        runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
+        low_pos_decoding_err_threshold_in_cm: float = 6.):
+    thresholds = [0.3, 0.8, 1.2]
 
-    runs_configs_with_scores_max_df[f'has_grid_d60'] \
-        = runs_configs_with_scores_max_df['score_60_by_neuron_max'] > grid_score_d60_threshold
+    for threshold in thresholds:
+        plt.close()
+        runs_configs_with_scores_max_df[f'pos_decoding_err_below_{threshold}'] = \
+            runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 
-    runs_configs_with_scores_max_df[f'has_grid_d90'] \
-        = runs_configs_with_scores_max_df['score_90_by_neuron_max'] > grid_score_d90_threshold
+        runs_configs_with_scores_max_df[f'has_grid_d60'] \
+            = runs_configs_with_scores_max_df['score_60_by_neuron_max'] > threshold
 
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
-                             sharey=True, sharex=True)
+        fig, ax = plt.subplots(figsize=(32, 8))
 
-    ax = axes[0]
-    sns.barplot(y="has_grid_d60",
-                x='human_readable_sweep',
-                data=runs_configs_with_scores_max_df,
-                ax=ax)
-    ax.set_ylim(0., 1.)
-    ax.set_title(r'$60^{\circ}$')
-    ax.set_ylabel(
-        f'Frac Runs : Max Grid Score > {grid_score_d60_threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm} cm')
-    ax.set_xlabel('')
+        # ax = axes[0]
+        sns.barplot(y="has_grid_d60",
+                    x='human_readable_sweep',
+                    data=runs_configs_with_scores_max_df,
+                    ax=ax,
+                    )
+        ax.set_ylim(0., 1.)
+        # ax.set_title(r'$60^{\circ}$')
+        plt.ylim(0., 1.)
+        # plt.title(r'$60^{\circ}$')
+        ax.set_ylabel(
+            f'Frac Runs\nMax Grid Score > {threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm} cm')
+        ax.set_xlabel('')
 
-    ax = axes[1]
-    sns.barplot(y="has_grid_d90",
-                x='human_readable_sweep',
-                data=runs_configs_with_scores_max_df,
-                ax=ax)
-    ax.set_ylim(0., 1.)
-    ax.set_title(r'$90^{\circ}$')
-    ax.set_ylabel(
-        f'Frac Runs : Max Grid Score > {grid_score_d90_threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm}')
-    ax.set_xlabel('')
+        # ax = axes[1]
+        # sns.barplot(y="has_grid_d90",
+        #             x='human_readable_sweep',
+        #             data=runs_configs_with_scores_max_df,
+        #             ax=ax)
+        # ax.set_ylim(0., 1.)
+        # ax.set_title(r'$90^{\circ}$')
+        # ax.set_ylabel(
+        #     f'Frac Runs : Max Grid Score > {grid_score_d90_threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm}')
+        # ax.set_xlabel('')
 
-    os.path.join(plot_dir,
-                 f'percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep.png')
-    plt.savefig(plot_path,
-                bbox_inches='tight',
-                dpi=300)
-    # plt.show()
-    plt.close()
-    print(f'Plotted {plot_path}')
+        plot_path = os.path.join(plot_dir,
+                                 f'percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep_threshold={threshold}.png')
+        plt.savefig(plot_path,
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+        print(f'Plotted {plot_path}')
 
 
 def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
@@ -2023,7 +2033,7 @@ def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
 
 def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.DataFrame,
                                           plot_dir: str):
-    thresholds = [0.3, 0.8, 1.15]
+    thresholds = [0.3, 0.8, 1.2]
 
     for threshold in thresholds:
         plt.close()
@@ -2390,7 +2400,7 @@ def plot_rate_maps_by_run_id(
         smooth: bool = True):
     for run_id, run_id_neurons_df in neurons_data_by_run_id_df.groupby(['run_id']):
 
-        n_rows = n_cols = int(np.ceil(np.sqrt(512)))
+        n_rows = n_cols = 5
 
         fig, axes = plt.subplots(
             n_rows,  # rows
@@ -2435,6 +2445,9 @@ def plot_rate_maps_by_run_id(
             # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
             ax.invert_yaxis()
 
+            if ax_idx == 24:
+                break
+
         plt.tight_layout()
         plot_path = os.path.join(plot_dir,
                                  f'rate_maps_by_run_id={run_id}.png')
@@ -2459,6 +2472,7 @@ def plot_rate_maps_examples_hexagons_by_score_range(
         (0.45, 0.65),
         (0.65, 0.80),
         (0.80, 0.90),
+        (0.90, 1.15),
         (1.15, 10),
     ]
 

@@ -47,6 +47,11 @@ runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
+plot_rate_maps_by_run_id(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir)
+
 max_grid_scores_by_run_id_df = neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
     score_90_by_neuron_max=('score_90_by_neuron', 'max')).reset_index()
