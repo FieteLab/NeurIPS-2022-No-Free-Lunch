@@ -7,44 +7,36 @@ import wandb
 
 ### Option 1: Manually specify sweep IDs, then fetch (finished) run IDs.
 
-# MSE
-# sweep_ids = ['26gn9pfh']
+# Cartesian
+# sweep_ids = ['gvxvhnx8']
 
 # Gaussian
-# sweep_ids = ['7li410k6']
+# sweep_ids = ['oa0v2uzr']
 
-# DoG, sweeping RF.
-# sweep_ids = ['yzszqr74']
+# True DoG
+sweep_ids = ['nisioabg']
 
-# DoG, sweeping SS.
-# sweep_ids = ['acmd4be7']
+# DoS
+# sweep_ids = ['vxbwdefk']
 
-# DoG, multiple scales.
-# sweep_ids = ['2yfpvx86']
 
-# DoG, multiple fields.
-# sweep_ids = ['rbrvuf2g', 'wnmp7nx0', '56legweh', 'lwalddwy']
 
-# DoG, sweeping architectures.
-# sweep_ids = ['can8n6vd']
-
-# DoG, heterogeneous receptive field and surround scale.
 
 # # Fetch runs associated with the relevant sweeps.
-# api = wandb.Api(timeout=60)
-# run_ids = []
-# for sweep_id in sweep_ids:
-#     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
-#     sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
-#     run_ids.extend(sweep_run_ids)
+api = wandb.Api(timeout=60)
+run_ids = []
+for sweep_id in sweep_ids:
+    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+    run_ids.extend(sweep_run_ids)
 #
 # print(f'Collected runs from sweeps: {sweep_ids}')
 
 ### Option 2: Manually specify run IDs.
 
 # All runs.
-results_dir = 'results'
-run_ids = list(sorted(os.listdir(results_dir)))
+# results_dir = 'results'
+# run_ids = list(sorted(os.listdir(results_dir)))
 
 # Ideal grid cells
 # run_ids = ['wxt06g20', 'y5qdmmqx', 'ryrmls1x', 'otuv2dhn', 'kfpr44o9', '08jmt76g', '1ez9xulc', '6lgoiwhw', '0svwod2a', 'zg5hbvxx', 'ebb8dp9b', 'd47g0wpn', 'goo0np7q', 'qg3a3h8e', 'p0osju5b', 'ltzh0j9x']
