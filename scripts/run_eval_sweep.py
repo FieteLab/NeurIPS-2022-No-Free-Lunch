@@ -21,12 +21,12 @@ sweep_ids = ['nisioabg']
 
 
 # # Fetch runs associated with the relevant sweeps.
-api = wandb.Api(timeout=60)
-run_ids = []
-for sweep_id in sweep_ids:
-    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
-    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
-    run_ids.extend(sweep_run_ids)
+# api = wandb.Api(timeout=60)
+# run_ids = []
+# for sweep_id in sweep_ids:
+#     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+#     sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+#     run_ids.extend(sweep_run_ids)
 #
 # print(f'Collected runs from sweeps: {sweep_ids}')
 
@@ -56,9 +56,7 @@ for sweep_id in sweep_ids:
 
 # Multiple fields per cell
 # run_ids = ['8xwwf767', '5isckig9', 'esgd2jok']
-# run_ids = ['txayqzm5']
-
-# run_ids = ['jpm8ao6i']
+run_ids = ['1e7c8fhd', 'v7y9ylc0']
 
 # random.shuffle functions in-place.
 random.shuffle(run_ids)

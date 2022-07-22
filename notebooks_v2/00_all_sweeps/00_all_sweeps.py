@@ -25,13 +25,12 @@ sweep_ids = [
     'vxbwdefk',     # DoS
 ]
 
-#
 runs_configs_df = download_wandb_project_runs_configs(
     wandb_project_path='mec-hpc-investigations',
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 
 # Add human-readable sweep
@@ -60,6 +59,8 @@ runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()),
     include_additional_data=False)
+
+print("Successfully loaded joblib data!")
 
 overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,

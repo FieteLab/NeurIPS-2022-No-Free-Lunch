@@ -724,7 +724,7 @@ def plot_grid_scores_kdes_by_human_readable_sweep(
         # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
-        # kde=True,
+        common_norm=False,  # Ensure each sweep is normalized separately.
         hue='human_readable_sweep')
     g.legend_.set_title('Sweep')
     plt.xlabel('Grid Score')
@@ -2054,7 +2054,7 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
                     for label in num_runs_per_category.index.values],
             # shadow=True,
             autopct='%.1f%%')
-        plt.title(f'Runs With Grid Cells\nThreshold={threshold}, N={len(runs_configs_with_scores_max_df)}')
+        plt.title(f'Runs With (Possible) Grid Cells\nThreshold={threshold}\nNum. of Networks={len(runs_configs_with_scores_max_df)}')
 
         plot_path = os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png')
         plt.savefig(plot_path,
@@ -2074,7 +2074,7 @@ def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
         percent_runs_above_threshold[threshold_idx] = 100 * (
                 runs_configs_with_scores_max_df['score_60_by_neuron_max'] > threshold).mean()
 
-    y_label = f'% Runs with Grid Cells (N={len(runs_configs_with_scores_max_df)})'
+    y_label = f'% Runs with (Possible) Grid Cells (N={len(runs_configs_with_scores_max_df)})'
     plot_df = pd.DataFrame.from_dict({
         'Grid Score Threshold': thresholds,
         y_label: percent_runs_above_threshold
@@ -2381,6 +2381,7 @@ def plot_pos_decoding_err_vs_human_readable_sweep(
                   size=4,
                   ax=ax)
     ax.set_ylim(1., 100.)
+    ax.set_yscale("log")
     ax.set_ylabel('Pos Decoding Err (cm)')
     ax.set_xlabel('')
     plot_path = os.path.join(plot_dir,
