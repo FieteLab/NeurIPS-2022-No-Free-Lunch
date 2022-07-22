@@ -20,8 +20,6 @@ sweep_ids = ['nisioabg']
 # sweep_ids = ['vxbwdefk']
 
 
-
-
 # # Fetch runs associated with the relevant sweeps.
 api = wandb.Api(timeout=60)
 run_ids = []

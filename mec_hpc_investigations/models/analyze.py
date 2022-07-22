@@ -307,11 +307,13 @@ def download_wandb_project_runs_histories(wandb_project_path: str,
 
 def load_runs_joblib_files(run_ids: List[str],
                            results_dir: str = 'results',
+                           include_additional_data: bool = False,
                            ) -> Dict[str, Dict[str, np.ndarray]]:
 
     joblib_files_data_by_run_id_dict = {run_id: dict() for run_id in run_ids}
     missing_joblib_runs = []
     for run_id in run_ids:
+
         run_dir = os.path.join(results_dir, run_id)
 
         try:
@@ -335,29 +337,36 @@ def load_runs_joblib_files(run_ids: List[str],
                 'two_NN': loss_pos_and_dimensionalities_results['two_NN'],
                 # 'rate_maps': rate_maps_and_scores_results['rate_maps_nbins=20'],
                 # 'rate_maps': rate_maps_and_scores_results['rate_maps_nbins=32'],
-                'rate_maps': rate_maps_and_scores_results['rate_maps_nbins=44'],
                 'score_60_by_neuron_nbins=20': rate_maps_and_scores_results['score_60_by_neuron_nbins=20'],
                 'score_90_by_neuron_nbins=20': rate_maps_and_scores_results['score_90_by_neuron_nbins=20'],
-                'period_per_cell_nbins=20': period_and_orientation_results['period_per_cell_nbins=20'],
-                'period_err_per_cell_nbins=20': period_and_orientation_results['period_err_per_cell_nbins=20'],
-                'orientations_per_cell_nbins=20': period_and_orientation_results['orientations_per_cell_nbins=20'],
                 'score_60_by_neuron_nbins=32': rate_maps_and_scores_results['score_60_by_neuron_nbins=32'],
                 'score_90_by_neuron_nbins=32': rate_maps_and_scores_results['score_90_by_neuron_nbins=32'],
-                'period_per_cell_nbins=32': period_and_orientation_results['period_per_cell_nbins=32'],
-                'period_err_per_cell_nbins=32': period_and_orientation_results['period_err_per_cell_nbins=32'],
-                'orientations_per_cell_nbins=32': period_and_orientation_results['orientations_per_cell_nbins=32'],
                 'score_60_by_neuron_nbins=44': rate_maps_and_scores_results['score_60_by_neuron_nbins=44'],
                 'score_90_by_neuron_nbins=44': rate_maps_and_scores_results['score_90_by_neuron_nbins=44'],
-                'period_per_cell_nbins=44': period_and_orientation_results['period_per_cell_nbins=44'],
-                'period_err_per_cell_nbins=44': period_and_orientation_results['period_err_per_cell_nbins=44'],
-                'orientations_per_cell_nbins=44': period_and_orientation_results['orientations_per_cell_nbins=44'],
             }
+
+            if include_additional_data:
+                joblib_files_data_by_run_id_dict[run_id].update({
+                    'rate_maps': rate_maps_and_scores_results['rate_maps_nbins=44'],
+                    'period_per_cell_nbins=20': period_and_orientation_results['period_per_cell_nbins=20'],
+                    'period_err_per_cell_nbins=20': period_and_orientation_results['period_err_per_cell_nbins=20'],
+                    'orientations_per_cell_nbins=20': period_and_orientation_results['orientations_per_cell_nbins=20'],
+                    'period_per_cell_nbins=32': period_and_orientation_results['period_per_cell_nbins=32'],
+                    'period_err_per_cell_nbins=32': period_and_orientation_results['period_err_per_cell_nbins=32'],
+                    'orientations_per_cell_nbins=32': period_and_orientation_results['orientations_per_cell_nbins=32'],
+                    'period_per_cell_nbins=44': period_and_orientation_results['period_per_cell_nbins=44'],
+                    'period_err_per_cell_nbins=44': period_and_orientation_results['period_err_per_cell_nbins=44'],
+                    'orientations_per_cell_nbins=44': period_and_orientation_results['orientations_per_cell_nbins=44'],
+                })
 
         except FileNotFoundError:
             missing_joblib_runs.append(run_id)
 
-    # if len(missing_joblib_runs) > 0:
-    #     raise FileNotFoundError(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
+    # print("Ru")
+
+    if len(missing_joblib_runs) > 0:
+        # print(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
+        raise FileNotFoundError(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
 
     print('Loaded joblib files\' data')
 
