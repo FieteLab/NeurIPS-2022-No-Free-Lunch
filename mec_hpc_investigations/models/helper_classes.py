@@ -94,6 +94,7 @@ class PlaceCells(object):
 
         assert options.place_field_values in {
             'cartesian',
+            'high_dim_cartesian',
             'polar',
             'gaussian',
             'difference_of_gaussians',
@@ -194,19 +195,18 @@ class PlaceCells(object):
 
         self.fields_to_keep = 1. - self.fields_to_delete
 
-        # if self.vr1d:
-        #     # assert (self.min_y == self.max_y)
-        #     # usy = self.min_y * tf.ones((self.Np,), dtype=tf.float32)
-        #     raise NotImplementedError
-        # else:
-        #     usy = tf.random.uniform(
-        #         shape=(self.Np, max_n_place_fields_per_cell),
-        #         minval=self.min_y,
-        #         maxval=self.max_y,
-        #         dtype=tf.float32)
-        #
-        # # Shape: (Num place cells, num fields per cell, 2 for XY)
-        # self.us = tf.stack([usx, usy], axis=-1)
+        if self.place_field_values == "high_dim_cartesian":
+            assert self.max_n_place_fields_per_cell == 1
+            self.slopes = tf.random.uniform(
+                shape=(2, self.Np),
+                minval=-1.,
+                maxval=1.,
+                dtype=tf.float32)
+            self.intercepts = tf.random.uniform(
+                shape=(1, 1, self.Np),
+                minval=-1.,
+                maxval=1.,
+                dtype=tf.float32)
 
         # Create place cell receptive field tensor.
         if isinstance(options.place_cell_rf, (float, int)):
@@ -255,12 +255,18 @@ class PlaceCells(object):
         '''
         Get place cell activations for a given position.
         Args:
-            pos: 2d position of shape [batch_size, sequence_length, 2].
+            pos: 2d position with shape (batch_size, sequence_length, 2).
         Returns:
-            outputs: Place cell activations with shape [batch_size, sequence_length, Np].
+            outputs: Place cell activations with shape (batch_size, sequence_length, Np).
         '''
         if self.place_field_values == 'cartesian':
+            # Shape: (batch_size, sequence_length, 2)
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
+            return outputs
+
+        if self.place_field_values == "high_dim_cartesian":
+            # Shape: (batch size, sequence length, num place cells)
+            outputs = tf.matmul(pos, self.slopes) + self.intercepts
             return outputs
 
         if self.place_field_values == 'polar':
@@ -271,6 +277,9 @@ class PlaceCells(object):
             # Shape: (batch size, seq len, 2)
             outputs = tf.concat([r, theta], axis=2)
             return outputs
+
+        if self.place_field_values == "high_dim_polar":
+            raise NotImplementedError
 
         # Shape: (batch size, sequence length, num place cells, max num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])

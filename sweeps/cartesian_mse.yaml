@@ -7,7 +7,10 @@ metric:
 parameters:
   activation:
     values: [
-        'relu',
+      'relu',
+      'tanh',
+      'sigmoid',
+      'linear',
     ]
   batch_size:
     values: [200]
@@ -20,6 +23,8 @@ parameters:
   initializer:
     values: [
       'glorot_uniform',
+      'glorot_normal',
+      'orthogonal',
     ]
   is_periodic:
     values: [False]
@@ -29,52 +34,50 @@ parameters:
     values: [20]
   n_grad_steps_per_epoch:
     values: [10000]
+  n_place_fields_per_cell:
+    values: [ 1 ]
   Ng:
-    values: [4096]
+    values: [1024]
   Np:
-    values: [512]
+    values: [2]
   optimizer:
     values: [
+        'sgd',
         'adam',
+        'rmsprop',
     ]
   place_field_loss:
     values: [
-      'crossentropy',
+      'mse',
     ]
   place_field_values:
     values: [
-      'difference_of_gaussians',
+      'cartesian',
     ]
   place_field_normalization:
     values: [
-      'global',
+      'none',
     ]
   place_cell_rf:
     values: [
-      0.09,
-      0.10,
-      0.11,
-      0.12,
-      0.13,
-      0.14,
-      0.15,
-      0.16,
-      0.17,
-      0.18,
-      0.19,
-      0.20,
+      0.
     ]
   readout_dropout:
-    values: [0.]
+    values: [0., 0.5]
+  recurrent_dropout:
+    values: [ 0., 0.5 ]
   rnn_type:
     values: [
-      'RNN',
+        'RNN',
+        'LSTM',
+        'UGRNN',
+        'GRU',
     ]
   seed:
-    values: [ 0,  1,  2]
+    values: [ 0, 1, 2 ]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [2.]
+    values: [1.]
   weight_decay:
-      values: [ 0.0001 ]
+      values: [0, 0.0001 ]

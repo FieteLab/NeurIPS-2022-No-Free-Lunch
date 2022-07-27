@@ -12,6 +12,6 @@
 
 for i in {1..5}
 do
-  sbatch scripts/run_train_one.sh rwb622oq
+  sbatch scripts/run_train_one.sh 8qcojz8h
   sleep 3
 done
