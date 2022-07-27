@@ -65,6 +65,9 @@ parameters:
   rnn_type:
     values: [
         'RNN',
+        'LSTM',
+        'UGRNN',
+        'GRU',
     ]
   seed:
     values: [ 0, 1, 2 ]

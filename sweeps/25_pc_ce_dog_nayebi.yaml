@@ -60,6 +60,8 @@ parameters:
     ]
   readout_dropout:
     values: [0.]
+  recurrent_dropout:
+    values: [ 0.]
   rnn_type:
     values: [
       'RNN',
@@ -69,7 +71,7 @@ parameters:
       'SRNN',
     ]
   seed:
-    values: [ 0, 1, 2, 3 ]
+    values: [ 0, 1, 2, 3, 4 ]
   sequence_length:
     values: [20]
   surround_scale:
