@@ -18,11 +18,14 @@ grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 
 sweep_ids = [
-    'gvxvhnx8',     # Cartesian + MSE
+    'gvxvhnx8',     # Low Dim Cartesian
+    '2ks3s65c',     # High Dim Cartesian
     # 'vndf9snd',     # Polar
     'oa0v2uzr',     # G
     'nisioabg',     # DoG
     'vxbwdefk',     # DoS
+    '8qcojz8h',     # SoD (Softmax of Differences)
+    'rwb622oq',     # Heterogeneous DoS
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -37,15 +40,21 @@ runs_configs_df = download_wandb_project_runs_configs(
 def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     sweep_id = row['Sweep']
     if sweep_id in {'gvxvhnx8'}:
-        human_readable_sweep = 'Cartesian'
+        human_readable_sweep = 'Cartesian (Low Dim)'
+    elif sweep_id in {'2ks3s65c'}:
+        human_readable_sweep = 'Cartesian (High Dim)'
     # elif sweep_id in {'vndf9snd'}:
     #     human_readable_sweep = 'Polar\nGeodesic'
     elif sweep_id in {'oa0v2uzr'}:
         human_readable_sweep = 'Gaussian PCs'
     elif sweep_id in {'nisioabg'}:
-        human_readable_sweep = 'Diff-Gaussian PCs'
+        human_readable_sweep = 'DoG PCs'
     elif sweep_id in {'vxbwdefk'}:
-        human_readable_sweep = 'Diff-Softmax PCs'
+        human_readable_sweep = 'DoS PCs'
+    elif sweep_id in {'8qcojz8h'}:
+        human_readable_sweep = 'SoD PCs'
+    elif sweep_id in {'rwb622oq'}:
+        human_readable_sweep = 'DoS (Heterogeneous)'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -55,6 +64,15 @@ def convert_sweeps_to_human_readable_sweep(row: pd.Series):
 runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
     convert_sweeps_to_human_readable_sweep,
     axis=1)
+
+# Exclude the RF=0.12, SS=2.0 from the DoS Heterogeneous sweep
+# because those are redundant with the DoS sweep.
+redundant_runs = (runs_configs_df['human_readable_sweep'] == 'DoS (Heterogeneous)') \
+                 & ((runs_configs_df['place_cell_rf'] == "0.12")
+                    | (runs_configs_df['surround_scale'] == "2"))
+print(f"Num redundant runs to exclude: {redundant_runs.sum()}")
+runs_configs_df = runs_configs_df[~redundant_runs]
+
 
 # Append the number of runs per human-readable sweep to the human-readable sweep.
 num_runs_per_human_readable_sweep = runs_configs_df.groupby('human_readable_sweep').size().to_dict()

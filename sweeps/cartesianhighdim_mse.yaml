@@ -23,6 +23,8 @@ parameters:
   initializer:
     values: [
       'glorot_uniform',
+      'glorot_normal',
+      'orthogonal',
     ]
   is_periodic:
     values: [False]
@@ -31,7 +33,7 @@ parameters:
   n_epochs:
     values: [20]
   n_grad_steps_per_epoch:
-    values: [10000]
+    values: [1000]
   n_place_fields_per_cell:
     values: [ 1 ]
   Ng:
@@ -78,4 +80,4 @@ parameters:
       0.
     ]
   weight_decay:
-      values: [ 0.0001 ]
+      values: [0, 0.0001 ]

@@ -96,6 +96,7 @@ class PlaceCells(object):
             'cartesian',
             'high_dim_cartesian',
             'polar',
+            'high_dim_polar',
             'gaussian',
             'difference_of_gaussians',
             'true_difference_of_gaussians',
@@ -195,7 +196,7 @@ class PlaceCells(object):
 
         self.fields_to_keep = 1. - self.fields_to_delete
 
-        if self.place_field_values == "high_dim_cartesian":
+        if self.place_field_values == 'high_dim_cartesian':
             assert self.max_n_place_fields_per_cell == 1
             self.slopes = tf.random.uniform(
                 shape=(2, self.Np),
@@ -207,6 +208,29 @@ class PlaceCells(object):
                 shape=(1, 1, self.Np),
                 minval=-1.,
                 maxval=1.,
+                dtype=tf.float32)
+        elif self.place_field_values == 'high_dim_polar':
+            assert self.max_n_place_fields_per_cell == 1
+            self.slopes = tf.random.uniform(
+                shape=(1, self.Np // 2),
+                minval=-1.,
+                maxval=1.,
+                dtype=tf.float32)
+            self.slopes_pinv = tf.linalg.pinv(self.slopes)
+            self.intercepts = tf.random.uniform(
+                shape=(1, 1, self.Np // 2),
+                minval=-1.,
+                maxval=1.,
+                dtype=tf.float32)
+            self.von_mises_centers = tf.random.uniform(
+                shape=(1, 1, self.Np // 2),
+                minval=-np.pi,
+                maxval=np.pi,
+                dtype=tf.float32)
+            self.von_mises_concentrations = tf.random.uniform(
+                shape=(1, 1, self.Np // 2),
+                minval=0.,
+                maxval=2.,
                 dtype=tf.float32)
 
         # Create place cell receptive field tensor.
@@ -265,7 +289,7 @@ class PlaceCells(object):
             outputs = tf.cast(tf.identity(pos), dtype=tf.float32)
             return outputs
 
-        if self.place_field_values == "high_dim_cartesian":
+        if self.place_field_values == 'high_dim_cartesian':
             # Shape: (batch size, sequence length, num place cells)
             outputs = tf.matmul(pos, self.slopes) + self.intercepts
             return outputs
@@ -278,8 +302,29 @@ class PlaceCells(object):
             # Shape: (batch size, seq len, 2)
             outputs = tf.concat([r, theta], axis=2)
             return outputs
+        
+        if self.place_field_values == 'high_dim_polar':
+            # Convert to polar
+            # Shape: (batch size, seq len, 1)
+            r = tf.math.sqrt(tf.reduce_sum(tf.math.square(pos), axis=2, keepdims=True))
+            # Shape: (batch size, seq len, 1)
+            theta = tf.math.atan(pos[..., 1, tf.newaxis] / pos[..., 0, tf.newaxis])
 
-        if self.place_field_values == "high_dim_polar":
+            # Shape: (batch size, seq len, Np // 2)
+            distance_neurons = tf.matmul(r, self.slopes) + self.intercepts
+
+            # Shape: (batch size, seq len, Np // 2)
+            angle_neurons = tf.exp(tf.multiply(
+                self.von_mises_concentrations,
+                tf.cos(theta - self.von_mises_centers)
+            ))
+
+            # Shape: (batch size, seq len, Np)
+            outputs = tf.concat([distance_neurons, angle_neurons], axis=2)
+
+            return outputs
+
+        if self.place_field_values == 'high_dim_polar':
             raise NotImplementedError
 
         # Shape: (batch size, sequence length, num place cells, max num fields per cell, 2)
@@ -295,8 +340,8 @@ class PlaceCells(object):
         #    # this minimum won't change anything unless the position variable goes past the boundary max_x
         #    dx = tf.minimum(dx, (self.max_x - self.min_x) - dx)
         #    after_min = dx
-        #    print("before: ", (self.max_x - self.min_x), tf.reduce_max(before_min))
-        #    print("after: ", (self.max_x - self.min_x), tf.reduce_max(after_min))
+        #    print('before: ', (self.max_x - self.min_x), tf.reduce_max(before_min))
+        #    print('after: ', (self.max_x - self.min_x), tf.reduce_max(after_min))
         #    dy = tf.minimum(dy, (self.max_y - self.min_y) - dy)
         #    d = tf.stack([dx,dy], axis=-1)
 
@@ -320,7 +365,7 @@ class PlaceCells(object):
         elif self.place_field_normalization == 'global':
             normalized_dist_squared = tf.nn.softmax(-min_divided_dist_squared, axis=2)
         else:
-            raise ValueError(f"Impermissible normalization: {self.place_field_normalization}")
+            raise ValueError(f'Impermissible normalization: {self.place_field_normalization}')
 
         if self.place_field_values == 'gaussian':
             # Shape: (batch size, sequence length, num place cells,)
@@ -379,7 +424,7 @@ class PlaceCells(object):
             elif self.place_field_normalization == 'global':
                 other_normalized_dist_squared = tf.nn.softmax(-min_other_divided_dist_squared, axis=2)
             else:
-                raise ValueError(f"Impermissible normalization: {self.place_field_normalization}")
+                raise ValueError(f'Impermissible normalization: {self.place_field_normalization}')
 
             # Shape: (batch size, sequence length, num place cells)
             outputs = normalized_dist_squared - other_normalized_dist_squared
@@ -389,7 +434,7 @@ class PlaceCells(object):
             outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
 
         else:
-            raise ValueError(f"Impermissible place field function: {self.place_field_loss}")
+            raise ValueError(f'Impermissible place field function: {self.place_field_loss}')
 
         # Shape (batch size, seq length, num place cells,)
         return outputs
@@ -421,6 +466,19 @@ class PlaceCells(object):
             pred_y = activation[:, :, 0] * tf.math.sin(activation[:, :, 1])
             # Shape: (batch size, seq len, 2)
             pred_pos = tf.stack([pred_x, pred_y], axis=2)
+        elif self.place_field_values == 'high_dim_polar':
+            # Shape: (batch size, seq length, 1)
+            pred_r = tf.matmul(activation[:, :, :self.Np // 2] - self.intercepts, self.slopes_pinv)
+            # Shape: (batch size, seq length, 1)
+            pred_theta = tf.add(
+                tf.divide(tf.math.log(activation[:, :, self.Np // 2:]),
+                          self.von_mises_concentrations),
+                self.von_mises_centers)
+            pred_x = pred_r * tf.math.cos(pred_theta)
+            pred_y = pred_r * tf.math.sin(pred_theta)
+            # Shape: (batch size, seq len, 2)
+            pred_pos = tf.stack([pred_x, pred_y], axis=2)
+
         else:
             # # Original:
             # _, idxs = tf.math.top_k(activation, k=k)
