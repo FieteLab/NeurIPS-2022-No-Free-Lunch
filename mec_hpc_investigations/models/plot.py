@@ -725,10 +725,7 @@ def plot_grid_scores_kdes_by_human_readable_sweep(
         x='score_60_by_neuron',
         common_norm=False,  # Ensure each sweep is normalized separately.
         hue='human_readable_sweep')
-    # g.legend(
-    #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
-    #     loc='center left',  # Legend goes center-left of anchor
-    # )
+    sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
     # g.legend_.set_title('')
     # g.legend_.set_title('Sweep')
     plt.xlabel('Grid Score')
@@ -814,14 +811,11 @@ def plot_grid_scores_kdes_by_place_field_values(
         x='score_60_by_neuron',
         common_norm=False,
         hue='place_field_values')
-    sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
-    # g.legend(
-    #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
-    #     loc='center left',  # Legend goes center-left of anchor
-    # )
-    # g.legend_.set_title('Target')
+    sns.move_legend(g, "upper left", bbox_to_anchor=(1, 1))
+    g.legend_.set_title('')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
+    plt.xlim(-1.3, 1.3)
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_kdes_by_place_field_values.png'),
                 bbox_inches='tight',
@@ -2232,10 +2226,7 @@ def plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
                         hue='human_readable_sweep',
                         # ax=ax,
                         s=10)
-    g.legend(
-        bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
-        loc='center left',  # Legend goes center-left of anchor
-    )
+    sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
     # g.legend_.set_title('Sweeps')
     ax = plt.gca()
     ax.set_ylim(ymin, 120)

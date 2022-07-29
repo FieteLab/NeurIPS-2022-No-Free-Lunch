@@ -8,7 +8,7 @@ from mec_hpc_investigations.models.plot import *
 notebook_dir = 'notebooks_v2/05_dog_ideal'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
-results_dir = os.path.join(notebook_dir, 'results')
+results_dir = os.path.join(notebook_dir, 'prev_results')
 if os.path.exists(results_dir) and os.path.isdir(results_dir):
     shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
@@ -17,7 +17,7 @@ low_pos_decoding_err_threshold_in_cm = 6.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'gvwcljra',  # DoG with ideal conditions (rf=0.12 or 0.20, adam or RMSprop)
+    'vxbwdefk',  # DoS with many conditions
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(

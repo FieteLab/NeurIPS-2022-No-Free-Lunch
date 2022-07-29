@@ -18,10 +18,10 @@ grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 
 sweep_ids = [
-    # 'gvxvhnx8',     # Cartesian + MSE
+    'gvxvhnx8',     # Cartesian + MSE
     # 'vndf9snd',     # Polar
-    # 'oa0v2uzr',     # G
-    # 'nisioabg',     # DoG
+    'oa0v2uzr',     # G
+    'nisioabg',     # DoG
     'vxbwdefk',     # DoS
 ]
 
