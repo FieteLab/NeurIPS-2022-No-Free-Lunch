@@ -28,7 +28,7 @@ neural_predictivity_df = pd.read_csv(
 
 
 sweep_ids = [
-    'can8n6vd',  # DoG sweeping architecture
+    '59lptrr1',
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(

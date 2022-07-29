@@ -5,7 +5,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare paths.
-notebook_dir = 'notebooks_v2/04_true_dog'
+notebook_dir = 'notebooks_v2/04_DoG_vs_DoS'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -23,12 +23,13 @@ grid_score_d90_threshold = 1.
 runs_configs_true_dog_df = download_wandb_project_runs_configs(
     wandb_project_path='mec-hpc-investigations',
     data_dir=data_dir,
-    sweep_ids=['nisioabg'],
+    sweep_ids=['nisioabg'],  # True DoG
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 true_dog_joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_true_dog_df['run_id'].unique()))
+    run_ids=list(runs_configs_true_dog_df['run_id'].unique()),
+    include_additional_data=True)
 
 overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_true_dog_df,
@@ -131,4 +132,4 @@ plot_grid_scores_kdes_by_place_field_values(
 #     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
 #     plot_dir=results_dir, )
 
-print('Finished 04_true_dog/04_true_dog.py!')
+print('Finished 04_DoG_vs_DoS/04_DoG_vs_DoS.py!')

@@ -116,7 +116,7 @@ class Trainer(object):
     def eval_during_train(self,
                           gen: TrajectoryGenerator,
                           epoch_idx: int,
-                          n_samples: int = 10,
+                          n_recurr_units_to_analyze: int = 10,
                           save: bool = False,
                           # log_and_plot_grid_scores: bool = True,
                           ):
@@ -147,18 +147,20 @@ class Trainer(object):
         #     self.log_and_plot_all(pos=pos,
         #                           inputs=inputs,
         #                           epoch_idx=epoch_idx,
-        #                           n_samples=n_samples)
+        #                           n_recurr_units_to_analyze=n_recurr_units_to_analyze)
 
     def eval_after_train(self,
                          gen: TrajectoryGenerator,
                          run_dir: str,
-                         n_samples: int = None,
+                         n_recurr_units_to_analyze: int = None,
                          refresh: bool = False,
                          ):
 
-        if n_samples is None:
-            # n_samples = self.options.Ng
-            n_samples = 512
+        # We only use 1024 of networks' recurrent units for the analyses.
+        # For most networks, this is 100% of their recurrent units.
+        if n_recurr_units_to_analyze is None:
+            # n_recurr_units_to_analyze = self.options.Ng
+            n_recurr_units_to_analyze = 1024
 
         inputs, pc_outputs, pos = next(gen)
 
@@ -176,7 +178,7 @@ class Trainer(object):
         self.log_and_plot_all(pos=pos,
                               inputs=inputs,
                               epoch_idx=None,
-                              n_samples=n_samples,
+                              n_recurr_units_to_analyze=n_recurr_units_to_analyze,
                               log_to_wandb=False,
                               run_dir=run_dir,
                               refresh=refresh)
@@ -272,7 +274,7 @@ class Trainer(object):
                          pos: tf.Tensor,
                          inputs: tf.Tensor,
                          epoch_idx: int,
-                         n_samples: int,
+                         n_recurr_units_to_analyze: int,
                          log_to_wandb: bool = True,
                          run_dir: str = None,
                          refresh: bool = False):
@@ -322,7 +324,7 @@ class Trainer(object):
             ys=ys,
             activations=activations,
             epoch_idx=epoch_idx,
-            n_samples=n_samples,
+            n_recurr_units_to_analyze=n_recurr_units_to_analyze,
             log_to_wandb=log_to_wandb,
             run_dir=run_dir,
             refresh=refresh)
@@ -465,7 +467,7 @@ class Trainer(object):
                                   ys,
                                   activations,
                                   epoch_idx: int,
-                                  n_samples: int,
+                                  n_recurr_units_to_analyze: int,
                                   run_dir: str,
                                   log_to_wandb: bool = True,
                                   refresh: bool = False):
@@ -479,8 +481,8 @@ class Trainer(object):
             for scorer in self.scorers:
 
                 # Create scores and ratemaps, then save to dis.
-                score_60_by_neuron = np.zeros(n_samples)
-                score_90_by_neuron = np.zeros(n_samples)
+                score_60_by_neuron = np.zeros(n_recurr_units_to_analyze)
+                score_90_by_neuron = np.zeros(n_recurr_units_to_analyze)
 
                 best_score_60 = -np.inf
                 best_rate_map_60 = None
@@ -488,9 +490,9 @@ class Trainer(object):
                 best_rate_map_90 = None
 
                 neuron_indices = np.random.choice(self.options.Ng, replace=False,
-                                                  size=n_samples)
+                                                  size=n_recurr_units_to_analyze)
 
-                rate_maps = np.zeros(shape=(n_samples, scorer._nbins, scorer._nbins))
+                rate_maps = np.zeros(shape=(n_recurr_units_to_analyze, scorer._nbins, scorer._nbins))
 
                 for storage_idx, neuron_idx in enumerate(neuron_indices):
 
@@ -545,14 +547,14 @@ class Trainer(object):
             #     best_rate_map_90[np.isnan(best_rate_map_90)] = 0.
             #
             #     wandb.log({
-            #         f'max_grid_score_d=60_n={n_samples}': np.nanmax(score_60_by_neuron),
-            #         f'grid_score_histogram_d=60_n={n_samples}': wandb.Histogram(
+            #         f'max_grid_score_d=60_n={n_recurr_units_to_analyze}': np.nanmax(score_60_by_neuron),
+            #         f'grid_score_histogram_d=60_n={n_recurr_units_to_analyze}': wandb.Histogram(
             #             score_60_by_neuron[~np.isnan(score_60_by_neuron)]),
-            #         f'best_rate_map_d=60_n={n_samples}': best_rate_map_60,
-            #         f'max_grid_score_d=90_n={n_samples}': np.nanmax(score_90_by_neuron),
-            #         f'grid_score_histogram_d=90_n={n_samples}': wandb.Histogram(
+            #         f'best_rate_map_d=60_n={n_recurr_units_to_analyze}': best_rate_map_60,
+            #         f'max_grid_score_d=90_n={n_recurr_units_to_analyze}': np.nanmax(score_90_by_neuron),
+            #         f'grid_score_histogram_d=90_n={n_recurr_units_to_analyze}': wandb.Histogram(
             #             score_90_by_neuron[~np.isnan(score_90_by_neuron)]),
-            #         f'best_rate_map_d=90_n={n_samples}': best_rate_map_90,
+            #         f'best_rate_map_d=90_n={n_recurr_units_to_analyze}': best_rate_map_90,
             #     }, step=epoch_idx + 1)
 
         else:
@@ -573,8 +575,8 @@ class Trainer(object):
                               log_to_wandb: bool = True,
                               run_dir: str = None):
 
-        n_samples = rate_maps.shape[0]
-        n_rows = n_cols = int(np.ceil(np.sqrt(n_samples)))
+        n_recurr_units_to_analyze = rate_maps.shape[0]
+        n_rows = n_cols = int(np.ceil(np.sqrt(n_recurr_units_to_analyze)))
 
         fig, axes = plt.subplots(
             n_rows,  # rows

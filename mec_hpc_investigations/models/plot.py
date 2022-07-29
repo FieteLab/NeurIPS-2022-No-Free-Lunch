@@ -11,7 +11,7 @@ from sklearn.neighbors import KernelDensity
 from typing import Dict, List
 
 plt.rcParams["font.family"] = ["Times New Roman"]
-plt.rcParams["font.size"] = 20  # was previously 22
+plt.rcParams["font.size"] = 25  # was previously 22
 sns.set_style("whitegrid")
 
 architecture_color_map = dict(
@@ -716,24 +716,28 @@ def plot_grid_scores_kde(
 def plot_grid_scores_kdes_by_human_readable_sweep(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
 
-    # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
-    #                   | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
     g = sns.kdeplot(
         # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
         common_norm=False,  # Ensure each sweep is normalized separately.
         hue='human_readable_sweep')
-    g.legend_.set_title('Sweep')
+    # g.legend(
+    #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+    #     loc='center left',  # Legend goes center-left of anchor
+    # )
+    # g.legend_.set_title('')
+    # g.legend_.set_title('Sweep')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_kdes_by_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
-    # plt.show()
+    plt.show()
     plt.close()
 
 
@@ -801,17 +805,21 @@ def plot_grid_scores_kdes_by_n_place_fields_per_cell(
 def plot_grid_scores_kdes_by_place_field_values(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
+
     plt.close()
 
-    # indices_to_keep = (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1') \
-    #                   | (augmented_neurons_data_by_run_id_df['n_place_fields_per_cell'] == '1 + Poisson( 1.0 )')
     g = sns.kdeplot(
         # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
-        # kde=True,
+        common_norm=False,
         hue='place_field_values')
-    g.legend_.set_title('Target')
+    sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
+    # g.legend(
+    #     bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+    #     loc='center left',  # Legend goes center-left of anchor
+    # )
+    # g.legend_.set_title('Target')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
     plt.savefig(os.path.join(plot_dir,
@@ -1889,6 +1897,7 @@ def plot_percent_grid_cells_vs_place_cell_rf_by_threshold(
         bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
         loc='center left',  # Legend goes center-left of anchor
     )
+
     plt.xlabel(r'$\sigma$ (m)')
     plt.ylabel('% Grid Cells')
 
@@ -2054,7 +2063,8 @@ def plot_percent_runs_with_grid_cells_pie(runs_configs_with_scores_max_df: pd.Da
                     for label in num_runs_per_category.index.values],
             # shadow=True,
             autopct='%.1f%%')
-        plt.title(f'Runs With (Possible) Grid Cells\nThreshold={threshold}\nNum. of Networks={len(runs_configs_with_scores_max_df)}')
+        plt.title(
+            f'Runs With (Possible) Grid Cells\nThreshold={threshold}\nNum. of Networks={len(runs_configs_with_scores_max_df)}')
 
         plot_path = os.path.join(plot_dir, f'percent_runs_with_grid_cells_pie_threshold={threshold}.png')
         plt.savefig(plot_path,
@@ -2159,13 +2169,21 @@ def plot_pos_decoding_err_vs_max_grid_score_kde(runs_configs_with_scores_max_df:
 
     sns.kdeplot(
         x='score_60_by_neuron_max',
-        y='score_90_by_neuron_max',
+        y='pos_decoding_err',
         # cmap=cmap,
         fill=True,
         clip=(-5, 5),
-        levels=15,
+        levels=10,
         data=runs_configs_with_scores_max_df,
     )
+
+    plt.xlabel("Max Grid Score")
+    plt.ylabel("Pos Decoding Err (cm)")
+    plt.ylim(0., 120.)
+
+    # Add horizontal line indicating a randomly initialized network.
+    plt.axhline(y=110, color='k', linestyle='--')
+    plt.text(-0.2, 110, "At Initialization")
 
     plt.savefig(os.path.join(plot_dir, f'pos_decoding_err_vs_max_grid_score_kde.png'),
                 bbox_inches='tight',
@@ -2203,33 +2221,43 @@ def plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
         runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str):
     plt.close()
-    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
-                             sharey=True, sharex=True)
+    # fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(32, 8),
+    #                          sharey=True, sharex=True)
     ymin = runs_configs_with_scores_max_df['pos_decoding_err'].min()
     ymax = runs_configs_with_scores_max_df['pos_decoding_err'].max()
-    ax = axes[0]
-    sns.scatterplot(y="pos_decoding_err",
-                    x='score_60_by_neuron_max',
-                    data=runs_configs_with_scores_max_df,
-                    hue='human_readable_sweep',
-                    ax=ax,
-                    s=10)
-    ax.set_ylim(ymin, ymax)
+    # ax = axes[0]
+    g = sns.scatterplot(y="pos_decoding_err",
+                        x='score_60_by_neuron_max',
+                        data=runs_configs_with_scores_max_df,
+                        hue='human_readable_sweep',
+                        # ax=ax,
+                        s=10)
+    g.legend(
+        bbox_to_anchor=(1, 0.5),  # 1 on the x axis, 0.5 on the y axis
+        loc='center left',  # Legend goes center-left of anchor
+    )
+    # g.legend_.set_title('Sweeps')
+    ax = plt.gca()
+    ax.set_ylim(ymin, 120)
     ax.set_ylabel('Pos Decoding Err (cm)')
     ax.set_xlabel(r'Max Grid Score')
-    ax.set_title(r'$60^{\circ}$')
+    # ax.set_title(r'$60^{\circ}$')
 
-    ax = axes[1]
-    sns.scatterplot(y="pos_decoding_err",
-                    x='score_90_by_neuron_max',
-                    data=runs_configs_with_scores_max_df,
-                    hue='human_readable_sweep',
-                    ax=ax,
-                    s=10)
-    ax.set_ylim(ymin, ymax)
-    ax.set_ylabel(None)  # Share Y-Label with subplot to left.
-    ax.set_xlabel(r'Max Grid Score')
-    ax.set_title(r'$90^{\circ}$')
+    # Add horizontal line indicating a randomly initialized network.
+    ax.axhline(y=110, color='k', linestyle='--')
+    ax.text(-0.2, 110, "At Initialization")
+
+    # ax = axes[1]
+    # sns.scatterplot(y="pos_decoding_err",
+    #                 x='score_90_by_neuron_max',
+    #                 data=runs_configs_with_scores_max_df,
+    #                 hue='human_readable_sweep',
+    #                 ax=ax,
+    #                 s=10)
+    # ax.set_ylim(ymin, ymax)
+    # ax.set_ylabel(None)  # Share Y-Label with subplot to left.
+    # ax.set_xlabel(r'Max Grid Score')
+    # ax.set_title(r'$90^{\circ}$')
 
     plt.savefig(os.path.join(plot_dir,
                              f'pos_decoding_err_vs_max_grid_score_by_human_readable_sweep.png'),

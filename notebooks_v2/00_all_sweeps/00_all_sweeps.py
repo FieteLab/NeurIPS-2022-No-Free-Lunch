@@ -18,10 +18,10 @@ grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 
 sweep_ids = [
-    'gvxvhnx8',     # Cartesian + MSE
+    # 'gvxvhnx8',     # Cartesian + MSE
     # 'vndf9snd',     # Polar
-    'oa0v2uzr',     # G
-    'nisioabg',     # DoG
+    # 'oa0v2uzr',     # G
+    # 'nisioabg',     # DoG
     'vxbwdefk',     # DoS
 ]
 
@@ -34,7 +34,7 @@ runs_configs_df = download_wandb_project_runs_configs(
 
 
 # Add human-readable sweep
-def convert_sweep_to_human_readable_sweep(row: pd.Series):
+def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     sweep_id = row['Sweep']
     if sweep_id in {'gvxvhnx8'}:
         human_readable_sweep = 'Cartesian'
@@ -53,8 +53,15 @@ def convert_sweep_to_human_readable_sweep(row: pd.Series):
 
 
 runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
-    convert_sweep_to_human_readable_sweep,
+    convert_sweeps_to_human_readable_sweep,
     axis=1)
+
+# Append the number of runs per human-readable sweep to the human-readable sweep.
+num_runs_per_human_readable_sweep = runs_configs_df.groupby('human_readable_sweep').size().to_dict()
+runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
+    lambda row: row['human_readable_sweep'] + "\nN = " + str(num_runs_per_human_readable_sweep[row['human_readable_sweep']]),
+    axis=1)
+
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()),
