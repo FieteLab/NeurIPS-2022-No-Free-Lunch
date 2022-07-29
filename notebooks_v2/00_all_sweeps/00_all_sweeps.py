@@ -30,8 +30,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=False,
-    overwrite_with_joblib_data=True)
+    refresh=False)
 
 
 # Add human-readable sweep

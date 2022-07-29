@@ -5,7 +5,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare paths.
-notebook_dir = 'notebooks_v2/04_DoG_vs_DoS'
+notebook_dir = 'notebooks_v2/04_dog_vs_dos'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -93,7 +93,7 @@ def convert_place_field_values_to_human_readable_place_field_values(row: pd.Seri
     if place_field_values == 'difference_of_gaussians':
         replacement_place_field_values = '"DoG" (DoS)'
     elif place_field_values == 'true_difference_of_gaussians':
-        replacement_place_field_values = 'True DoG'
+        replacement_place_field_values = 'DoG'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -132,4 +132,4 @@ plot_grid_scores_kdes_by_place_field_values(
 #     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
 #     plot_dir=results_dir, )
 
-print('Finished 04_DoG_vs_DoS/04_DoG_vs_DoS.py!')
+print('Finished 04_dog_vs_dos/04_dog_vs_dos.py!')
