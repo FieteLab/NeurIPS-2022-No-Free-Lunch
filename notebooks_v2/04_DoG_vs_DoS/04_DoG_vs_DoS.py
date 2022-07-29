@@ -25,8 +25,15 @@ runs_configs_true_dog_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=['nisioabg'],  # True DoG
     finished_only=True,
-    refresh=True,
-    overwrite_with_joblib_data=True)
+    refresh=True)
+
+true_dog_joblib_files_data_by_run_id_dict = load_runs_joblib_files(
+    run_ids=list(runs_configs_true_dog_df['run_id'].unique()),
+    include_additional_data=True)
+
+overwrite_runs_configs_df_values_with_joblib_data(
+    runs_configs_df=runs_configs_true_dog_df,
+    joblib_files_data_by_run_id_dict=true_dog_joblib_files_data_by_run_id_dict)
 
 # plot_percent_runs_with_low_pos_decoding_err_pie(
 #     runs_configs_df=runs_configs_true_dog_df,
@@ -63,8 +70,7 @@ runs_configs_dog_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=['vxbwdefk'],
     finished_only=True,
-    refresh=True,
-    overwrite_with_joblib_data=True)
+    refresh=True)
 
 # Keep only the ideal DoS runs.
 runs_configs_dog_df = runs_configs_dog_df[

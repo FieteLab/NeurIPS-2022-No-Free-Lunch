@@ -64,13 +64,13 @@ runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
     axis=1)
 
 
-# joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-#     run_ids=list(runs_configs_df['run_id'].unique()),
-#     include_additional_data=False)
-#
-# overwrite_runs_configs_df_values_with_joblib_data(
-#     runs_configs_df=runs_configs_df,
-#     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+joblib_files_data_by_run_id_dict = load_runs_joblib_files(
+    run_ids=list(runs_configs_df['run_id'].unique()),
+    include_additional_data=False)
+
+overwrite_runs_configs_df_values_with_joblib_data(
+    runs_configs_df=runs_configs_df,
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
 plot_percent_runs_with_low_pos_decoding_err_pie(
     runs_configs_df=runs_configs_df,
