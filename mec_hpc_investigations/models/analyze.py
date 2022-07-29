@@ -170,7 +170,9 @@ def download_wandb_project_runs_configs(wandb_project_path: str,
                                         sweep_ids: List[str] = None,
                                         finished_only: bool = True,
                                         refresh: bool = False,
+                                        overwrite_with_joblib_data: bool = False,
                                         ) -> pd.DataFrame:
+
     runs_configs_df_path = os.path.join(
         data_dir,
         'sweeps=' + ','.join(sweep_ids) + '_runs_configs.csv')
@@ -210,6 +212,24 @@ def download_wandb_project_runs_configs(wandb_project_path: str,
             sweep_results_list.append(summary)
 
         runs_configs_df = pd.DataFrame(sweep_results_list)
+
+        if overwrite_with_joblib_data:
+
+            # Load joblib data from disk.
+            joblib_files_data_by_run_id_dict = load_runs_joblib_files(
+                run_ids=list(runs_configs_df['run_id'].unique()),
+                include_additional_data=True)
+
+            print("Successfully loaded joblib data!")
+
+            # Use joblib data to overwrite W&B values.
+            overwrite_runs_configs_df_values_with_joblib_data(
+                runs_configs_df=runs_configs_df,
+                joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
+
+            print("Successfully overwrote W&B data with joblib data!")
+
+        # Save to disk.
         runs_configs_df.to_csv(runs_configs_df_path, index=False)
         print(f'Wrote {runs_configs_df_path} to disk.')
     else:
