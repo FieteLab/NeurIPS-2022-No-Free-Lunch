@@ -45,7 +45,7 @@ joblib_files_data_by_run_id_dict = load_runs_joblib_files(
 rate_maps_participation_ratio_by_run_id_df = compute_rate_maps_participation_ratio_from_joblib_files_data(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     data_dir=data_dir,
-    # refresh=True,
+    refresh=True,
 )
 
 runs_configs_df = runs_configs_df.merge(

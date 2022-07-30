@@ -35,7 +35,7 @@ parameters:
   n_place_fields_per_cell:
     values: [ 1 ]
   Ng:
-    values: [4096]
+    values: [1024]
   Np:
     values: [512]
   optimizer:

@@ -41,9 +41,9 @@ runs_configs_df = download_wandb_project_runs_configs(
 def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     sweep_id = row['Sweep']
     if sweep_id in {'gvxvhnx8'}:
-        human_readable_sweep = 'Cartesian (Low Dim)'
+        human_readable_sweep = 'Cartesian\n(Low Dim)'
     elif sweep_id in {'2ks3s65c'}:
-        human_readable_sweep = 'Cartesian (High Dim)'
+        human_readable_sweep = 'Cartesian\n(High Dim)'
     # elif sweep_id in {'vndf9snd'}:
     #     human_readable_sweep = 'Polar\nGeodesic'
     elif sweep_id in {'oa0v2uzr'}:
@@ -55,9 +55,9 @@ def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     elif sweep_id in {'8qcojz8h'}:
         human_readable_sweep = 'SoD PCs'
     elif sweep_id in {'rwb622oq'}:
-        human_readable_sweep = 'DoS (Multi-Scale)'
+        human_readable_sweep = 'DoS\n(Multi-Scale)'
     elif sweep_id in {'lk012xp8'}:
-        human_readable_sweep = 'DoS (Multi-Field & -Scale)'
+        human_readable_sweep = 'DoS\n(Multi-Field, Multi-Scale)'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -175,4 +175,4 @@ plot_grid_scores_histograms_by_human_readable_sweep(
 #     augmented_neurons_data_by_run_id_df=
 # )
 
-print('Finished!')
+print('Finished 00_all_sweeps!')

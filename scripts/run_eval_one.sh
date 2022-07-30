@@ -2,7 +2,7 @@
 #SBATCH -p normal
 #SBATCH -n 1                    # one core
 #SBATCH --mem=12G               # RAM
-#SBATCH --time=01:00:00         # total run time limit (HH:MM:SS)
+#SBATCH --time=00:45:00         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
 
 run_id=${1}
