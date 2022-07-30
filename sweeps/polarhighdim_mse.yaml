@@ -29,26 +29,26 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [10]
+    values: [200]
   n_grad_steps_per_epoch:
-    values: [10000]
+    values: [100]
   n_place_fields_per_cell:
     values: [ 1 ]
   Ng:
     values: [4096]
   Np:
-    values: [2]
+    values: [512]
   optimizer:
     values: [
       'adam',
     ]
   place_field_loss:
     values: [
-      'polarmse',
+      'mse',
     ]
   place_field_values:
     values: [
-      'polar',
+      'high_dim_polar',
     ]
   place_field_normalization:
     values: [

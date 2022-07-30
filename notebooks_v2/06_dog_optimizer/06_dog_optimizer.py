@@ -13,7 +13,7 @@ if os.path.exists(results_dir) and os.path.isdir(results_dir):
     shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
 
-low_pos_decoding_err_threshold_in_cm = 6.
+low_pos_decoding_err_threshold_in_cm = 10.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [

@@ -7,14 +7,17 @@ import wandb
 
 ### Option 1: Manually specify sweep IDs, then fetch (finished) run IDs.
 
-# Cartesian
+# Cartesian (Low Dim)
 # sweep_ids = ['gvxvhnx8']
+
+# Cartesian (High Dim)
+sweep_ids = ['2ks3s65c']
 
 # Gaussian
 # sweep_ids = ['oa0v2uzr']
 
 # DoG (true DoG)
-sweep_ids = ['nisioabg']
+# sweep_ids = ['nisioabg']
 
 # DoS (done)
 # sweep_ids = ['vxbwdefk']
@@ -24,7 +27,7 @@ sweep_ids = ['nisioabg']
 
 
 # # Fetch runs associated with the relevant sweeps.
-api = wandb.Api(timeout=60)
+# api = wandb.Api(timeout=60)
 # run_ids = []
 # for sweep_id in sweep_ids:
 #     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
@@ -40,7 +43,7 @@ api = wandb.Api(timeout=60)
 # run_ids = list(sorted(os.listdir(results_dir)))
 
 # Specific runs
-run_ids = ['7a7ktmwd', 'k97fuh2w', '7yiodipq', '1eohgoy4', 'k3byw15i', 'aldnn6ql', '59jrwni9', '0f0pk2yu', '1hi5xlxk', 'pp8l1cfs', 'yzu7wvhq', '5yp08mxp', '54e6d3x4', 'uneylmc8', 'jhm2hlga', '08fvp5z2', 'ol1sdy3c', 'l9gu1gkl', 'x71lcqmn', 'q6trd8sn', 'khnuf5vf', 'zmdrezdg', '9h7r2te0', 'r7ukfb8q', 'u9daz8op', 'v3x7k5bh', '9moeo4d9', '7xl0a33i', 'kq0t3ziz', 'jx6ct9k8', '7nyrs5gz', 'q7qsoqxh', 'um6ybsqf', 'jjicdfjt', 'nyds2zx3', '4m7b8341', '0prrnf5c', 'vvsv8yio', '0ues74ev', 'xiwf84un', 'vi2bjylp', 'rlc7ussj', 'vjffi0hh', 'uona1czh', 'sp9s61ka', 'ri04melu', 'gaaf5il5', 'iumf02v5', 'plyvqx1z', 'xva3aio5', 'fmr3tr0l', 'ia47vots', '37stamsv', 'lqp3x7d6', 'n28o0pzx', 'lzg3064v', 'lnhgn7n0', '5s2tusnp', 'awwks2ey', '1pvp86fj', 'i4sqiwi0', 'weein0e7', 'mfo0eiop', '19z6uit4', 'xgsgm3yu', '1yhie0ho', 'pgv6mm3g', '0g62e5m2', '6hysewph', 'nyt27nj5', 'irh2l6n9', 'ykdgxamn', 'wptw3cwd', 'n3hqgelv', 'yqu3ravz', 'ahlfhiz1', 'c6qhkk0s', 'ake60d2a', 'i6tx0ksu', 'pko5bxkd', 'rekcbh8i', '67hyxs25', 'cb9hhbti', '7fv2jdsh', 'mtdfd1wr', 'sghgrvbn', '238do866', 'cyy6vnfn', 'a06uadxs', '4en4p2k7', 'wvgl1z36', '053p9hio', '4b96qgrl', 'i7tmwus6', '5a8h2evr', 'xd4h8iyn', 'yjbwe36i', 'bxfzf6cn', '4su86qo1', 'j84hq6t0', 'aprzp6wb', '6xxr9dt6', 'tq2x1wse', 'e5tej245', 'lhgwylps', '5dat50hu', 'cxt51q65', 'sp422uz2', '475jhisv', 'v283jtbj', 'x2vw3fo6', 'blhyp83h', 'pfc7o056', 'xwn595jy', 'trf3zk8x', 'j57angtv', 'khvfxr8v', '6pyuz2yc', '81z7rier', 'z7p84v3c', 'thbub652', 'is4ex92q', 'bkdackkh', 'iyeugj20']
+run_ids = ['xr8so4ls', 'fmyw73by', 'p0e1tg0g', 'ekmq5ijm', '5i5g42qx', 'jmafm0x5', 'pxu0hid3', 'a4he41iw', 'ugtsy1hv', '2xcycf9v', '1amcym9l', 'cyxe0wwh', '59k504w4', 'y3csn9cf', '61ii98hp', 'dn3je3c1', 'l51ilia3', '6k4208cu', 'y34iq5on', 'h1g92bwa', 'ykkx8vhs', 'i0jgx9gj', 'spusyr5v', 'zu19ynk8', 'sypcyou2', 'kq40nfyz', 'okowtmwe', 'tk5nea8u', '015tfkuz', 'cbiqva26', 'v0rgu757', 'y48zzrk8', 'yeuxs9h5', 'ank336jh', 'd2k9of0n', 'quqlt6rd', 'kj92sehk', 'ymx1zavm', 'b7121ifx', '8ao4t1y8', 'pn1kkl8y', 'zye01mi7', '6jidf78n', 'bv7a23wn', 'tryee22h', 'mjfufbgw', 'rcoajiiu', 'c3s8krv8', '8iwo30mx', 'tqimuvqp', 'mmgforyo', 'nkz6r699', 'i58vfs2h', '1xbnrltu', 'nj1ewm6w', '8biuafs2', 'et8t3zqk', '0qyc5xx1', 'q9l70z1y', 'r5pcv3wp', 'b9tlor1c', 'ietefxzn', 'ted8jx7t', 'efy0qx8f', 'gw1xhmnf', 'ejtschyv', 'tspkhihn', 'pz6stxcn', '8yrrymrr', 'vtyx1gk2', 'ek9aneyy', '18qqpar9', 'mqg3fhln', 'wp3si45y', '51fw15ig', '8v35mn6w', 'wpxqeodb', 'een6fde0', 'l2ug04st', 'ydgbmay1', 'gpwpz6ai', '2e7ym98t', 'd9rspmic', 'ows8foup', '0sgm7iz0', 'cg8q0162', '1jdho6zh', 'weaj81h6', 'dhq1lznu', 'tfti4os9', 'kaj1y2ja', 'm27lagpb', '0ev9jj9m', '7sinxki2', 'vljq5vz4', 'xof87uon']
 
 
 # random.shuffle functions in-place.

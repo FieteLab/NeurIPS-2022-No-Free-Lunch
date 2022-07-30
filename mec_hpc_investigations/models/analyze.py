@@ -71,7 +71,7 @@ def compute_rate_maps_participation_ratio_from_joblib_files_data(
             rate_maps_pr = skdim.id.lPCA(ver='participation_ratio').fit_transform(
                 X=rate_maps)
             rate_maps_participation_ratios.append(rate_maps_pr)
-            print(f'Computed participation ratio for run_id={run_id}')
+            print(f'Computed participation ratio for run_id={run_id}: {rate_maps_pr}')
 
         rate_maps_participation_ratio_by_run_id_df = pd.DataFrame.from_dict({
             'run_id': run_ids,

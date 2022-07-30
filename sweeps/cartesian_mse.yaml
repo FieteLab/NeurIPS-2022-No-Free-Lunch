@@ -68,10 +68,10 @@ parameters:
     values: [ 0., 0.5 ]
   rnn_type:
     values: [
-        'RNN',
-        'LSTM',
-        'UGRNN',
-        'GRU',
+      'RNN',
+      'LSTM',
+      'UGRNN',
+      'GRU',
     ]
   seed:
     values: [ 0, 1, 2 ]

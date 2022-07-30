@@ -1,11 +1,9 @@
 #!/bin/bash
-#SBATCH -p normal
-#SBATCH -n 1                    # one core
-#SBATCH --mem=12G               # RAM
-#SBATCH --time=01:00:00         # total run time limit (HH:MM:SS)
+#SBATCH -p fiete
+#SBATCH -n 2                    # one core
+#SBATCH --mem=24G               # RAM
+#SBATCH --time=24:99:99         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
-
-run_id=${1}
 
 # Activate virtual environment.
 source mec_hpc_venv/bin/activate
@@ -17,4 +15,4 @@ export PYTHONPATH=.
 # https://stackoverflow.com/questions/5750450/how-can-i-print-each-command-before-executing
 set -x
 
-python -u mec_hpc_investigations/models/run_scoring_rylan.py ${run_id}
+python -u notebooks_v2/03_g/03_g.py

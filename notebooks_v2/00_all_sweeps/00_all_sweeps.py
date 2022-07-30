@@ -13,7 +13,7 @@ if os.path.exists(results_dir) and os.path.isdir(results_dir):
     shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
 
-low_pos_decoding_err_threshold_in_cm = 15.
+low_pos_decoding_err_threshold_in_cm = 10.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 
@@ -25,7 +25,8 @@ sweep_ids = [
     'nisioabg',     # DoG
     'vxbwdefk',     # DoS
     '8qcojz8h',     # SoD (Softmax of Differences)
-    'rwb622oq',     # Heterogeneous DoS
+    'rwb622oq',     # Multi-Scale DoS
+    'lk012xp8',     # Multi-field, Multi-Scale DoS
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -54,7 +55,9 @@ def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     elif sweep_id in {'8qcojz8h'}:
         human_readable_sweep = 'SoD PCs'
     elif sweep_id in {'rwb622oq'}:
-        human_readable_sweep = 'DoS (Heterogeneous)'
+        human_readable_sweep = 'DoS (Multi-Scale)'
+    elif sweep_id in {'lk012xp8'}:
+        human_readable_sweep = 'DoS (Multi-Field & -Scale)'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -65,9 +68,9 @@ runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
     convert_sweeps_to_human_readable_sweep,
     axis=1)
 
-# Exclude the RF=0.12, SS=2.0 from the DoS Heterogeneous sweep
+# Exclude the RF=0.12, SS=2.0 from the DoS Multi-Scale sweep
 # because those are redundant with the DoS sweep.
-redundant_runs = (runs_configs_df['human_readable_sweep'] == 'DoS (Heterogeneous)') \
+redundant_runs = (runs_configs_df['human_readable_sweep'] == 'DoS (Multi-Scale)') \
                  & ((runs_configs_df['place_cell_rf'] == "0.12")
                     | (runs_configs_df['surround_scale'] == "2"))
 print(f"Num redundant runs to exclude: {redundant_runs.sum()}")

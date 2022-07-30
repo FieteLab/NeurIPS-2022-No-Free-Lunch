@@ -7,7 +7,7 @@ metric:
 parameters:
   activation:
     values: [
-        'relu',
+      'relu',
     ]
   batch_size:
     values: [200]
@@ -31,13 +31,11 @@ parameters:
     values: [10000]
   n_place_fields_per_cell:
     values: [
-      1,
-      'Poisson( 1.0 )',
       'Poisson( 2.0 )',
       'Poisson( 3.0 )',
     ]
   Ng:
-    values: [4096]
+    values: [1024]
   Np:
     values: [512]
   optimizer:
@@ -59,18 +57,27 @@ parameters:
   place_cell_rf:
     values: [
       0.12,
+      'Uniform( 0.06 , 0.24 )',
+      'Uniform( 0.06 , 1.0 )',
     ]
   readout_dropout:
     values: [0.]
+  recurrent_dropout:
+    values: [ 0.]
   rnn_type:
     values: [
       'RNN',
+      'UGRNN',
     ]
   seed:
     values: [ 0 , 1, 2 ]
   sequence_length:
     values: [20]
   surround_scale:
-    values: [2.]
+    values: [
+      2.0,
+      'Uniform( 1.50 , 2.50 )',
+      'Uniform( 1.25 , 4.50 )',
+    ]
   weight_decay:
       values: [ 0.0001 ]

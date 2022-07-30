@@ -13,11 +13,11 @@ if os.path.exists(results_dir) and os.path.isdir(results_dir):
     shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
 
-low_pos_decoding_err_threshold_in_cm = 6.
+low_pos_decoding_err_threshold_in_cm = 10.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    '7li410k6',  # Gaussian Arch & Activation
+    'oa0v2uzr',  # Gaussian
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -28,7 +28,8 @@ runs_configs_df = download_wandb_project_runs_configs(
     refresh=False)
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_df['run_id'].unique()))
+    run_ids=list(runs_configs_df['run_id'].unique()),
+    include_additional_data=True)
 
 # overwrite_runs_configs_df_values_with_joblib_data(
 #     runs_configs_df=runs_configs_df,
@@ -47,10 +48,10 @@ runs_configs_df = runs_configs_df[low_pos_decoding_indices]
 neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
 
-plot_rate_maps_by_run_id(
-    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
-    plot_dir=results_dir)
+# plot_rate_maps_by_run_id(
+#     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+#     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+#     plot_dir=results_dir)
 
 max_grid_scores_by_run_id_df = neurons_data_by_run_id_df.groupby('run_id').agg(
     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
@@ -87,8 +88,8 @@ plot_grid_scores_histogram(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-plot_grid_scores_histograms_by_run_id(
-    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
-    plot_dir=results_dir)
+# plot_grid_scores_histograms_by_run_id(
+#     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+#     plot_dir=results_dir)
 
 print('Finished 03_g/03_g.py!')

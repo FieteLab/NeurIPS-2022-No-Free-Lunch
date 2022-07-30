@@ -9,7 +9,7 @@ from mec_hpc_investigations.models.plot import *
 notebook_dir = 'notebooks_v2/20_nayebi2021_neural_predictivity'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
-results_dir = os.path.join(notebook_dir, 'results')
+results_dir = os.path.join(notebook_dir, 'results_round_one')
 if os.path.exists(results_dir) and os.path.isdir(results_dir):
     shutil.rmtree(results_dir)
 os.makedirs(results_dir, exist_ok=True)
@@ -28,7 +28,7 @@ neural_predictivity_df = pd.read_csv(
 
 
 sweep_ids = [
-    '59lptrr1',
+    '59lptrr1',  # Nayebi sweep
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -39,11 +39,14 @@ runs_configs_df = download_wandb_project_runs_configs(
     refresh=False)
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_df['run_id'].unique()))
+    run_ids=list(runs_configs_df['run_id'].unique()),
+    include_additional_data=True)
 
 rate_maps_participation_ratio_by_run_id_df = compute_rate_maps_participation_ratio_from_joblib_files_data(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
-    data_dir=data_dir)
+    data_dir=data_dir,
+    # refresh=True,
+)
 
 runs_configs_df = runs_configs_df.merge(
     rate_maps_participation_ratio_by_run_id_df,
@@ -79,9 +82,9 @@ trained_neural_predictivity_and_ID_df.rename(
              'activation': 'Activation'},
     inplace=True)
 
-plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation(
-    trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
-    plot_dir=results_dir)
+# plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation(
+#     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
+#     plot_dir=results_dir)
 
 plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
@@ -94,3 +97,5 @@ plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_ac
 plot_neural_predictivity_vs_rate_maps_rank_by_architecture_and_activation(
     trained_neural_predictivity_and_ID_df=trained_neural_predictivity_and_ID_df,
     plot_dir=results_dir)
+
+print("Finished 20_nayebi2021_neural_predictivity!")

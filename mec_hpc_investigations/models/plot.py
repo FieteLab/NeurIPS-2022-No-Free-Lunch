@@ -19,7 +19,7 @@ architecture_color_map = dict(
     LSTM='tab:red',
     GRU='tab:green',
     UGRNN='tab:orange',
-    # SRNN='tab:cyan',
+    SRNN='tab:cyan',
 )
 
 activation_marker_map = dict(
@@ -1701,7 +1701,7 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
         loc='center left',  # Legend goes center-left of anchor
     )
     plt.xlabel('Activity Participation Ratio')
-    plt.ylabel('Neural Predictivity')
+    plt.ylabel('Neural Predictivity\n(Pearson Correlation)')
 
     plot_path = os.path.join(plot_dir,
                              f'neural_predictivity_vs_activity_participation_ratio_by_architecture_and_activation.png')
@@ -1716,6 +1716,7 @@ def plot_neural_predictivity_vs_activity_participation_ratio_by_architecture_and
 def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation(
         trained_neural_predictivity_and_ID_df: pd.DataFrame,
         plot_dir: str):
+
     g = sns.scatterplot(
         x='rate_maps_participation_ratio',
         y='Trained',
@@ -1727,7 +1728,7 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
         loc='center left',  # Legend goes center-left of anchor
     )
     plt.xlabel('Rate Maps Participation Ratio')
-    plt.ylabel('Neural Predictivity')
+    plt.ylabel('Neural Predictivity\n(Pearson Correlation)')
 
     plot_path = os.path.join(plot_dir,
                              f'neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_and_activation.pdf')
@@ -1765,7 +1766,7 @@ def plot_neural_predictivity_vs_rate_maps_participation_ratio_by_architecture_an
             marker=activation_marker_map[row['Activation'][0]])
 
     plt.xlabel('Participation Ratio of Rate Maps')
-    plt.ylabel('Neural Predictivity')
+    plt.ylabel('Neural Predictivity\n(Pearson Correlation)')
 
     # Add custom legend.
     # https://stackoverflow.com/a/45141109/4570472
@@ -2526,6 +2527,7 @@ def plot_rate_maps_examples_hexagons_by_score_range(
             run_id = row['run_id']
             neuron_idx = row['neuron_idx']
             score_60 = row['score_60_by_neuron']
+            print(f"Run ID: {run_id}\tNeuron Idx: {neuron_idx}\tScore: {score_60}")
             rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
 
             if smooth:
