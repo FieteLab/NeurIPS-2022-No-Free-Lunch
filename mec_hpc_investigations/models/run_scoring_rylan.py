@@ -13,7 +13,7 @@ from mec_hpc_investigations.models.utils import configure_options, configure_mod
 
 
 results_dir = 'results'
-wandb_run_id = sys.argv[1]  # '0dxm9nbz'
+wandb_run_id = sys.argv[1]
 # wandb_run_id = 'gaqt4cge'
 print(f'W&B Run ID: {wandb_run_id}')
 run_dir = os.path.join(results_dir, wandb_run_id)
@@ -40,12 +40,26 @@ print('Loaded model')
 # the position decoder is part of the PlaceCell class, we instead just copy over
 # the relevant data members.
 if options.place_field_values != 'cartesian':
+
     training_place_cells = joblib.load(place_cells_path)
     model.place_cells.us = training_place_cells.us
     model.place_cells.place_cell_rf = training_place_cells.place_cell_rf
     model.place_cells.surround_scale = training_place_cells.surround_scale
     model.place_cells.fields_to_delete = training_place_cells.fields_to_delete
     model.place_cells.fields_to_keep = training_place_cells.fields_to_keep
+
+    if options.place_field_values == "high_dim_cartesian":
+        model.place_cells.slopes = training_place_cells.slopes
+        model.place_cells.intercepts = training_place_cells.intercepts
+        model.place_cells.slopes_pinv = training_place_cells.slopes_pinv
+
+    if options.place_field_values == "high_dim_polar":
+        model.place_cells.slopes = training_place_cells.slopes
+        model.place_cells.intercepts = training_place_cells.intercepts
+        model.place_cells.slopes_pinv = training_place_cells.slopes_pinv
+        model.place_cells.von_mises_centers = training_place_cells.von_mises_centers
+        model.place_cells.von_mises_concentrations = training_place_cells.von_mises_concentrations
+
     print('Loaded place cells.')
 
 # Create the trainer, trajectory generator and grid scorer.

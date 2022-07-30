@@ -79,6 +79,7 @@ runs_configs_df = runs_configs_df[~redundant_runs]
 
 # Append the number of runs per human-readable sweep to the human-readable sweep.
 num_runs_per_human_readable_sweep = runs_configs_df.groupby('human_readable_sweep').size().to_dict()
+print(f"Num Runs per Human Readable Sweep: {num_runs_per_human_readable_sweep}")
 runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
     lambda row: row['human_readable_sweep'] + "\nN = " + str(num_runs_per_human_readable_sweep[row['human_readable_sweep']]),
     axis=1)
