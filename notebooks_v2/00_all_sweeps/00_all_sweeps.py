@@ -20,7 +20,7 @@ grid_score_d90_threshold = 1.5
 sweep_ids = [
     'gvxvhnx8',     # Low Dim Cartesian
     '2ks3s65c',     # High Dim Cartesian
-    # 'vndf9snd',     # Polar
+    'm10yfzgz',     # High Dim Polar
     'oa0v2uzr',     # G
     'nisioabg',     # DoG
     'vxbwdefk',     # DoS

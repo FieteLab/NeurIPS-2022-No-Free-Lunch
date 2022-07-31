@@ -7,7 +7,7 @@ from mec_hpc_investigations.models.analyze import *
 from mec_hpc_investigations.models.plot import *
 
 # Declare variables.
-notebook_dir = 'notebooks_v2/09_dog_heterogeneous_rf_ss'
+notebook_dir = 'notebooks_v2/13_dos_multiple_fields_and_scales'
 data_dir = os.path.join(notebook_dir, 'data')
 os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
@@ -30,17 +30,13 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
-homogeneous_indices = (runs_configs_df['n_place_cells_per_field'] == '1') & \
-                      (runs_configs_df['place_cell_rf'] == '0.12') \
-                      & (runs_configs_df['surround_scale'] == '2')
-heterogeneous_indices = (runs_configs_df['n_place_cells_per_field'] == '1') & \
-                        (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-                        & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
-
-print(f"Num homogeneous runs: {sum(homogeneous_indices)}")
-print(f"Num heterogeneous runs: {sum(heterogeneous_indices)}")
-
-indices_to_keep = homogeneous_indices | heterogeneous_indices
+single_scale_single_field_indices = (runs_configs_df['n_place_cells_per_field'] == '1') & \
+                                    (runs_configs_df['place_cell_rf'] == '0.12') \
+                                    & (runs_configs_df['surround_scale'] == '2')
+multi_scale_multi_field_indices = (runs_configs_df['n_place_cells_per_field'] == 'Poisson( 3.0 )') & \
+                                  (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                                  & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+indices_to_keep = single_scale_single_field_indices | multi_scale_multi_field_indices
 runs_configs_df = runs_configs_df[indices_to_keep]
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
@@ -119,17 +115,17 @@ plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-heterogeneous_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-                        & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+multi_scale_multi_field_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                                  & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
 
 plot_rate_maps_examples_hexagons_by_score_range(
-    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[heterogeneous_indices],
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[multi_scale_multi_field_indices],
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
 plot_rate_maps_examples_squares_by_score_range(
-    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[heterogeneous_indices],
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[multi_scale_multi_field_indices],
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-print('Finished 09_heterogeneous_receptive_field/09_heterogeneous_receptive_field.py!')
+print('Finished 13_dos_multiple_fields_and_scales/13_dos_multiple_fields_and_scales.py!')

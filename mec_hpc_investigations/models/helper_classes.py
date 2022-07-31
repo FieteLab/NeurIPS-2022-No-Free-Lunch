@@ -309,8 +309,10 @@ class PlaceCells(object):
             # Convert to polar
             # Shape: (batch size, seq len, 1)
             r = tf.math.sqrt(tf.reduce_sum(tf.math.square(pos), axis=2, keepdims=True))
+
+            # atan2 respects the signs of the arguments! atan does not.
             # Shape: (batch size, seq len, 1)
-            theta = tf.math.atan(pos[..., 1, tf.newaxis] / pos[..., 0, tf.newaxis])
+            theta = tf.math.atan2(y=pos[..., 1, tf.newaxis], x=pos[..., 0, tf.newaxis])
 
             # Shape: (batch size, seq len, Np // 2)
             distance_neurons = tf.matmul(r, self.slopes) + self.intercepts

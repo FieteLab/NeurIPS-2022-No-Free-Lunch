@@ -9,6 +9,8 @@ parameters:
     values: [
         'relu',
         'tanh',
+        'linear',
+        'sigmoid',
     ]
   batch_size:
     values: [200]
@@ -29,9 +31,9 @@ parameters:
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [200]
+    values: [20]
   n_grad_steps_per_epoch:
-    values: [100]
+    values: [1000]
   n_place_fields_per_cell:
     values: [ 1 ]
   Ng:
@@ -74,6 +76,6 @@ parameters:
   sequence_length:
     values: [20]
   surround_scale:
-    values: [1.]
+    values: [0.]
   weight_decay:
       values: [0, 0.0001 ]

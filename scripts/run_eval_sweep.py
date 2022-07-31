@@ -11,7 +11,10 @@ import wandb
 # sweep_ids = ['gvxvhnx8']
 
 # Cartesian (High Dim)
-sweep_ids = ['2ks3s65c']
+# sweep_ids = ['2ks3s65c']
+
+# Polar
+# sweep_ids = ['m10yfzgz']
 
 # Gaussian
 # sweep_ids = ['oa0v2uzr']
@@ -21,6 +24,9 @@ sweep_ids = ['2ks3s65c']
 
 # DoS (done)
 # sweep_ids = ['vxbwdefk']
+
+# DoS (Multiple field, multiple scale
+sweep_ids = ['lk012xp8', '2lj5ngjz']
 
 # Nayebi sweep (done)
 # sweep_ids = ['59lptrr1']
