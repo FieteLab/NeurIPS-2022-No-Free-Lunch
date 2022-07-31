@@ -26,7 +26,8 @@ sweep_ids = [
     'vxbwdefk',     # DoS
     '8qcojz8h',     # SoD (Softmax of Differences)
     'rwb622oq',     # Multi-Scale DoS
-    'lk012xp8',     # Multi-field, Multi-Scale DoS
+    'lk012xp8',     # Multi-field, Multi-Scale DoS Part 1
+    '2lj5ngjz',     # Multi-field, Multi-Scale DoS Part 2
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(

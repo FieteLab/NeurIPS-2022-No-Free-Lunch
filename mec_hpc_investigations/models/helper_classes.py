@@ -211,6 +211,7 @@ class PlaceCells(object):
                 dtype=tf.float32)
         elif self.place_field_values == 'high_dim_polar':
             assert self.max_n_place_fields_per_cell == 1
+            assert (self.Np % 2) == 0
             self.slopes = tf.random.uniform(
                 shape=(1, self.Np // 2),
                 minval=-1.,
@@ -227,11 +228,12 @@ class PlaceCells(object):
                 minval=-np.pi,
                 maxval=np.pi,
                 dtype=tf.float32)
-            self.von_mises_concentrations = tf.random.uniform(
-                shape=(1, 1, self.Np // 2),
-                minval=0.,
-                maxval=2.,
-                dtype=tf.float32)
+            # self.von_mises_concentrations = tf.random.uniform(
+            #     shape=(1, 1, self.Np // 2),
+            #     minval=0.1,
+            #     maxval=2.,
+            #     dtype=tf.float32)
+            self.von_mises_concentrations = 1.0
 
         # Create place cell receptive field tensor.
         if isinstance(options.place_cell_rf, (float, int)):
@@ -323,9 +325,6 @@ class PlaceCells(object):
             outputs = tf.concat([distance_neurons, angle_neurons], axis=2)
 
             return outputs
-
-        if self.place_field_values == 'high_dim_polar':
-            raise NotImplementedError
 
         # Shape: (batch size, sequence length, num place cells, max num fields per cell, 2)
         d = tf.abs(pos[:, :, tf.newaxis, tf.newaxis, :] - self.us[tf.newaxis, tf.newaxis, ...])
@@ -443,6 +442,8 @@ class PlaceCells(object):
                              activation,
                              k: int = 3):
         '''
+        # TODO: Rename this function "get_prediction_position"
+
         Decode position using centers of k maximally active place cells.
         Args:
             activation: Place cell activations of shape [batch_size, sequence_length, Np].
@@ -468,16 +469,23 @@ class PlaceCells(object):
             pred_pos = tf.stack([pred_x, pred_y], axis=2)
         elif self.place_field_values == 'high_dim_polar':
             # Shape: (batch size, seq length, 1)
-            pred_r = tf.matmul(activation[:, :, :self.Np // 2] - self.intercepts, self.slopes_pinv)
+            pred_r = tf.matmul(activation[:, :, :(self.Np // 2)] - self.intercepts, self.slopes_pinv)
+
+            # Shape: (1, 1, batch size, seq length)
+            pred_theta = tf.gather(
+                self.von_mises_centers,
+                tf.math.argmax(activation[:, :, (self.Np // 2):], axis=2),
+                axis=2)
             # Shape: (batch size, seq length, 1)
-            pred_theta = tf.add(
-                tf.divide(tf.math.log(activation[:, :, self.Np // 2:]),
-                          self.von_mises_concentrations),
-                self.von_mises_centers)
+            pred_theta = tf.reshape(
+                pred_theta,
+                (pred_theta.shape[2], pred_theta.shape[3], 1),  # (batch size, seq len, 1)
+            )
+
             pred_x = pred_r * tf.math.cos(pred_theta)
             pred_y = pred_r * tf.math.sin(pred_theta)
             # Shape: (batch size, seq len, 2)
-            pred_pos = tf.stack([pred_x, pred_y], axis=2)
+            pred_pos = tf.concat([pred_x, pred_y], axis=2)
 
         else:
             # # Original:

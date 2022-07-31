@@ -10,7 +10,7 @@ pandas==1.4.2
 POT==0.7.0
 scikit_learn==1.0.2
 scikit-image~=0.19.2
-scikit-dimension~=0.3.1
+scikit-dimension~=0.3.0
 scipy==1.5.2
 tensorflow==2.8.0
 tqdm==4.49.0
