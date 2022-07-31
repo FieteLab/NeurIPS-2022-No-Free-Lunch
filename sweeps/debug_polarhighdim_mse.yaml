@@ -21,15 +21,13 @@ parameters:
   initializer:
     values: [
       'glorot_uniform',
-      'glorot_normal',
-      'orthogonal',
     ]
   is_periodic:
     values: [False]
   learning_rate:
     values: [0.0001]
   n_epochs:
-    values: [200]
+    values: [50]
   n_grad_steps_per_epoch:
     values: [100]
   n_place_fields_per_cell:
@@ -59,15 +57,12 @@ parameters:
       0.
     ]
   readout_dropout:
-    values: [0., 0.5]
+    values: [0.]
   recurrent_dropout:
-    values: [ 0., 0.5 ]
+    values: [ 0. ]
   rnn_type:
     values: [
         'RNN',
-        'LSTM',
-        'UGRNN',
-        'GRU',
     ]
   seed:
     values: [ 0, 1, 2 ]
@@ -76,4 +71,4 @@ parameters:
   surround_scale:
     values: [1.]
   weight_decay:
-      values: [0, 0.0001 ]
+      values: [0.0001 ]
