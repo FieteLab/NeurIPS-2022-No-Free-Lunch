@@ -29,8 +29,8 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
-homogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
-                      (runs_configs_df['place_cell_rf'] == '0.12') \
+homogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) \
+                      & (runs_configs_df['place_cell_rf'] == '0.12') \
                       & (runs_configs_df['surround_scale'] == '2')
 # heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
 #                         (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
@@ -38,6 +38,7 @@ homogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
 heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
                         (runs_configs_df['place_cell_rf'] != '0.12') \
                         & (runs_configs_df['surround_scale'] != '2')
+
 
 print(f"Num homogeneous runs: {sum(homogeneous_indices)}")
 print(f"Num heterogeneous runs: {sum(heterogeneous_indices)}")

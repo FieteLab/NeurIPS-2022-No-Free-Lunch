@@ -713,23 +713,44 @@ def plot_grid_scores_kde(
     print(f'Plotted {plot_path}')
 
 
+def plot_grid_scores_kde_cdf(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    sns.kdeplot(
+        data=neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        cumulative=True)
+    plt.xlabel('Grid Score')
+    plt.ylabel('Cumulative Density')
+    plot_path = os.path.join(plot_dir, f'grid_scores_kde_cdf.png')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+    print(f'Plotted {plot_path}')
+
+
 def plot_grid_scores_kdes_by_human_readable_sweep(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
 
     plt.close()
-
+    fig, ax = plt.subplots(figsize=(16, 12))
     g = sns.kdeplot(
         # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
         common_norm=False,  # Ensure each sweep is normalized separately.
-        hue='human_readable_sweep')
+        hue='human_readable_sweep',
+        ax=ax)
     sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
-    # g.legend_.set_title('')
+    g._legend.set_title('')
     # g.legend_.set_title('Sweep')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')
+    plt.xlim(-0.75, 1.2)
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_kdes_by_human_readable_sweep.png'),
                 bbox_inches='tight',
@@ -744,17 +765,21 @@ def plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
 
     plt.close()
 
+    fig, ax = plt.subplots(figsize=(16, 12))
+
     g = sns.kdeplot(
         data=augmented_neurons_data_by_run_id_df,
         x='score_60_by_neuron',
         common_norm=False,  # Ensure each sweep is normalized separately.
         cumulative=True,
-        hue='human_readable_sweep')
+        hue='human_readable_sweep',
+        ax=ax)
     sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
-    # g.legend_.set_title('')
+    g.legend_.set_title('')
     # g.legend_.set_title('Sweep')
+    plt.xlim(-0.75, 1.2)
     plt.xlabel('Grid Score')
-    plt.ylabel('Density')
+    plt.ylabel('Cumulative Density')
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_kdes_cdfs_by_human_readable_sweep.png'),
                 bbox_inches='tight',
@@ -1444,7 +1469,7 @@ def plot_loss_min_vs_optimizer(runs_configs_df: pd.DataFrame,
 def plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
         runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str,
-        low_pos_decoding_err_threshold_in_cm: float = 6.):
+        low_pos_decoding_err_threshold_in_cm: float = 10.):
     plt.close()
     runs_configs_with_scores_max_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'] = \
         runs_configs_with_scores_max_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
@@ -1984,7 +2009,7 @@ def plot_percent_have_possible_grid_cells_given_low_pos_decoding_err_vs_human_re
         ax.set_ylim(0., 1.)
         # ax.set_title(r'$60^{\circ}$')
         # plt.title(r'$60^{\circ}$')
-        fig.suptitle('Fraction of Runs with Possible Grid Cells | Low Position Decoding Error')
+        fig.suptitle(f'Fraction of Runs with Possible Grid Cells (Max Grid Score > {threshold}) | Low Position Decoding Error')
         # ax.set_ylabel(
         #     f'Frac Runs\nMax Grid Score > {threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm} cm')
         ax.set_xlabel('')
@@ -2014,7 +2039,7 @@ def plot_percent_have_possible_grid_cells_given_low_pos_decoding_err_vs_human_re
 def plot_percent_type_lattice_cells_given_low_pos_decoding_err_vs_activation(
         runs_performance_df: pd.DataFrame,
         plot_dir: str,
-        low_pos_decoding_err_threshold_in_cm: float = 6.,
+        low_pos_decoding_err_threshold_in_cm: float = 10.,
         grid_score_d60_threshold: float = 1.2,
         grid_score_d90_threshold: float = 1.4):
     plt.close()
@@ -2131,7 +2156,7 @@ def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
 
 def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
                                                     plot_dir: str,
-                                                    low_pos_decoding_err_threshold_in_cm: float = 6.):
+                                                    low_pos_decoding_err_threshold_in_cm: float = 10.):
     plt.close()
 
     pos_decoding_err_below_threshold_col = f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'
@@ -2165,12 +2190,12 @@ def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFram
 def plot_percent_low_decoding_err_vs_human_readable_sweep(
         runs_configs_df: pd.DataFrame,
         plot_dir: str,
-        low_pos_decoding_err_threshold_in_cm: float = 6.):
+        low_pos_decoding_err_threshold_in_cm: float = 10.):
     plt.close()
     runs_configs_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'] = \
         runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 
-    fig, ax = plt.subplots(figsize=(20, 8))
+    fig, ax = plt.subplots(figsize=(32, 8))
     sns.barplot(x="human_readable_sweep",
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}',
                 data=runs_configs_df,

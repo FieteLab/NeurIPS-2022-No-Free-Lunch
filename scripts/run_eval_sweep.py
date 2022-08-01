@@ -52,7 +52,7 @@ sweep_ids = ['lk012xp8', '2lj5ngjz']
 # run_ids = list(sorted(os.listdir(results_dir)))
 
 # Specific runs
-run_ids = ['095wjc71', '8h5ojyoy', 'gftruqhj', '55fiu4dc', '28gzce8b', 'ptkioiul', 'jjiyfu0m', '4vm43lru', '6w1bcn2m']
+run_ids = ['095wjc71', '8h5ojyoy', 'gftruqhj', '55fiu4dc', '28gzce8b', 'ptkioiul']
 
 
 # random.shuffle functions in-place.

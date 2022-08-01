@@ -48,17 +48,17 @@ def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     elif sweep_id in {'m10yfzgz'}:
         human_readable_sweep = 'Polar\nHigh Dim'
     elif sweep_id in {'oa0v2uzr'}:
-        human_readable_sweep = 'Gaussian PCs'
+        human_readable_sweep = 'Gaussian'
     elif sweep_id in {'nisioabg'}:
-        human_readable_sweep = 'DoG PCs'
+        human_readable_sweep = 'DoG'
     elif sweep_id in {'vxbwdefk'}:
-        human_readable_sweep = 'DoS PCs'
+        human_readable_sweep = 'DoS'
     elif sweep_id in {'8qcojz8h'}:
-        human_readable_sweep = 'SoD PCs'
+        human_readable_sweep = 'SoD'
     elif sweep_id in {'rwb622oq'}:
-        human_readable_sweep = 'DoS PCs\nMulti-Scale'
+        human_readable_sweep = 'DoS\n~Scale'
     elif sweep_id in {'lk012xp8', '2lj5ngjz'}:
-        human_readable_sweep = 'DoS PCs\nMulti-Field & -Scale'
+        human_readable_sweep = 'DoS\n~Field & ~Scale'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -69,9 +69,10 @@ runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
     convert_sweeps_to_human_readable_sweep,
     axis=1)
 
-# Exclude the RF=0.12, SS=2.0 from the DoS Multi-Scale sweep
+# Exclude the RF=0.12, SS=2.0 from the DoS Multi-Scale sweeps
 # because those are redundant with the DoS sweep.
-redundant_runs = (runs_configs_df['human_readable_sweep'] == 'DoS (Multi-Scale)') \
+redundant_runs = ((runs_configs_df['human_readable_sweep'] == 'DoS\n~Scale') |
+                  (runs_configs_df['human_readable_sweep'] == 'DoS\n~Field & ~Scale')) \
                  & ((runs_configs_df['place_cell_rf'] == "0.12")
                     | (runs_configs_df['surround_scale'] == "2"))
 print(f"Num redundant runs to exclude: {redundant_runs.sum()}")
@@ -166,9 +167,9 @@ plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-plot_grid_scores_histograms_by_human_readable_sweep(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
+# plot_grid_scores_histograms_by_human_readable_sweep(
+#     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+#     plot_dir=results_dir)
 
 # plot_grid_scores_histograms_by_place_field_values(
 #     augmented_neurons_data_by_run_id_df=
