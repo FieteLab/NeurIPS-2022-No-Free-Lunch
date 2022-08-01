@@ -30,12 +30,34 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
+
+# Add human-readable sweep
+def convert_sweeps_to_human_readable_sweep(row: pd.Series):
+    sweep_id = row['Sweep']
+    if sweep_id in {'gvxvhnx8'}:
+        human_readable_sweep = 'DoS (Ideal)'
+    elif sweep_id in {'lk012xp8', '2lj5ngjz'}:
+        human_readable_sweep = 'DoS (~Field, ~Scale)'
+    else:
+        # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
+        raise ValueError
+    return human_readable_sweep
+
+
+runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
+    convert_sweeps_to_human_readable_sweep,
+    axis=1)
+
 single_scale_single_field_indices = (runs_configs_df['n_place_fields_per_cell'] == '1') & \
                                     (runs_configs_df['place_cell_rf'] == '0.12') \
                                     & (runs_configs_df['surround_scale'] == '2')
 multi_scale_multi_field_indices = (runs_configs_df['n_place_fields_per_cell'] == 'Poisson( 3.0 )') & \
-                                  (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-                                  & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+                                  (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 1.0 )') \
+                                  & (runs_configs_df['surround_scale'] == 'Uniform( 1.25 , 4.50 )')
+
+print(f"Num single-scale & single-field runs: {sum(single_scale_single_field_indices)}")
+print(f"Num multi-scale & multi-field runs: {sum(multi_scale_multi_field_indices)}")
+
 indices_to_keep = single_scale_single_field_indices | multi_scale_multi_field_indices
 runs_configs_df = runs_configs_df[indices_to_keep]
 
@@ -78,16 +100,16 @@ plot_percent_runs_with_grid_cells_pie(
 #     plot_dir=results_dir)
 
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
-    'run_id', 'place_cell_rf', 'surround_scale']].merge(
+    'run_id', 'place_cell_rf', 'surround_scale', 'human_readable_sweep']].merge(
     neurons_data_by_run_id_df,
     on='run_id',
     how='left')
 
-plot_grid_scores_histograms_by_place_cell_rf_and_ss_homo_vs_hetero(
+plot_grid_scores_histograms_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
-plot_grid_scores_kdes_by_place_cell_rf_and_ss_homo_vs_hetero(
+plot_grid_scores_kdes_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
@@ -100,32 +122,11 @@ augmented_percent_neurons_score60_above_threshold_by_run_id_df = runs_configs_df
     on='run_id',
     how='left')
 
-plot_grid_periods_kde_by_place_cell_rf_by_place_cell_ss(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_grid_periods_histograms_by_place_cell_rf_by_place_cell_ss(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_grid_scores_vs_place_cell_rf_by_place_cell_ss(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
-    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
-
-multi_scale_multi_field_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-                                  & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+# multi_scale_multi_field_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+#                                   & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
 
 plot_rate_maps_examples_hexagons_by_score_range(
-    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[multi_scale_multi_field_indices],
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
-    plot_dir=results_dir)
-
-plot_rate_maps_examples_squares_by_score_range(
-    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[multi_scale_multi_field_indices],
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,  # [multi_scale_multi_field_indices],
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 

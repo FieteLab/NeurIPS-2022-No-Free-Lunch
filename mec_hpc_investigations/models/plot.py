@@ -746,7 +746,7 @@ def plot_grid_scores_kdes_by_human_readable_sweep(
         hue='human_readable_sweep',
         ax=ax)
     sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
-    g._legend.set_title('')
+    g.legend_.set_title('')
     # g.legend_.set_title('Sweep')
     plt.xlabel('Grid Score')
     plt.ylabel('Density')

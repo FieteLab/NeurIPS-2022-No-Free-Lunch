@@ -56,9 +56,11 @@ def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     elif sweep_id in {'8qcojz8h'}:
         human_readable_sweep = 'SoD'
     elif sweep_id in {'rwb622oq'}:
-        human_readable_sweep = 'DoS\n~Scale'
+        # human_readable_sweep = 'DoS\n~Scale'
+        human_readable_sweep = 'DoS'
     elif sweep_id in {'lk012xp8', '2lj5ngjz'}:
-        human_readable_sweep = 'DoS\n~Field & ~Scale'
+        # human_readable_sweep = 'DoS\n~Field & ~Scale'
+        human_readable_sweep = 'DoS'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError

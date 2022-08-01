@@ -14,7 +14,7 @@ import wandb
 # sweep_ids = ['2ks3s65c']
 
 # Polar
-# sweep_ids = ['m10yfzgz']
+sweep_ids = ['m10yfzgz']
 
 # Gaussian
 # sweep_ids = ['oa0v2uzr']
@@ -29,20 +29,23 @@ import wandb
 # sweep_ids = ['rwb622oq']
 
 # DoS Multiple field & Multiple scale
-sweep_ids = ['lk012xp8', '2lj5ngjz']
+# sweep_ids = ['lk012xp8', '2lj5ngjz']
 
 # Nayebi sweep (done)
 # sweep_ids = ['59lptrr1']
 
+# Ideal DoG
+# sweep_ids = ['bav6z2py']
+
 
 # Fetch runs associated with the relevant sweeps.
-# api = wandb.Api(timeout=60)
-# run_ids = []
-# for sweep_id in sweep_ids:
-#     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
-#     sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
-#     run_ids.extend(sweep_run_ids)
-# print(f'Collected runs from sweeps: {sweep_ids}')
+api = wandb.Api(timeout=60)
+run_ids = []
+for sweep_id in sweep_ids:
+    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+    run_ids.extend(sweep_run_ids)
+print(f'Collected runs from sweeps: {sweep_ids}')
 
 
 ### Option 2: Manually specify run IDs.
@@ -52,7 +55,7 @@ sweep_ids = ['lk012xp8', '2lj5ngjz']
 # run_ids = list(sorted(os.listdir(results_dir)))
 
 # Specific runs
-run_ids = ['095wjc71', '8h5ojyoy', 'gftruqhj', '55fiu4dc', '28gzce8b', 'ptkioiul']
+# run_ids = ['095wjc71', '8h5ojyoy', 'gftruqhj', '55fiu4dc', '28gzce8b', 'ptkioiul']
 
 
 # random.shuffle functions in-place.

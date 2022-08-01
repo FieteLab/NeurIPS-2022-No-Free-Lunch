@@ -30,15 +30,21 @@ runs_configs_df = download_wandb_project_runs_configs(
     refresh=False)
 
 homogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) \
+                      & (runs_configs_df['rnn_type'] == 'RNN') \
                       & (runs_configs_df['place_cell_rf'] == '0.12') \
                       & (runs_configs_df['surround_scale'] == '2')
-# heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
-#                         (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-#                         & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
 heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
-                        (runs_configs_df['place_cell_rf'] != '0.12') \
-                        & (runs_configs_df['surround_scale'] != '2')
+                        (runs_configs_df['rnn_type'] == 'RNN') & \
+                        (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+                        & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+# heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
+#                         (runs_configs_df['place_cell_rf'] != '0.12') \
+#                         & (runs_configs_df['surround_scale'] != '2')
 
+
+runs_configs_df['descr'] = ''
+runs_configs_df['descr'][homogeneous_indices] = 'homo'
+runs_configs_df['descr'][heterogeneous_indices] = 'hetero'
 
 print(f"Num homogeneous runs: {sum(homogeneous_indices)}")
 print(f"Num heterogeneous runs: {sum(heterogeneous_indices)}")
