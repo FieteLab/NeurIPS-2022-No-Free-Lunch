@@ -8,7 +8,7 @@ import pandas as pd
 import scipy.ndimage
 import seaborn as sns
 from sklearn.neighbors import KernelDensity
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 plt.rcParams["font.family"] = ["Times New Roman"]
 plt.rcParams["font.size"] = 25  # was previously 22
@@ -790,11 +790,12 @@ def plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
 
 def plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
-        plot_dir: str):
+        plot_dir: str,
+        figsize: Tuple[int] = (10, 8)):
 
     plt.close()
 
-    fig, ax = plt.subplots(figsize=(16, 12))
+    fig, ax = plt.subplots(figsize=figsize)
 
     g = sns.kdeplot(
         data=augmented_neurons_data_by_run_id_df,
@@ -2675,11 +2676,12 @@ def plot_rate_maps_examples_hexagons_by_score_sorted(
         neurons_data_by_run_id_df: pd.DataFrame,
         joblib_files_data_by_run_id_dict: Dict[str, Dict[str, np.ndarray]],
         plot_dir: str,
-        max_num_ratemaps_per_range: int = 12,
+        max_num_ratemaps: int = 12,
         smooth: bool = True):
+
     # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
     n_cols = 4
-    n_rows = int(np.ceil(max_num_ratemaps_per_range / n_cols))
+    n_rows = int(np.ceil(max_num_ratemaps / n_cols))
 
     fig, axes = plt.subplots(
         nrows=n_rows,
@@ -2688,64 +2690,70 @@ def plot_rate_maps_examples_hexagons_by_score_sorted(
         sharey=True,
         sharex=True,
         gridspec_kw={'width_ratios': [1] * n_cols})
-    #
-    # neurons_data = neurons_data_by_run_id_df[['run_id']]
 
-    # for ax_idx, (row_idx, row) in enumerate(neurons_data_by_run_id_df.iterrows()):
-    #     run_id = row['run_id']
-    #     neuron_idx = row['neuron_idx']
-    #     score_60 = row['score_60_by_neuron']
-    #     rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
-    #
-    #     if smooth:
-    #         rate_map = np.copy(rate_map)
-    #         rate_map[np.isnan(rate_map)] = 0.
-    #         rate_map = scipy.ndimage.gaussian_filter(rate_map, sigma=2.)
-    #
-    #     row, col = ax_idx // n_cols, ax_idx % n_cols
-    #     ax = axes[row, col]
-    #
-    #     sns.heatmap(
-    #         data=rate_map,
-    #         # vmin=np.nanmin(rate_maps[storage_idx]),
-    #         # vmax=np.nanmax(rate_maps[storage_idx]),
-    #         ax=ax,
-    #         cbar=False,
-    #         cmap='Spectral_r',
-    #         square=True,
-    #         yticklabels=False,
-    #         xticklabels=False)
-    #
-    #     ax.set_title(f'{np.round(score_60, 2)}')
-    #
-    #     # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
-    #     ax.invert_yaxis()
-    #
-    # # Replace any empty subplots with empty heatmaps
-    # empty_rate_map = np.full_like(rate_map, fill_value=np.nan)
-    # for ax_idx in range(ax_idx, n_rows * n_cols):
-    #     row, col = ax_idx // n_cols, ax_idx % n_cols
-    #     ax = axes[row, col]
-    #     sns.heatmap(
-    #         data=empty_rate_map,
-    #         ax=ax,
-    #         cbar=False,
-    #         cmap='Spectral_r',
-    #         square=True,
-    #         yticklabels=False,
-    #         xticklabels=False)
-    #
-    # plt.tight_layout()
-    #
-    # plot_path = os.path.join(plot_dir,
-    #                          f'rate_maps_examples_hexagons_by_score_sorted.png')
-    # plt.savefig(plot_path,
-    #             bbox_inches='tight',
-    #             dpi=300)
+    neurons_data_by_run_id_df.sort_values(
+        by='score_60_by_neuron',
+        ascending=False,
+        inplace=True
+    )
+
+    for ax_idx, (row_idx, row) in enumerate(neurons_data_by_run_id_df.iterrows()):
+
+        if ax_idx >= (n_rows * n_cols):
+            break
+
+        run_id = row['run_id']
+        neuron_idx = row['neuron_idx']
+        score_60 = row['score_60_by_neuron']
+        rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
+
+        if smooth:
+            rate_map = np.copy(rate_map)
+            rate_map[np.isnan(rate_map)] = 0.
+            rate_map = scipy.ndimage.gaussian_filter(rate_map, sigma=2.)
+
+        row, col = ax_idx // n_cols, ax_idx % n_cols
+        ax = axes[row, col]
+
+        sns.heatmap(
+            data=rate_map,
+            # vmin=np.nanmin(rate_maps[storage_idx]),
+            # vmax=np.nanmax(rate_maps[storage_idx]),
+            ax=ax,
+            cbar=False,
+            cmap='Spectral_r',
+            square=True,
+            yticklabels=False,
+            xticklabels=False)
+
+        ax.set_title(f'{np.round(score_60, 2)}')
+
+        # Seaborn's heatmap flips the y-axis by default. Flip it back ourselves.
+        ax.invert_yaxis()
+
+    # Replace any empty subplots with empty heatmaps
+    empty_rate_map = np.full_like(rate_map, fill_value=np.nan)
+    for ax_idx in range(ax_idx, n_rows * n_cols):
+        row, col = ax_idx // n_cols, ax_idx % n_cols
+        ax = axes[row, col]
+        sns.heatmap(
+            data=empty_rate_map,
+            ax=ax,
+            cbar=False,
+            cmap='Spectral_r',
+            square=True,
+            yticklabels=False,
+            xticklabels=False)
+
+    plt.tight_layout()
+
+    plot_path = os.path.join(plot_dir,
+                             f'rate_maps_examples_hexagons_by_score_sorted.png')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
     plt.show()
     plt.close()
-    # print(f'Plotted {plot_path}')
-    raise NotImplementedError
 
 
 def plot_rate_maps_examples_squares_by_score_range(

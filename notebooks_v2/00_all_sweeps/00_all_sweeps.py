@@ -171,7 +171,8 @@ plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
 
 plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
+    plot_dir=results_dir,
+    figsize=(8, 6))
 
 # plot_grid_scores_histograms_by_human_readable_sweep(
 #     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

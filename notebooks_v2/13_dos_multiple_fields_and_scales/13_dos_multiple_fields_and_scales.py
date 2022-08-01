@@ -129,7 +129,8 @@ plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
 
 plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
-    plot_dir=results_dir)
+    plot_dir=results_dir,
+    figsize=(8, 6))
 
 percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
@@ -147,5 +148,13 @@ plot_rate_maps_examples_hexagons_by_score_range(
     ],
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
+
+plot_rate_maps_examples_hexagons_by_score_sorted(
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[
+        augmented_neurons_data_by_run_id_df['human_readable_sweep'] == "DoS\nMultiple Fields\nMultiple Scales\nN = 6"
+        ],
+    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
+    plot_dir=results_dir
+)
 
 print('Finished 13_dos_multiple_fields_and_scales/13_dos_multiple_fields_and_scales.py!')
