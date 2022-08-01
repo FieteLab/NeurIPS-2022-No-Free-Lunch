@@ -755,7 +755,7 @@ def plot_grid_scores_kdes_by_human_readable_sweep(
                              f'grid_scores_kdes_by_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
-    plt.show()
+    # plt.show()
     plt.close()
 
 
@@ -784,7 +784,38 @@ def plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
                              f'grid_scores_kdes_cdfs_by_human_readable_sweep.png'),
                 bbox_inches='tight',
                 dpi=300)
-    plt.show()
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+
+    fig, ax = plt.subplots(figsize=(16, 12))
+
+    g = sns.kdeplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        common_norm=False,  # Ensure each sweep is normalized separately.
+        cumulative=True,
+        hue='human_readable_sweep',
+        ax=ax)
+    sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
+    g.legend_.set_title('')
+    plt.xlim(-0.75, 1.2)
+    plt.xlabel('Grid Score')
+    plt.ylabel('1 - Cumulative Density')
+    # Take 1-CDF to plot survival function
+    for line_idx in range(len(ax.lines)):
+        ax.lines[line_idx].set_ydata(1. - ax.lines[line_idx].get_ydata())
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_kdes_survival_functions_by_human_readable_sweep.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
     plt.close()
 
 
@@ -2191,11 +2222,15 @@ def plot_percent_low_decoding_err_vs_human_readable_sweep(
         runs_configs_df: pd.DataFrame,
         plot_dir: str,
         low_pos_decoding_err_threshold_in_cm: float = 10.):
+
     plt.close()
     runs_configs_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'] = \
         runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 
-    fig, ax = plt.subplots(figsize=(32, 8))
+    width = int(1 + 4 * len(runs_configs_df['human_readable_sweep'].unique()))
+    # fig, ax = plt.subplots(figsize=(32, 8))
+    fig, ax = plt.subplots(figsize=(width, 8))
+    # fig, ax = plt.subplots()
     sns.barplot(x="human_readable_sweep",
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}',
                 data=runs_configs_df,

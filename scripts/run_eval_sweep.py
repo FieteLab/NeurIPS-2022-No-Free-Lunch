@@ -55,7 +55,7 @@ print(f'Collected runs from sweeps: {sweep_ids}')
 # run_ids = list(sorted(os.listdir(results_dir)))
 
 # Specific runs
-# run_ids = ['095wjc71', '8h5ojyoy', 'gftruqhj', '55fiu4dc', '28gzce8b', 'ptkioiul']
+run_ids = ['0ro6eo9s', 'iny3vrhc', 'nau5pr5d', 'lsq216i7', 'qblmlwlc', '1l49bsit', 'v0lhwrf0', '0cm2nfwe', '6orcbkzw', '4t5wkwnc', 'zlxa5fkb', 'snllejtr', '7jgdgewo', 'gek19gjq', 'b53i6hy9', '76x03hu2', 'rmtx3kf0', 'ks7s6adp', 'nw9pit9l', 'tre2mgvw', 'le50ezwc', 'v81h0dyq', 'jgpyvm83', 'dmyd87fh', 'cl16efzi', 'uhbqyf5s', '8f8u5dyx', 'noy7wye5', 'n6ob6ulz', '99vu6tu4', 'wz3v82g5', 'i8jmfygt', 'jwzhc1ad', 'pslomn1y', '0f819ylb', 'y1yvhp6t', 'wvic6qza']
 
 
 # random.shuffle functions in-place.

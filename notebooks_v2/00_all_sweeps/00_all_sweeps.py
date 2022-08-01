@@ -105,7 +105,7 @@ plot_percent_runs_with_low_pos_decoding_err_pie(
 plot_pos_decoding_err_vs_human_readable_sweep(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir)
-#
+
 plot_percent_low_decoding_err_vs_human_readable_sweep(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir,
@@ -166,6 +166,10 @@ plot_grid_scores_kdes_by_human_readable_sweep(
     plot_dir=results_dir)
 
 plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 

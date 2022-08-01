@@ -19,8 +19,9 @@ low_pos_decoding_err_threshold_in_cm = 10.  # centimeters
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'lk012xp8',     # DoS, Multi-field, Multi-Scale Part 1
-    '2lj5ngjz',     # DoS, Multi-field, Multi-Scale Part 2
+    'bav6z2py',     # DoS Ideal
+    'lk012xp8',     # DoS Multi-field, Multi-Scale Part 1
+    '2lj5ngjz',     # DoS Multi-field, Multi-Scale Part 2
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -30,23 +31,6 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
-
-# Add human-readable sweep
-def convert_sweeps_to_human_readable_sweep(row: pd.Series):
-    sweep_id = row['Sweep']
-    if sweep_id in {'gvxvhnx8'}:
-        human_readable_sweep = 'DoS (Ideal)'
-    elif sweep_id in {'lk012xp8', '2lj5ngjz'}:
-        human_readable_sweep = 'DoS (~Field, ~Scale)'
-    else:
-        # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
-        raise ValueError
-    return human_readable_sweep
-
-
-runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
-    convert_sweeps_to_human_readable_sweep,
-    axis=1)
 
 single_scale_single_field_indices = (runs_configs_df['n_place_fields_per_cell'] == '1') & \
                                     (runs_configs_df['place_cell_rf'] == '0.12') \
@@ -61,6 +45,31 @@ print(f"Num multi-scale & multi-field runs: {sum(multi_scale_multi_field_indices
 indices_to_keep = single_scale_single_field_indices | multi_scale_multi_field_indices
 runs_configs_df = runs_configs_df[indices_to_keep]
 
+
+# Add human-readable sweep
+def convert_sweeps_to_human_readable_sweep(row: pd.Series):
+    sweep_id = row['Sweep']
+    if sweep_id in {'bav6z2py'}:
+        human_readable_sweep = 'DoS\nSingle Field\nSingle Scales'
+    elif sweep_id in {'lk012xp8', '2lj5ngjz'}:
+        human_readable_sweep = 'DoS\nMultiple Fields\nMultiple Scales'
+    else:
+        # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
+        raise ValueError
+    return human_readable_sweep
+
+
+runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
+    convert_sweeps_to_human_readable_sweep,
+    axis=1)
+
+# Append the number of runs per human-readable sweep to the human-readable sweep.
+num_runs_per_human_readable_sweep = runs_configs_df.groupby('human_readable_sweep').size().to_dict()
+print(f"Num Runs per Human Readable Sweep: {num_runs_per_human_readable_sweep}")
+runs_configs_df['human_readable_sweep'] = runs_configs_df.apply(
+    lambda row: row['human_readable_sweep'] + "\nN = " + str(num_runs_per_human_readable_sweep[row['human_readable_sweep']]),
+    axis=1)
+
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_df['run_id'].unique()),
     include_additional_data=True)
@@ -72,6 +81,11 @@ overwrite_runs_configs_df_values_with_joblib_data(
 plot_percent_runs_with_low_pos_decoding_err_pie(
     runs_configs_df=runs_configs_df,
     plot_dir=results_dir)
+
+plot_percent_low_decoding_err_vs_human_readable_sweep(
+    runs_configs_df=runs_configs_df,
+    plot_dir=results_dir,
+    low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold_in_cm)
 
 # Keep only networks that achieved low position decoding error.
 low_pos_decoding_indices = runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
@@ -95,10 +109,6 @@ plot_percent_runs_with_grid_cells_pie(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,)
 
-# plot_grid_score_max_vs_place_cell_rf_by_place_cell_ss(
-#     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
-#     plot_dir=results_dir)
-
 augmented_neurons_data_by_run_id_df = runs_configs_df[[
     'run_id', 'place_cell_rf', 'surround_scale', 'human_readable_sweep']].merge(
     neurons_data_by_run_id_df,
@@ -113,20 +123,28 @@ plot_grid_scores_kdes_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 
+plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 percent_neurons_score60_above_threshold_by_run_id_df = compute_percent_neurons_score60_above_threshold_by_run_id_df(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df)
 
 augmented_percent_neurons_score60_above_threshold_by_run_id_df = runs_configs_df[[
-    'run_id', 'place_cell_rf', 'surround_scale']].merge(
+    'human_readable_sweep', 'run_id', 'n_place_fields_per_cell', 'place_cell_rf',
+    'surround_scale']].merge(
     percent_neurons_score60_above_threshold_by_run_id_df,
     on='run_id',
     how='left')
 
-# multi_scale_multi_field_indices = (augmented_neurons_data_by_run_id_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-#                                   & (augmented_neurons_data_by_run_id_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
-
 plot_rate_maps_examples_hexagons_by_score_range(
-    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,  # [multi_scale_multi_field_indices],
+    neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[
+        augmented_neurons_data_by_run_id_df['human_readable_sweep'] == "DoS\nMultiple Fields\nMultiple Scales\nN = 6"
+    ],
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
