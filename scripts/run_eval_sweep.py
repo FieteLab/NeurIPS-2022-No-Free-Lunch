@@ -25,7 +25,10 @@ import wandb
 # DoS (done)
 # sweep_ids = ['vxbwdefk']
 
-# DoS (Multiple field, multiple scale
+# DoS Multiple Scale
+# sweep_ids = ['rwb622oq']
+
+# DoS Multiple field & Multiple scale
 sweep_ids = ['lk012xp8', '2lj5ngjz']
 
 # Nayebi sweep (done)

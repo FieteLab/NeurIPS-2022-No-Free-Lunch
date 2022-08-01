@@ -30,7 +30,7 @@ runs_configs_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=sweep_ids,
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 
 # Add 1 to Poissons because we used 1+Poisson number of fields
@@ -46,7 +46,8 @@ runs_configs_df['n_place_fields_per_cell'] = runs_configs_df.apply(
     axis=1)
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_df['run_id'].unique()))
+    run_ids=list(runs_configs_df['run_id'].unique()),
+    include_additional_data=True)
 
 overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,

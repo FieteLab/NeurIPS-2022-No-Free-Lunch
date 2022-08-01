@@ -19,8 +19,7 @@ low_pos_decoding_err_threshold_in_cm = 10.  # centimeters
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'lk012xp8',     # DoS, Multi-field, Multi-Scale Part 1
-    '2lj5ngjz',     # DoS, Multi-field, Multi-Scale Part 2
+    'rwb622oq',     # DoS, Multi-Scale Part 1
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -30,12 +29,15 @@ runs_configs_df = download_wandb_project_runs_configs(
     finished_only=True,
     refresh=False)
 
-homogeneous_indices = (runs_configs_df['n_place_cells_per_field'] == '1') & \
+homogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
                       (runs_configs_df['place_cell_rf'] == '0.12') \
                       & (runs_configs_df['surround_scale'] == '2')
-heterogeneous_indices = (runs_configs_df['n_place_cells_per_field'] == '1') & \
-                        (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
-                        & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+# heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
+#                         (runs_configs_df['place_cell_rf'] == 'Uniform( 0.06 , 0.18 )') \
+#                         & (runs_configs_df['surround_scale'] == 'Uniform( 1.50 , 2.50 )')
+heterogeneous_indices = (runs_configs_df['n_place_fields_per_cell'] == 1) & \
+                        (runs_configs_df['place_cell_rf'] != '0.12') \
+                        & (runs_configs_df['surround_scale'] != '2')
 
 print(f"Num homogeneous runs: {sum(homogeneous_indices)}")
 print(f"Num heterogeneous runs: {sum(heterogeneous_indices)}")
@@ -44,7 +46,8 @@ indices_to_keep = homogeneous_indices | heterogeneous_indices
 runs_configs_df = runs_configs_df[indices_to_keep]
 
 joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_df['run_id'].unique()))
+    run_ids=list(runs_configs_df['run_id'].unique()),
+    include_additional_data=True)
 
 overwrite_runs_configs_df_values_with_joblib_data(
     runs_configs_df=runs_configs_df,
