@@ -1,8 +1,7 @@
 #!/bin/bash
-#SBATCH -p fiete
-#SBATCH -n 2                    # one core
+#SBATCH -n 1                    # one core
 #SBATCH --mem=32G               # RAM
-#SBATCH --time=24:99:99         # total run time limit (HH:MM:SS)
+#SBATCH --time=02:00:00         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
 
 # Activate virtual environment.

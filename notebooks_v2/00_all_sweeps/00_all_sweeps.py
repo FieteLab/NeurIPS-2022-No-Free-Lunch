@@ -42,11 +42,11 @@ runs_configs_df = download_wandb_project_runs_configs(
 def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     sweep_id = row['Sweep']
     if sweep_id in {'gvxvhnx8'}:
-        human_readable_sweep = 'Cartesian\n(Low Dim)'
+        human_readable_sweep = 'Cartesian\nLow Dim'
     elif sweep_id in {'2ks3s65c'}:
-        human_readable_sweep = 'Cartesian\n(High Dim)'
-    # elif sweep_id in {'vndf9snd'}:
-    #     human_readable_sweep = 'Polar\nGeodesic'
+        human_readable_sweep = 'Cartesian\nHigh Dim'
+    elif sweep_id in {'m10yfzgz'}:
+        human_readable_sweep = 'Polar\nHigh Dim'
     elif sweep_id in {'oa0v2uzr'}:
         human_readable_sweep = 'Gaussian PCs'
     elif sweep_id in {'nisioabg'}:
@@ -56,9 +56,9 @@ def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     elif sweep_id in {'8qcojz8h'}:
         human_readable_sweep = 'SoD PCs'
     elif sweep_id in {'rwb622oq'}:
-        human_readable_sweep = 'DoS\n(Multi-Scale)'
-    elif sweep_id in {'lk012xp8'}:
-        human_readable_sweep = 'DoS\n(Multi-Field, Multi-Scale)'
+        human_readable_sweep = 'DoS PCs\nMulti-Scale'
+    elif sweep_id in {'lk012xp8', '2lj5ngjz'}:
+        human_readable_sweep = 'DoS PCs\nMulti-Field & -Scale'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -134,7 +134,6 @@ plot_percent_runs_with_grid_cells_pie(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,)
 
-
 plot_pos_decoding_err_vs_max_grid_score_by_human_readable_sweep(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir)
@@ -148,7 +147,7 @@ plot_max_grid_score_given_low_pos_decoding_err_vs_human_readable_sweep(
 #     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
 #     plot_dir=results_dir)
 
-plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
+plot_percent_have_possible_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,
     low_pos_decoding_err_threshold_in_cm=low_pos_decoding_err_threshold_in_cm)
@@ -160,6 +159,10 @@ augmented_neurons_data_by_run_id_df = runs_configs_df[[
     how='left')
 
 plot_grid_scores_kdes_by_human_readable_sweep(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
 

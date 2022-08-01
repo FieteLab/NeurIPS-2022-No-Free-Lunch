@@ -36,13 +36,13 @@ sweep_ids = ['lk012xp8', '2lj5ngjz']
 
 
 # Fetch runs associated with the relevant sweeps.
-api = wandb.Api(timeout=60)
-run_ids = []
-for sweep_id in sweep_ids:
-    sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
-    sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
-    run_ids.extend(sweep_run_ids)
-print(f'Collected runs from sweeps: {sweep_ids}')
+# api = wandb.Api(timeout=60)
+# run_ids = []
+# for sweep_id in sweep_ids:
+#     sweep = api.sweep(f'rylan/mec-hpc-investigations/{sweep_id}')
+#     sweep_run_ids = [run.id for run in sweep.runs if run.state == 'finished']
+#     run_ids.extend(sweep_run_ids)
+# print(f'Collected runs from sweeps: {sweep_ids}')
 
 
 ### Option 2: Manually specify run IDs.
@@ -52,7 +52,7 @@ print(f'Collected runs from sweeps: {sweep_ids}')
 # run_ids = list(sorted(os.listdir(results_dir)))
 
 # Specific runs
-# run_ids = []
+run_ids = ['095wjc71', '8h5ojyoy', 'gftruqhj', '55fiu4dc', '28gzce8b', 'ptkioiul', 'jjiyfu0m', '4vm43lru', '6w1bcn2m']
 
 
 # random.shuffle functions in-place.

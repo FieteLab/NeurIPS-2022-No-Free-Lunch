@@ -738,6 +738,31 @@ def plot_grid_scores_kdes_by_human_readable_sweep(
     plt.close()
 
 
+def plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+
+    g = sns.kdeplot(
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        common_norm=False,  # Ensure each sweep is normalized separately.
+        cumulative=True,
+        hue='human_readable_sweep')
+    sns.move_legend(g, "center left", bbox_to_anchor=(1, 0.5))
+    # g.legend_.set_title('')
+    # g.legend_.set_title('Sweep')
+    plt.xlabel('Grid Score')
+    plt.ylabel('Density')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_kdes_cdfs_by_human_readable_sweep.png'),
+                bbox_inches='tight',
+                dpi=300)
+    plt.show()
+    plt.close()
+
+
 def plot_grid_scores_kdes_by_place_cell_rf_and_ss_homo_vs_hetero(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
@@ -1934,10 +1959,10 @@ def plot_percent_grid_cells_vs_place_cell_rf_vs_place_cell_ss_by_threshold(
         print(f'Plotted {plot_path}')
 
 
-def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
+def plot_percent_have_possible_grid_cells_given_low_pos_decoding_err_vs_human_readable_sweep(
         runs_configs_with_scores_max_df: pd.DataFrame,
         plot_dir: str,
-        low_pos_decoding_err_threshold_in_cm: float = 6.):
+        low_pos_decoding_err_threshold_in_cm: float = 10.):
     thresholds = [0.3, 0.8, 1.2]
 
     for threshold in thresholds:
@@ -1958,11 +1983,12 @@ def plot_percent_have_grid_cells_given_low_pos_decoding_err_vs_human_readable_sw
                     )
         ax.set_ylim(0., 1.)
         # ax.set_title(r'$60^{\circ}$')
-        plt.ylim(0., 1.)
         # plt.title(r'$60^{\circ}$')
-        ax.set_ylabel(
-            f'Frac Runs\nMax Grid Score > {threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm} cm')
+        fig.suptitle('Fraction of Runs with Possible Grid Cells | Low Position Decoding Error')
+        # ax.set_ylabel(
+        #     f'Frac Runs\nMax Grid Score > {threshold} | Pos Err < {low_pos_decoding_err_threshold_in_cm} cm')
         ax.set_xlabel('')
+        ax.set_ylabel('')
 
         # ax = axes[1]
         # sns.barplot(y="has_grid_d90",
@@ -2144,13 +2170,15 @@ def plot_percent_low_decoding_err_vs_human_readable_sweep(
     runs_configs_df[f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}'] = \
         runs_configs_df['pos_decoding_err'] < low_pos_decoding_err_threshold_in_cm
 
-    fig, ax = plt.subplots(figsize=(24, 8))
+    fig, ax = plt.subplots(figsize=(20, 8))
     sns.barplot(x="human_readable_sweep",
                 y=f'pos_decoding_err_below_{low_pos_decoding_err_threshold_in_cm}',
                 data=runs_configs_df,
                 ax=ax)
     ax.set_xlabel('')
-    ax.set_ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold_in_cm} cm')
+    ax.set_ylabel('')
+    # ax.set_ylabel(f'Frac Runs : Pos Error < {low_pos_decoding_err_threshold_in_cm} cm')
+    fig.suptitle(f'Fraction of Runs with Low Position Decoding Error (<{low_pos_decoding_err_threshold_in_cm} cm)')
     ax.set_ylim(0., 1.)
     plt.savefig(os.path.join(plot_dir,
                              f'percent_low_decoding_err_vs_human_readable_sweep.png'),
@@ -2397,6 +2425,7 @@ def plot_pos_decoding_err_vs_human_readable_sweep(
         plot_dir: str):
     plt.close()
     fig, ax = plt.subplots(figsize=(24, 8))
+    # fig.suptitle('Fraction of Runs with Low Position Decoding Error')
     sns.stripplot(x="human_readable_sweep",
                   y="pos_decoding_err",
                   data=runs_configs_df,
