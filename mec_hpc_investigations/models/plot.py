@@ -24,9 +24,9 @@ architecture_color_map = dict(
 
 activation_marker_map = dict(
     relu='o',
-    linear='P',
-    sigmoid='X',
-    tanh='*',
+    # linear='P',
+    # sigmoid='X',
+    # tanh='*',
 )
 
 

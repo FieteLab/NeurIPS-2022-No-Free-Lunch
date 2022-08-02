@@ -62,6 +62,10 @@ runs_configs_with_scores_max_df = runs_configs_df.merge(
     on='run_id',
     how='left')
 
+runs_configs_with_scores_max_df.to_csv(
+    os.path.join(data_dir, 'runs_configs_with_scores_max.csv')
+)
+
 plot_percent_runs_with_grid_cells_pie(
     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
     plot_dir=results_dir,)
