@@ -6,6 +6,7 @@ from mec_hpc_investigations.core.default_dirs import BANINO_REP_DIR
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--gpu", type=str, default=None, required=True)
     parser.add_argument("--save_dir", type=str, default=BANINO_REP_DIR)
@@ -34,8 +35,8 @@ if __name__ == "__main__":
     ARGS = parser.parse_args()
 
     # If GPUs available, select which to train on
-    os.environ["CUDA_DEVICE_ORDER"]="PCI_BUS_ID"
-    os.environ["CUDA_VISIBLE_DEVICES"]=ARGS.gpu
+    os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+    os.environ["CUDA_VISIBLE_DEVICES"] = ARGS.gpu
 
     tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 
@@ -77,4 +78,3 @@ if __name__ == "__main__":
     trainer.train(n_epochs=options.n_epochs,
                   n_steps=options.n_steps,
                   save=True)
-

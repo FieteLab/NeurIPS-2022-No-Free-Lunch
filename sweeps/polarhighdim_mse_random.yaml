@@ -1,0 +1,82 @@
+program: mec_hpc_investigations/models/run_trainer_rylan.py
+project: mec-hpc-investigations
+method: random
+metric:
+  goal: minimize
+  name: pos_decoding_err
+parameters:
+  activation:
+    values: [
+        'relu',
+        'tanh',
+        'linear',
+        'sigmoid',
+    ]
+  batch_size:
+    values: [30, 60, 90, 120, 150, 180]
+  bin_side_in_m:
+    values: [0.05]
+  box_height_in_m:
+    values: [2.2]
+  box_width_in_m:
+    values: [2.2]
+  initializer:
+    values: [
+      'glorot_uniform',
+      'glorot_normal',
+      'orthogonal',
+    ]
+  is_periodic:
+    values: [False]
+  learning_rate:
+    values: [0.005, 0.001, 0.0005, 0.0001]
+  n_epochs:
+    values: [1, 4, 8, 12, 16]
+  n_grad_steps_per_epoch:
+    values: [5000]
+  n_place_fields_per_cell:
+    values: [ 1 ]
+  Ng:
+    values: [1024]
+  Np:
+    values: [128, 256, 512]
+  optimizer:
+    values: [
+      'adam',
+      'rmsprop',
+    ]
+  place_field_loss:
+    values: [
+      'mse',
+    ]
+  place_field_values:
+    values: [
+      'high_dim_polar',
+    ]
+  place_field_normalization:
+    values: [
+      'none',
+    ]
+  place_cell_rf:
+    values: [
+      0.
+    ]
+  readout_dropout:
+    values: [0., 0.05, 0.1, 0.2, 0.5 ]
+  recurrent_dropout:
+    values: [0., 0.05, 0.1, 0.2, 0.5 ]
+  rnn_type:
+    values: [
+        'RNN',
+        'LSTM',
+        'UGRNN',
+        'GRU',
+    ]
+  seed:
+    values: [ 0, 1, 2 ]
+  sequence_length:
+    values: [20, 25, 30, 35, 40]
+  surround_scale:
+    values: [0.]
+  weight_decay:
+      values: [0., 0.0001, 0.0005, 0.001, 0.005, 0.01 ]

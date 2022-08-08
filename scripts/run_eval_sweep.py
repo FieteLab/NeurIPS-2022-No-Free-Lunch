@@ -10,14 +10,26 @@ import wandb
 # Cartesian (Low Dim)
 # sweep_ids = ['gvxvhnx8']
 
+# Cartesian (Low Dim) Random
+# sweep_ids = ['koueijox']
+
 # Cartesian (High Dim)
 # sweep_ids = ['2ks3s65c']
 
-# Polar
-sweep_ids = ['m10yfzgz']
+# Cartesian (High Dim) Random
+sweep_ids = ['iyycfgiv']
 
-# Gaussian
+# Polar
+# sweep_ids = ['m10yfzgz']
+
+# Polar (High Dim) Random
+# sweep_ids = ['2gz0ks4o']
+
+# Gaussian (eval done)
 # sweep_ids = ['oa0v2uzr']
+
+# Gaussian Random
+# sweep_ids = ['c2hohme2']
 
 # DoG (true DoG)
 # sweep_ids = ['nisioabg']
@@ -31,10 +43,10 @@ sweep_ids = ['m10yfzgz']
 # DoS Multiple field & Multiple scale
 # sweep_ids = ['lk012xp8', '2lj5ngjz']
 
-# Nayebi sweep (done)
+# Nayebi sweep (eval done)
 # sweep_ids = ['59lptrr1']
 
-# Ideal DoG
+# Ideal DoG (eval done)
 # sweep_ids = ['bav6z2py']
 
 
@@ -55,7 +67,7 @@ sweep_ids = ['m10yfzgz']
 # run_ids = list(sorted(os.listdir(results_dir)))
 
 # Specific runs
-run_ids = ['rgsnwjz4', 'utxx5afx', 'hsdllalp', 'ex8zi2a9']
+run_ids = ['kd4nv1c1', '5fxk2v4b', 'x1mp7tzh', 'q6n25ndf', '1zkk6olj', '2551algn', '1ah8jhyb', 'akfaf31o', 'lymxsmpc']
 
 
 # random.shuffle functions in-place.

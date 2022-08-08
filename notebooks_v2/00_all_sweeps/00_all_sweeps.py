@@ -19,9 +19,13 @@ grid_score_d90_threshold = 1.5
 
 sweep_ids = [
     'gvxvhnx8',     # Low Dim Cartesian
+    'koueijox',     # Low Dim Cartesian Random
     '2ks3s65c',     # High Dim Cartesian
+    'iyycfgiv',     # High Dim Cartesian Random
     'm10yfzgz',     # High Dim Polar
+    '2gz0ks4o',     # High Dim Polar Random
     'oa0v2uzr',     # G
+    'c2hohme2',     # G Random
     'nisioabg',     # DoG
     'vxbwdefk',     # DoS
     '8qcojz8h',     # SoD (Softmax of Differences)
@@ -41,13 +45,13 @@ runs_configs_df = download_wandb_project_runs_configs(
 # Add human-readable sweep
 def convert_sweeps_to_human_readable_sweep(row: pd.Series):
     sweep_id = row['Sweep']
-    if sweep_id in {'gvxvhnx8'}:
+    if sweep_id in {'gvxvhnx8', 'koueijox'}:
         human_readable_sweep = 'Cartesian\nLow Dim'
-    elif sweep_id in {'2ks3s65c'}:
+    elif sweep_id in {'2ks3s65c', 'iyycfgiv'}:
         human_readable_sweep = 'Cartesian\nHigh Dim'
-    elif sweep_id in {'m10yfzgz'}:
+    elif sweep_id in {'m10yfzgz', '2gz0ks4o'}:
         human_readable_sweep = 'Polar\nHigh Dim'
-    elif sweep_id in {'oa0v2uzr'}:
+    elif sweep_id in {'oa0v2uzr', 'c2hohme2'}:
         human_readable_sweep = 'Gaussian'
     elif sweep_id in {'nisioabg'}:
         human_readable_sweep = 'DoG'
