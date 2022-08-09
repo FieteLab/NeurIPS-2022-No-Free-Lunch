@@ -2239,6 +2239,57 @@ def plot_percent_runs_with_grid_cells_vs_grid_score_threshold(
     print(f'Plotted {plot_path}')
 
 
+def plot_percent_runs_with_grid_cells_vs_grid_score_threshold_n_units_threshold(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str,
+        n_units_thresholds: List[int] = None):
+
+    if n_units_thresholds is None:
+        n_units_thresholds = [1, 2, 3, 4, 5, 10, 20]
+
+    grid_score_thresholds = np.linspace(0.35, 1.15, 150)
+    percent_runs_above_threshold = np.zeros_like(grid_score_thresholds)
+
+    n_total_runs = len(neurons_data_by_run_id_df['run_id'].unique())
+
+    for n_units_threshold in n_units_thresholds:
+
+        for grid_score_threshold_idx, grid_score_threshold in enumerate(grid_score_thresholds):
+
+            neurons_above_grid_score_threshold = neurons_data_by_run_id_df[
+                neurons_data_by_run_id_df['score_60_by_neuron'] > grid_score_threshold]
+
+            n_runs_with_n_units_above_grid_threshold = \
+                (neurons_above_grid_score_threshold.groupby('run_id').size() >= n_units_threshold).sum()
+
+            percent_runs_above_threshold[grid_score_threshold_idx] = \
+                100. * n_runs_with_n_units_above_grid_threshold / n_total_runs
+
+        y_label = f'% Runs with (Possible) Grid Cells (N Runs={n_total_runs})'
+        plot_df = pd.DataFrame.from_dict({
+            'Grid Score Threshold': grid_score_thresholds,
+            y_label: percent_runs_above_threshold
+        })
+
+        plt.close()
+        sns.lineplot(
+            data=plot_df,
+            x='Grid Score Threshold',
+            y=y_label)
+        plt.ylim(0, 100)
+        plt.title(f'Num Units >= {n_units_threshold}')
+
+        plot_path = os.path.join(
+            plot_dir,
+            f'percent_runs_with_grid_cells_vs_grid_score_threshold_n_units_threshold={n_units_threshold}.png')
+        plt.savefig(plot_path,
+                    bbox_inches='tight',
+                    dpi=300)
+        # plt.show()
+        plt.close()
+        print(f'Plotted {plot_path}')
+
+
 def plot_percent_runs_with_low_pos_decoding_err_pie(runs_configs_df: pd.DataFrame,
                                                     plot_dir: str,
                                                     low_pos_decoding_err_threshold_in_cm: float = 10.):

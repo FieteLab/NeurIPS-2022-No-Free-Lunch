@@ -70,6 +70,10 @@ plot_rate_maps_examples_hexagons_by_score_range(
     joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
+plot_percent_runs_with_grid_cells_vs_grid_score_threshold_n_units_threshold(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
 plot_grid_scores_kde(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir)
