@@ -17,7 +17,8 @@ low_pos_decoding_err_threshold_in_cm = 10.
 grid_score_d60_threshold = 0.8
 grid_score_d90_threshold = 1.5
 sweep_ids = [
-    'm10yfzgz'
+    'm10yfzgz',     # High Dim Polar
+    '2gz0ks4o',     # High Dim Polar Random
 ]
 
 runs_configs_df = download_wandb_project_runs_configs(
@@ -74,6 +75,10 @@ plot_grid_scores_kde(
     plot_dir=results_dir)
 
 plot_grid_scores_kde_cdf(
+    neurons_data_by_run_id_df=neurons_data_by_run_id_df,
+    plot_dir=results_dir)
+
+plot_grid_scores_kde_survival_function(
     neurons_data_by_run_id_df=neurons_data_by_run_id_df,
     plot_dir=results_dir)
 

@@ -732,6 +732,29 @@ def plot_grid_scores_kde_cdf(
     print(f'Plotted {plot_path}')
 
 
+def plot_grid_scores_kde_survival_function(
+        neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+    plt.close()
+    sns.kdeplot(
+        data=neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        cumulative=True)
+    plt.xlabel('Grid Score')
+    plt.ylabel('1 - Cumulative Density')
+    ax = plt.gca()
+    # Take 1-CDF to plot survival function
+    for line_idx in range(len(ax.lines)):
+        ax.lines[line_idx].set_ydata(1. - ax.lines[line_idx].get_ydata())
+    plot_path = os.path.join(plot_dir, f'grid_scores_kde_survival_function.png')
+    plt.savefig(plot_path,
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+    print(f'Plotted {plot_path}')
+
+
 def plot_grid_scores_kdes_by_human_readable_sweep(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str):
@@ -902,6 +925,36 @@ def plot_grid_scores_kdes_by_place_field_values(
     plt.xlim(-1.3, 1.3)
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_kdes_by_place_field_values.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
+def plot_grid_scores_kdes_survival_functions_by_place_field_values(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    plt.close()
+
+    g = sns.kdeplot(
+        # data=augmented_neurons_data_by_run_id_df[indices_to_keep],
+        data=augmented_neurons_data_by_run_id_df,
+        x='score_60_by_neuron',
+        common_norm=False,
+        cumulative=True,
+        hue='place_field_values')
+    sns.move_legend(g, "upper left", bbox_to_anchor=(1, 1))
+    g.legend_.set_title('')
+    plt.xlabel('Grid Score')
+    plt.ylabel('1 - Cumulative Density')
+    plt.xlim(-1.3, 1.3)
+    ax = plt.gca()
+    # Take 1-CDF to plot survival function
+    for line_idx in range(len(ax.lines)):
+        ax.lines[line_idx].set_ydata(1. - ax.lines[line_idx].get_ydata())
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_kdes_survival_functions_by_place_field_values.png'),
                 bbox_inches='tight',
                 dpi=300)
     # plt.show()

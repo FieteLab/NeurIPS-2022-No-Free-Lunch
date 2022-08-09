@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -n 1                    # one core
-#SBATCH --mem=10G               # RAM
+#SBATCH --mem=32G               # RAM
 #SBATCH --time=01:00:00         # total run time limit (HH:MM:SS)
 #SBATCH --mail-type=FAIL
 

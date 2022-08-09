@@ -25,7 +25,7 @@ runs_configs_true_dog_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=['nisioabg'],  # True DoG
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 true_dog_joblib_files_data_by_run_id_dict = load_runs_joblib_files(
     run_ids=list(runs_configs_true_dog_df['run_id'].unique()),
@@ -70,7 +70,7 @@ runs_configs_dog_df = download_wandb_project_runs_configs(
     data_dir=data_dir,
     sweep_ids=['vxbwdefk'],
     finished_only=True,
-    refresh=True)
+    refresh=False)
 
 # Keep only the ideal DoS runs.
 runs_configs_dog_df = runs_configs_dog_df[
@@ -117,6 +117,11 @@ plot_grid_scores_histograms_by_place_field_values(
 plot_grid_scores_kdes_by_place_field_values(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
     plot_dir=results_dir)
+
+plot_grid_scores_kdes_survival_functions_by_place_field_values(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,
+    plot_dir=results_dir
+)
 
 # max_grid_scores_by_run_id_df = augmented_neurons_data_by_run_id_df.groupby('run_id').agg(
 #     score_60_by_neuron_max=('score_60_by_neuron', 'max'),
