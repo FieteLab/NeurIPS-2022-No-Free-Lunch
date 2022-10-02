@@ -23,15 +23,9 @@ Then install the required packages:
 
 `pip install -r requirements.txt`
 
-### Repositories
-
-To obtain the relevant repositories, see [zips/README.md](zips/README.md). You can either:
- 
-1. Manually download zips and place them inside `MEC-HPC-Models-Investigation/zips`, then extract
-  them to `mec_hpc_investigations/subprojects`.
-   
-2. Run `python mec_hpc_investigations/utils/data_setup.py` from the main repository directory,
-  which will download and unzip the files.
+Note: Some of the requirements' pinned versions have known security vulnerabilities and have since
+been updated. We intentionally kept the outdated versions to ensure fair comparisons with previous
+papers.
 
 ## Running
 
