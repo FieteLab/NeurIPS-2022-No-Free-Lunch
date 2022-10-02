@@ -1,4 +1,6 @@
-# MEC/HPC Models Investigation
+# No Free Lunch from Deep Learning in Neuroscience
+
+Code corresponding to the NeurIPS 2022 paper "No Free Lunch from Deep Learning in Neuroscience: A Case Study through Models of the Entorhinal-Hippocampal Circuit"
 
 ## Setup
 
@@ -35,12 +37,12 @@ To obtain the relevant repositories, see [zips/README.md](zips/README.md). You c
 
 Code to run our investigations is located inside our python package `mec_hpc_investigations`.
 
-## Background
+## Attribution
 
-This repository was based on Nayebi et al. 2021 commit `dfaa3bc03eba9df8aace1541c0724482fbcab75e`, 
-forked on 2022/03/18.
+This repository was forked from [Nayebi et al. 2021's](https://proceedings.neurips.cc/paper/2021/hash/656f0dbf9392657eed7feefc486781fb-Abstract.html)
+commit `dfaa3bc03eba9df8aace1541c0724482fbcab75e` on 2022/03/18.
 
 ## Contact
 
 Questions? Comments? Interested in collaborating? Open an issue or 
-email Rylan Schaeffer (rylanschaeffer@gmail.com).
+email Rylan Schaeffer (rylanschaeffer@gmail.com) and cc Ila Fiete (fiete@mit.edu).
