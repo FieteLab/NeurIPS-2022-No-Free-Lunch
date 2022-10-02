@@ -1,1 +1,0 @@
-rsync -avh rylansch@openmind-dtn.mit.edu:/om2/user/rylansch/MEC-HPC-Models-Investigation/torch_tem/env_and_walks.joblib ./
