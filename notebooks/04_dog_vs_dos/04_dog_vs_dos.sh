@@ -15,4 +15,4 @@ export PYTHONPATH=.
 # https://stackoverflow.com/questions/5750450/how-can-i-print-each-command-before-executing
 set -x
 
-python -u notebooks_v2/04_dog_vs_dos/04_dog_vs_dos.py
+python -u notebooks/04_dog_vs_dos/04_dog_vs_dos.py

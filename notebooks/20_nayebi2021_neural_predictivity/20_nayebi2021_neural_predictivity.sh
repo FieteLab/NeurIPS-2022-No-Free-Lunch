@@ -15,4 +15,4 @@ export PYTHONPATH=.
 # https://stackoverflow.com/questions/5750450/how-can-i-print-each-command-before-executing
 set -x
 
-python -u notebooks_v2/20_nayebi2021_neural_predictivity/20_nayebi2021_neural_predictivity.py
+python -u notebooks/20_nayebi2021_neural_predictivity/20_nayebi2021_neural_predictivity.py

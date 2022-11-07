@@ -63,36 +63,13 @@ plot_rate_maps_examples_squares_by_score_range(
     joblib_files_data_by_run_id_dict=true_dog_joblib_files_data_by_run_id_dict,
     plot_dir=results_dir)
 
-# Load DoS
-runs_configs_dog_df = download_wandb_project_runs_configs(
-    wandb_project_path='mec-hpc-investigations',
-    data_dir=data_dir,
-    sweep_ids=['vxbwdefk'],
-    finished_only=True,
-    refresh=False)
-
-# Keep only the ideal DoS runs.
-runs_configs_dog_df = runs_configs_dog_df[
-    (runs_configs_dog_df['place_cell_rf'] == 0.12) &
-    (runs_configs_dog_df['surround_scale'] == 2.0) &
-    (runs_configs_dog_df['optimizer'] == 'adam')]
-
-# Merge the two dataframes.
-runs_configs_df = pd.concat([runs_configs_true_dog_df, runs_configs_dog_df ]).reset_index()
-
-joblib_files_data_by_run_id_dict = load_runs_joblib_files(
-    run_ids=list(runs_configs_df['run_id'].unique()))
-
-neurons_data_by_run_id_df = convert_joblib_files_data_to_neurons_data_df(
-    joblib_files_data_by_run_id_dict=joblib_files_data_by_run_id_dict)
-
 
 def convert_place_field_values_to_human_readable_place_field_values(row: pd.Series):
     place_field_values = row['place_field_values']
     if place_field_values == 'difference_of_gaussians':
-        replacement_place_field_values = '"DoG" (DoS)'
-    elif place_field_values == 'true_difference_of_gaussians':
-        replacement_place_field_values = 'True DoG'
+        replacement_place_field_values = 'DoG'
+    elif place_field_values == 'general_difference_of_gaussians':
+        replacement_place_field_values = 'General DoG'
     else:
         # run_group = f"{row['place_field_loss']}\n{row['place_field_values']}\n{row['place_field_normalization']}"
         raise ValueError
@@ -131,4 +108,4 @@ plot_grid_scores_kdes_by_place_field_values(
 #     runs_configs_with_scores_max_df=runs_configs_with_scores_max_df,
 #     plot_dir=results_dir, )
 
-print('Finished 04_true_dog/04_true_dog.py!')
+print('Finished 14_general_dog/14_general_dog.py!')

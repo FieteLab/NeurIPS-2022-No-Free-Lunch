@@ -14,4 +14,4 @@ export PYTHONPATH=.
 # https://stackoverflow.com/questions/5750450/how-can-i-print-each-command-before-executing
 set -x
 
-python -u notebooks_v2/13_dos_multiple_fields_and_scales/13_dos_multiple_fields_and_scales.py
+python -u notebooks/13_dos_multiple_fields_and_scales/13_dos_multiple_fields_and_scales.py
