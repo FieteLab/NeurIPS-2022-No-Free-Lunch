@@ -11,9 +11,9 @@ os.makedirs(data_dir, exist_ok=True)
 results_dir = os.path.join(notebook_dir, 'results')
 
 # Remove results directory to make fresh.
-# if os.path.exists(results_dir) and os.path.isdir(results_dir):
-#     shutil.rmtree(results_dir)
-# os.makedirs(results_dir, exist_ok=True)
+if os.path.exists(results_dir) and os.path.isdir(results_dir):
+    shutil.rmtree(results_dir)
+os.makedirs(results_dir, exist_ok=True)
 
 low_pos_decoding_err_threshold_in_cm = 15.
 grid_score_d60_threshold = 0.8
@@ -65,7 +65,7 @@ runs_configs_general_dog_df = runs_configs_general_dog_df.merge(
     on='run_id',
     how='left')
 
-# Save max grid score by key parameters
+# Save max-grid-score-by-key-parameters to disk.
 runs_configs_general_dog_df[['activation', 'place_cell_alpha_e',
                              'place_cell_alpha_i', 'place_cell_rf',
                              'score_60_by_neuron_max',
@@ -100,10 +100,16 @@ runs_configs_general_dog_df['place_field_values'] = runs_configs_general_dog_df.
     axis=1)
 
 augmented_neurons_data_by_run_id_df = runs_configs_general_dog_df[[
-    'run_id', 'place_field_values']].merge(
+    'run_id', 'place_field_values', 'place_cell_alpha_e', 'place_cell_alpha_i',
+    'place_cell_rf']].merge(
     general_dog_neurons_data_by_run_id_df,
     on='run_id',
     how='left')
+
+plot_grid_scores_boxen_vs_alpha_e_alpha_i_by_place_cell_rf(
+    augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df[augmented_neurons_data_by_run_id_df['activation'] == 'relu'],
+    plot_dir=results_dir,
+)
 
 plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
     augmented_neurons_data_by_run_id_df=augmented_neurons_data_by_run_id_df,

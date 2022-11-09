@@ -1204,6 +1204,39 @@ def plot_grid_scores_boxen_vs_place_cell_rf_by_place_cell_ss(
     plt.close()
 
 
+def plot_grid_scores_boxen_vs_alpha_e_alpha_i_by_place_cell_rf(
+        augmented_neurons_data_by_run_id_df: pd.DataFrame,
+        plot_dir: str):
+
+    fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
+                             sharey=True, sharex=True)
+    ax = axes[0]
+    sns.boxenplot(y="score_60_by_neuron",
+                  x='place_cell_alpha_e',
+                  hue='place_cell_alpha_i',
+                  data=augmented_neurons_data_by_run_id_df[augmented_neurons_data_by_run_id_df['place_cell_rf'] == 0.12],
+                  ax=ax)
+    ax.set_ylabel(r'$60^{\circ}$ Grid Scores')
+    ax.set_xlabel(r'$\alpha_E$')
+    ax.set_title(r'$\sigma_E=0.12$ cm')
+
+    ax = axes[1]
+    sns.boxenplot(y="score_60_by_neuron",
+                  x='place_cell_alpha_e',
+                  hue='place_cell_alpha_i',
+                  data=augmented_neurons_data_by_run_id_df[augmented_neurons_data_by_run_id_df['place_cell_rf'] == 0.20],
+                  ax=ax)
+    ax.set_ylabel(r'$60^{\circ}$ Grid Scores')
+    ax.set_xlabel(r'$\alpha_E$')
+    ax.set_title(r'$\sigma_E=0.20$ cm')
+    plt.savefig(os.path.join(plot_dir,
+                             f'grid_scores_boxen_vs_alpha_e_alpha_i_by_place_cell_rf.png'),
+                bbox_inches='tight',
+                dpi=300)
+    # plt.show()
+    plt.close()
+
+
 def plot_grid_score_max_vs_activation(max_grid_scores_by_run_id_df: pd.DataFrame,
                                       plot_dir: str):
     fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(24, 8),
