@@ -368,8 +368,8 @@ def load_runs_joblib_files(run_ids: List[str],
     # print("Ru")
 
     if len(missing_joblib_runs) > 0:
-        # print(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
-        raise FileNotFoundError(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
+        print(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
+        # raise FileNotFoundError(f'The following {len(missing_joblib_runs)} runs are missing joblib files:\n{missing_joblib_runs}')
 
     print('Loaded joblib files\' data')
 
@@ -384,6 +384,13 @@ def overwrite_runs_configs_df_values_with_joblib_data(
     # values. We do this because the post-training loss and decoding are computed
     # using newer code and longer trajectories.
     keys = ['loss', 'pos_decoding_err', 'participation_ratio', 'two_NN', 'method_of_moments_ID']
+    for run_id, run_id_joblib_files_data in joblib_files_data_by_run_id_dict.items():
+        try:
+            for key in keys:
+                assert key in run_id_joblib_files_data
+        except AssertionError:
+            print(f'Run ID: {run_id} has keys: {run_id_joblib_files_data.keys()}')
+
     for key in keys:
         runs_configs_df[key] = runs_configs_df.apply(
             lambda row: joblib_files_data_by_run_id_dict[row['run_id']][key],

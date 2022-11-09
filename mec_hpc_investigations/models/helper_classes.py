@@ -10,6 +10,7 @@ class Options(object):
 
     def __init__(self):
         self.activation = None
+        self.activation = None
         self.batch_size = None
         self.bin_side_in_m = None
         self.box_width_in_m = None
@@ -30,6 +31,8 @@ class Options(object):
         self.place_field_loss = None
         self.place_field_values = None
         self.place_field_normalization = None
+        self.place_cell_alpha_e = None
+        self.place_cell_alpha_i = None
         self.place_cell_rf = None
         self.readout_dropout = None
         self.recurrent_dropout = None
@@ -100,8 +103,15 @@ class PlaceCells(object):
             'gaussian',
             'difference_of_gaussians',
             'true_difference_of_gaussians',
+            'general_difference_of_gaussians',
             'softmax_of_differences',
         }
+        if options.place_field_values == 'general_difference_of_gaussians':
+            assert options.place_cell_alpha_e is not None
+            assert options.place_cell_alpha_i is not None
+            self.place_cell_alpha_e = options.place_cell_alpha_e
+            self.place_cell_alpha_i = options.place_cell_alpha_i
+
         self.place_field_values = options.place_field_values
 
         if self.place_field_values == 'cartesian':
@@ -385,6 +395,26 @@ class PlaceCells(object):
                 batch_dims=3)
 
             outputs = tf.math.exp(-min_divided_dist_squared) - tf.math.exp(-min_other_divided_dist_squared)
+
+            # Original
+            # Shift and scale outputs so that they lie in [0,1].
+            outputs += tf.abs(tf.reduce_min(outputs, axis=-1, keepdims=True))
+            outputs /= tf.reduce_sum(outputs, axis=-1, keepdims=True)
+
+        elif self.place_field_values == 'general_difference_of_gaussians':
+            # Shape: (batch size, sequence length, num place cells, num fields per cell)
+            other_divided_dist_squared = tf.divide(
+                dist_squared,
+                2. * tf.square(tf.multiply(self.place_cell_rf, self.surround_scale))
+            )
+            # Shape: (batch size, sequence length, num place cells)
+            min_other_divided_dist_squared = tf.gather(
+                other_divided_dist_squared,
+                min_indices,
+                batch_dims=3)
+
+            outputs = self.place_cell_alpha_e * tf.math.exp(-min_divided_dist_squared) \
+                      - self.place_cell_alpha_i * tf.math.exp(-min_other_divided_dist_squared)
 
             # Original
             # Shift and scale outputs so that they lie in [0,1].

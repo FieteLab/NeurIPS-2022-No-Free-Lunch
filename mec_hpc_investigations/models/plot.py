@@ -814,7 +814,7 @@ def plot_grid_scores_kdes_cdfs_by_human_readable_sweep(
 def plot_grid_scores_kdes_survival_functions_by_human_readable_sweep(
         augmented_neurons_data_by_run_id_df: pd.DataFrame,
         plot_dir: str,
-        figsize: Tuple[int] = (10, 8)):
+        figsize: Tuple[int, int] = (10, 8)):
 
     plt.close()
 
@@ -2690,7 +2690,8 @@ def plot_rate_maps_examples_hexagons_by_score_range(
         (0.65, 0.80),
         (0.80, 0.90),
         (0.90, 1.15),
-        (1.15, 10),
+        (1.15, 1.5),
+        (1.5, 10),
     ]
 
     # n_rows = n_cols = int(np.ceil(np.sqrt(max_num_ratemaps_per_range)))
@@ -2724,6 +2725,10 @@ def plot_rate_maps_examples_hexagons_by_score_range(
             neuron_idx = row['neuron_idx']
             score_60 = row['score_60_by_neuron']
             print(f"Run ID: {run_id}\tNeuron Idx: {neuron_idx}\tScore: {score_60}")
+
+            if 'rate_maps' not in joblib_files_data_by_run_id_dict[run_id]:
+                print(f'Run ID: {run_id}\tKeys: {joblib_files_data_by_run_id_dict[run_id].keys()}')
+
             rate_map = joblib_files_data_by_run_id_dict[run_id]['rate_maps'][neuron_idx]
 
             if smooth:

@@ -775,6 +775,8 @@ def configure_options(run_ID: str,
                       place_field_loss: str = 'crossentropy',
                       place_field_values: str = 'gaussian',
                       place_field_normalization: str = 'local',
+                      place_cell_alpha_e: float = None,
+                      place_cell_alpha_i: float = None,
                       place_cell_rf: float = 0.12,
                       pc_k=None,
                       pc_activation="relu",
@@ -846,6 +848,8 @@ def configure_options(run_ID: str,
     if options.place_field_values == 'cartesian' or options.place_field_values == 'polar':
         assert options.Np == 2
     options.place_cell_rf = place_cell_rf  # width of place cell center tuning curve (m)
+    options.place_cell_alpha_e = place_cell_alpha_e
+    options.place_cell_alpha_i = place_cell_alpha_i
     options.rnn_type = rnn_type  # RNN or LSTM
     options.readout_dropout = readout_dropout
     options.recurrent_dropout = recurrent_dropout
