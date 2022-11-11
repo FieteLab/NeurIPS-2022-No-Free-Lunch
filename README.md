@@ -1,8 +1,8 @@
 # No Free Lunch from Deep Learning in Neuroscience
 
-![](figures/08_wrap_up_figure.png)
-
 Code corresponding to our [NeurIPS 2022 paper "No Free Lunch from Deep Learning in Neuroscience: A Case Study through Models of the Entorhinal-Hippocampal Circuit"](https://openreview.net/forum?id=syU-XvinTI1)
+
+![](figures/08_wrap_up_figure.png)
 
 ## Setup
 
