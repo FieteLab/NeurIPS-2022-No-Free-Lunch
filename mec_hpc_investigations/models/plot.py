@@ -1219,6 +1219,7 @@ def plot_grid_scores_boxen_vs_alpha_e_alpha_i_by_place_cell_rf(
     ax.set_ylabel(r'$60^{\circ}$ Grid Scores')
     ax.set_xlabel(r'$\alpha_E$')
     ax.set_title(r'$\sigma_E=0.12$ cm')
+    ax.legend().set_visible(False)  # Turn legend off
 
     ax = axes[1]
     sns.boxenplot(y="score_60_by_neuron",
@@ -1229,6 +1230,7 @@ def plot_grid_scores_boxen_vs_alpha_e_alpha_i_by_place_cell_rf(
     ax.set_ylabel(r'$60^{\circ}$ Grid Scores')
     ax.set_xlabel(r'$\alpha_E$')
     ax.set_title(r'$\sigma_E=0.20$ cm')
+    ax.legend().set_visible(False)  # Turn legend off
     plt.savefig(os.path.join(plot_dir,
                              f'grid_scores_boxen_vs_alpha_e_alpha_i_by_place_cell_rf.png'),
                 bbox_inches='tight',

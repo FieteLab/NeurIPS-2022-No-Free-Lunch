@@ -1,6 +1,8 @@
 # No Free Lunch from Deep Learning in Neuroscience
 
-Code corresponding to the NeurIPS 2022 paper "No Free Lunch from Deep Learning in Neuroscience: A Case Study through Models of the Entorhinal-Hippocampal Circuit"
+![](figures/08_wrap_up_figure.png)
+
+Code corresponding to our [NeurIPS 2022 paper "No Free Lunch from Deep Learning in Neuroscience: A Case Study through Models of the Entorhinal-Hippocampal Circuit"](https://openreview.net/forum?id=syU-XvinTI1)
 
 ## Setup
 
@@ -25,11 +27,23 @@ Then install the required packages:
 
 Note: Some of the requirements' pinned versions have known security vulnerabilities and have since
 been updated. We intentionally kept the outdated versions to ensure fair comparisons with previous
-papers.
+papers. Additionally, much code is vestigial (see Attribution below).
 
 ## Running
 
-Code to run our investigations is located inside our python package `mec_hpc_investigations`.
+At a high level, our code is designed with two different phases in mind: training models at scale,
+then analyzing trained models at scale.
+
+### Training Models
+
+We use [W&B](wandb.ai/) to run sweeps on our SLURM cluster. W&B sweep configurations are specified inside `sweeps/`,
+and SLURM run scripts are inside `scripts/`. The Python entrypoint is `mec_hpc_investigations/models/run_trainer_rylan.py`.
+
+### Analyzing Models
+
+After training models, they can be analyzed in a 2 step process. First, use `scripts/run_eval_sweep.py`
+to create files for analyzing a single model. Second, use the code inside `notebooks/` to answer
+particular questions.
 
 ## Attribution
 
